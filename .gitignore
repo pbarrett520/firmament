@@ -1,0 +1,9 @@
+.gdb_history
+.venv/
+.vs/
+.vscode/
+__pycache__/
+build/
+log.txt
+src/machine_conf.hpp
+venv/
