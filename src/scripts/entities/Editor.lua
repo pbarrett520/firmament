@@ -121,13 +121,15 @@ function Editor:draw_entity_viewer()
 	  imgui.PushID(id .. '##list_view')
 
 	  -- Display the node, and if clicked select it
+	  if self.selected == entity then
+		--imgui.PushStyleColor_2(imgui.constant.Col.Text, 0, 1, .1, 1)
+	  end
+	  
 	  if imgui.MenuItem(entity.name) then
 		self:select_entity(entity)
 	  end
 
-	  if imgui.IsItemHovered() then
-		entity_hovered_in_list = id
-	  end
+	  --imgui.PopStyleColor()
 
 	  imgui.PopID()
 	end
@@ -144,9 +146,7 @@ end
 
 function Editor:draw_selected_entity()
   if self.selected ~= nil then
-	imgui.extensions.Table(self.selected.name, self.selected)
-	--imgui.Text(self.selected:get_name())
-	--self.entity_editor:draw()
+	self.entity_editor:draw()
   end
 end
 
@@ -964,4 +964,7 @@ end
 
 function Editor:select_entity(entity)
   self.selected = entity
+  if self.selected then
+	self.entity_editor = imgui.extensions.TableEditor(self.selected)
+  end
 end

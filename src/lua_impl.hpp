@@ -69,8 +69,12 @@ void LuaState::load_options() {
 }
 
 void LuaState::update_entities(float dt) {
-	auto update = state["tdengine"]["update_entities"];
-	update(dt);
+	sol::protected_function update = state["tdengine"]["update_entities"];
+	auto result = update(dt);
+	if (!result.valid()) {
+		sol::error err = result;
+		tdns_log.write(err.what());
+	}
 }
 
 // Basic Lua bootstrapping. Don't load any game scripts here. This is called before
@@ -91,20 +95,11 @@ void init_lua() {
 		sol::lib::string,
 		sol::lib::table);
 
-	// Set up paths
-	lua_manager.scripts = absolute_path(path_join({"src", "scripts"}));
-	lua_manager.core = path_join({lua_manager.scripts, "core"});
-	lua_manager.dialogue = path_join({lua_manager.scripts, "dialogue"});
-	lua_manager.layouts = path_join({lua_manager.scripts, "layouts"});
-	lua_manager.libs = path_join({lua_manager.scripts, "libs"});
-	lua_manager.saves = path_join({lua_manager.scripts, "saves"});
-	lua_manager.gstate = path_join({lua_manager.scripts, "state"}); 
-
 	// Give those paths to Lua
-	lua_manager.prepend_to_search_path(lua_manager.scripts);
-	lua_manager.prepend_to_search_path(lua_manager.libs);
-	lua_manager.prepend_to_search_path(lua_manager.core);
-	lua_manager.prepend_to_search_path(lua_manager.saves);
+	lua_manager.prepend_to_search_path(fm_scripts);
+	lua_manager.prepend_to_search_path(fm_libs);
+	lua_manager.prepend_to_search_path(fm_core);
+	lua_manager.prepend_to_search_path(fm_saves);
 
 	// Bind all C functions
 	LoadImguiBindings();
@@ -113,6 +108,10 @@ void init_lua() {
 	// Then, script the base packages you need
 	lua_manager.script_dir(RelativePath("libs"));
 	lua_manager.script_dir(RelativePath("core"));
+
+	// @firmament break out error code and load it first
+	sol::protected_function error_handler = lua_manager.state["tdengine"]["handle_error"];
+	sol::protected_function::set_default_handler(error_handler);
 
 	lua_manager.load_options();
 }

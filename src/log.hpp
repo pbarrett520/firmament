@@ -17,7 +17,7 @@ struct Log {
 Log tdns_log;
 
 void Log::init() {
-	log_stream.open(root_dir + "log.txt", std::ofstream::out | std::ofstream::trunc);
+	log_stream.open(fm_log, std::ofstream::out | std::ofstream::trunc);
 }
 void Log::write(std::string message, uint8_t flags) {
 	if (flags & Log_Flags::Console)

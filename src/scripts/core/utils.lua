@@ -258,6 +258,22 @@ function truncate(float, digits)
   return math.modf(float * mult) / mult
 end
 
+function split(str, sep)
+  output = {}
+  
+  for match in string.gmatch(str, "([^" .. sep .. "]+)") do
+	table.insert(output, match)
+  end
+  
+  return output
+end
+
+function table_address(t)
+  if not t then return '0x00000000' end
+  return split(tostring(t), ' ')[2]
+end
+
 function current_function_name()
   return debug.getinfo(2)
 end
+

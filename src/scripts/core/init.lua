@@ -55,3 +55,18 @@ function tdengine.load_dialogue(name)
   return dialogue
 end
 
+function tdengine.handle_error(message)
+  -- Strip the message to just the script filename to make it more readable
+  local parts = split(message, ' ')
+  local path = parts[1]
+  local path_elements = split(path, '/')
+  local filename = path_elements[#path_elements]
+
+  local output = filename
+  for index = 2, #parts do
+	output = output .. ' ' .. parts[index]
+  end
+
+  -- And pass that into C++
+  return output
+end

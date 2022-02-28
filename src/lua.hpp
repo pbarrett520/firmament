@@ -9,14 +9,6 @@ struct LuaState {
 	void script_file(ScriptPath path);
 	void load_options();
 	void update_entities(float dt);
-
-	std::string scripts;
-	std::string core;
-	std::string dialogue;
-	std::string layouts;
-	std::string libs;
-	std::string saves;
-	std::string gstate; 
 } Lua; // @firmament make this a global
 
 void init_lua();

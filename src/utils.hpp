@@ -391,14 +391,14 @@ bool is_valid_filename(std::string& str) {
 // Don't use a leading slash
 std::string absolute_path(std::string dir_from_project_root) {
 	// Check that we didn't pass this function an absolute path already
-	if (dir_from_project_root.find(root_dir) != std::string::npos) {
+	if (dir_from_project_root.find(fm_root) != std::string::npos) {
 		return dir_from_project_root;
 	}
-	return root_dir + dir_from_project_root;
+	return fm_root2 + dir_from_project_root;
 }
 
 std::string relative_path(std::string absolute) {
-	string_replace(absolute, root_dir, "");
+	string_replace(absolute, fm_root2, "");
 	return absolute;
 }
 

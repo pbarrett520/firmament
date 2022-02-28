@@ -1,0 +1,11 @@
+#define fm_root2    fm_root "/"
+#define fm_log      fm_root "/" "log.txt"
+#define fm_source   fm_root "/" "src"
+#define fm_scripts  fm_source "/" "scripts"
+#define fm_core     fm_scripts "/" "core"
+#define fm_dialogue fm_scripts "/" "dialogue"
+#define fm_layouts  fm_scripts "/" "layouts"
+#define fm_libs     fm_scripts "/" "libs"
+#define fm_saves    fm_scripts "/" "saves"
+#define fm_state    fm_scripts "/" "state"
+

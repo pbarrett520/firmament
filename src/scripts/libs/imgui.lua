@@ -4,83 +4,68 @@ local inspect = require('inspect')
 imgui.extensions = imgui.extensions or {}
 imgui.internal = imgui.internal or {}
 
-imgui.extensions.Component = function(component)
-   imgui.PushID(component:get_id())
-   
-   if imgui.TreeNode(component:get_name()) then
-	  imgui.extensions.VariableName('id')
-	  imgui.SameLine()
-	  imgui.Text(tostring(component:get_id()))
-
-	  local name = component:get_name()
-	  local ignore = component.imgui_ignore
-	  imgui.extensions.TableMembers(name, component, ignore)
-	  imgui.TreePop()
-   end
-
-   imgui.PopID()
-end
-
-imgui.extensions.Entity = function(entity)
-   imgui.PushID(entity.id)
-
-   -- Name and ID
-   imgui.Text(entity.name)
-   imgui.extensions.VariableName('id')
-   imgui.SameLine()
-   imgui.Text(tostring(entity:get_ID()))
-
-   imgui.extensions.TableMembers(entity:get_name(), entity)
-
-   imgui.PopID()
-end
-
-imgui.extensions.TableMembers = function(name, t)
-  local ignore = ignore or {}
-  imgui_id = imgui_id or '##' .. name
-  
-  for member, value in pairs(t) do
-	if not ignore[member] then
-	  local value_type = type(value)
-	  local next_imgui_id = imgui_id .. '__' .. member
-	  
-	  if value_type == 'string' then
-		imgui.extensions.VariableName(member)
-		imgui.SameLine()
-		imgui.Text(value)
-	  elseif value_type == 'number' then
-		imgui.extensions.VariableName(member)
-		imgui.SameLine()
-		imgui.Text(tostring(value))
-	  elseif value_type == 'boolean' then
-		imgui.extensions.VariableName(member)
-		imgui.SameLine()
-		imgui.Text(tostring(value))
-	  elseif value_type == 'table' then
-		imgui.extensions.Table(member, value, {}, next_imgui_id)
-	  end
-	end
-  end
-end
-
-
-imgui.extensions.Table = function(name, t, ignore, imgui_id)
-   ignore = ignore or {}
-   imgui_id = imgui_id or '##' .. name
-   name = name .. imgui_id
-   
-   if imgui.TreeNode(name) then
-	  imgui.extensions.TableMembers(name, t, ignore, imgui_id)
-	  imgui.TreePop()
-   end
-end
-
 local types = {
   'number',
   'string',
   'bool',
   'table'
 }
+
+imgui.extensions.Table = function(t)
+  for member, value in pairs(t) do
+	local value_type = type(value)
+	
+	if value_type == 'string' then
+	  imgui.extensions.VariableName(member)
+	  imgui.SameLine()
+	  imgui.Text(value)
+	elseif value_type == 'number' then
+	  imgui.extensions.VariableName(member)
+	  imgui.SameLine()
+	  imgui.Text(tostring(value))
+	elseif value_type == 'boolean' then
+	  imgui.extensions.VariableName(member)
+	  imgui.SameLine()
+	  imgui.Text(tostring(value))
+	elseif value_type == 'table' then
+	  imgui.extensions.TableMenuItem(member, value)
+	end
+  end
+end
+
+imgui.extensions.TableMenuItem = function(name, t)
+  local address = table_address(t)
+  local imgui_id = name .. '##' .. address
+  
+  if imgui.TreeNode(imgui_id) then
+	imgui.extensions.Table(t)
+	imgui.TreePop()
+  end
+end
+
+imgui.extensions.TableEditor = function(editing)
+  local editor = {
+    key_id = tdengine.uuid_imgui(),
+    value_id = tdengine.uuid_imgui(),
+    type_id = tdengine.uuid_imgui(),
+	selected_type = 'string',
+	editing = editing,
+	children = {},
+	draw = function(self) imgui.internal.draw_table_editor(self) end,
+	clear = function(self) imgui.internal.clear_table_editor(self) end
+  }
+
+  -- Each child member that is a non-recursive table also gets an editor
+  for key, value in pairs(editing) do
+	local recurse = type(value) == 'table'
+	recurse = recurse and not value == editing
+	if recurse then
+	  editor.children[key] = imgui.extensions.TableEditor(value)
+	end
+  end
+
+  return editor
+end
 
 imgui.internal.draw_table_editor = function(editor)
   imgui.extensions.VariableName('type')
@@ -173,9 +158,6 @@ imgui.internal.draw_table_editor = function(editor)
 	  end
 	end
   end
-
-  for name, child in pairs(editor.children) do
-  end
 end
 
 imgui.internal.clear_table_editor = function(editor)
@@ -183,66 +165,6 @@ imgui.internal.clear_table_editor = function(editor)
   editor.value_id = tdengine.uuid_imgui()
   editor.type_id = tdengine.uuid_imgui()
   editor.children = {}
-end
-
-imgui.extensions.TableEditor = function(editing)
-  local editor = {
-    key_id = tdengine.uuid_imgui(),
-    value_id = tdengine.uuid_imgui(),
-    type_id = tdengine.uuid_imgui(),
-	selected_type = 'string',
-	editing = editing,
-	children = {},
-	draw = function(self) imgui.internal.draw_table_editor(self) end,
-	clear = function(self) imgui.internal.clear_table_editor(self) end
-  }
-
-  for key, value in pairs(editing) do
-	-- If you have yourself as a member, you will infinitely recurse. Prevent that from
-	-- happening
-	local recurse = type(value) == 'table'
-	recurse = recurse and not value == editing
-	if recurse then
-	  editor.children[key] = imgui.extensions.TableEditor(value)
-	end
-  end
-
-  return editor
-end
-
--- Components are stored separately from entities. We use the basic table editor for all of the
--- entity's normal fields, and then go through the editor for each component individually.
-imgui.internal.draw_entity_editor = function(editor)
-  imgui.internal.draw_table_editor(editor)
-
-  for name, component_editor in pairs(editor.components) do
-	if imgui.TreeNode(name) then
-	  component_editor:draw()
-	  imgui.TreePop()
-	end
-  end
-end
-
-imgui.internal.clear_entity_editor = function(editor)
-  imgui.internal.clear_table_editor(editor)
-  editor.components = nil
-end
-
--- The entity editor is pretty much just a table editor that has all of its components as separate
--- table editors inside it. 
-imgui.extensions.EntityEditor = function(editing)
-  local editor = imgui.extensions.TableEditor(editing)
-  editor.components = {}
-  editor.draw = function(self) imgui.internal.draw_entity_editor(self) end
-  editor.clear = function(self) imgui.internal.clear_entity_editor(self) end
-  
-  local components = editing:all_components()
-  for index, component in pairs(components) do
-	local name = component:get_name()
-	editor.components[name] = imgui.extensions.TableEditor(component)
-  end
-
-  return editor
 end
 
 imgui.extensions.PushBoolColor = function()
