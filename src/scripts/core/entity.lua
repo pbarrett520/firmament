@@ -29,7 +29,7 @@ local entity_mixin = {
 }
 
 function tdengine.entity(name)
-  local class = tdengine.create_class(name)
+  local class = tdengine.define_class(name)
   tdengine.add_new_to_class(class, tdengine.entity_types)
   class:include(entity_mixin)
   

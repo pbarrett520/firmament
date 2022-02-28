@@ -31,6 +31,7 @@ extern "C" {
 
 // STL
 #include <stdlib.h>
+#include <stdarg.h>
 #include <iostream>
 #include <fstream>
 #include <vector>

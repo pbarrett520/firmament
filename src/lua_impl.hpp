@@ -15,41 +15,42 @@ void LuaState::prepend_to_search_path(std::string directory) {
 	state["package"]["path"] = new_path;
 }
 
-void LuaState::script_file(ScriptPath path) {
-	tdns_log.write("Loaded script: " + path.path, Log_Flags::File);
-	auto result = state.script_file(path.path, [](auto, auto pfr) {
+void LuaState::script_file(const char* path) {
+	//tdns_log.write("loaded script: path = %s");
+	auto result = state.script_file(path, [](auto, auto pfr) {
 		return pfr;
 	});
 
 	if (!result.valid()) {
 		sol::error error = result;
-		tdns_log.write("Failed to script file: " + path.path);
+		//tdns_log.write("Failed to script file: " + path.path);
 		tdns_log.write(error.what());
 	}
 
-	file_watcher.watch(path.path, [this, path](){
-		tdns_log.write("@reload_script: " + path.path);
+	file_watcher.watch(path, [this, path](){
+		//tdns_log.write("@reload_script: " + path.path);
 		this->script_file(path);
 	});
 }
 
-void LuaState::script_dir(ScriptPath path) {
-	file_watcher.watch_dir(path.path, [&](auto new_script) {
-		tdns_log.write("@load_new_script: " + new_script);
+void LuaState::script_dir(const char* path) {
+	file_watcher.watch_dir(path, [&](const char* new_script) {
+		tdns_log.write("@load_new_script: %s", new_script);
 		this->script_file(new_script);
 	});
 	
-	for (auto it = directory_iterator(path.path); it != directory_iterator(); it++) {
+	for (auto it = directory_iterator(path); it != directory_iterator(); it++) {
 		std::string next_path = it->path().string();
 		normalize_path(next_path);
-		// Make sure the path is a TDS file that has not been run
+		
+		// Make sure the new file is a Lua script
 		if (is_regular_file(it->status())) {
 			if (is_lua(next_path)) {
-				script_file(ScriptPath(next_path));
+				script_file(next_path.c_str());
 			}
 		}
 		else if (is_directory(it->status())) {
-			script_dir(next_path);
+			script_dir(next_path.c_str());
 		}
 	}
 }
@@ -106,8 +107,9 @@ void init_lua() {
 	register_lua_api();
 
 	// Then, script the base packages you need
-	lua_manager.script_dir(RelativePath("libs"));
-	lua_manager.script_dir(RelativePath("core"));
+	lua_manager.script_file(fm_bootstrap);
+	lua_manager.script_dir(fm_libs);
+	lua_manager.script_dir(fm_core);
 
 	// @firmament break out error code and load it first
 	sol::protected_function error_handler = lua_manager.state["tdengine"]["handle_error"];
@@ -116,16 +118,28 @@ void init_lua() {
 	lua_manager.load_options();
 }
 
+// Lua itself has been initialized, and we've loaded in other assets our scripts
+// may use (shaders, fonts, etc). The last step is to load the game scripts and
+// configure the game itself through Lua
 void init_scripts() {
 	auto& lua_manager = Lua;
+	auto& state = lua_manager.state;
 
-	// Basic initialization of stuff that needs to exist in Lua before we load
-	// all the actual game scripts
-	lua_manager.state.script("tdengine.initialize()");
+	// Load in game scripts
+	lua_manager.script_dir(fm_entities);
+	
+	// Set up basic game options
+	sol::protected_function init = state["tdengine"]["initialize"];
+	auto result = init();
+	if (!result.valid()) {
+		sol::error err = result;
+		tdns_log.write(err.what());
+	}
 
-	lua_manager.script_dir(RelativePath("entities"));
-
-	// Once everything is set up, we can start up the editor
-	lua_manager.state.script("tdengine.load_editor()");
+	sol::protected_function load_editor = state["tdengine"]["load_editor"];
+	result = load_editor();
+	if (!result.valid()) {
+		sol::error err = result;
+		tdns_log.write(err.what());
+	}
 }
-

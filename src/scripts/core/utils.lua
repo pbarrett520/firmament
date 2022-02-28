@@ -161,7 +161,7 @@ local vec2_mixin = {
   end
 }
 
-tdengine.vec2_impl = tdengine.create_class('vec2_impl')
+tdengine.vec2_impl = tdengine.define_class('vec2_impl')
 tdengine.add_new_to_class(tdengine.vec2_impl, tdengine)
 tdengine.vec2_impl:include(vec2_mixin)
 tdengine.vec2 = function(x, y)

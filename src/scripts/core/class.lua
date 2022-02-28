@@ -39,7 +39,7 @@ function tdengine.add_new_to_class(class, class_parent)
   end
 end
 
-function tdengine.create_class(name)
+function tdengine.define_class(name)
   local class = {
 	name = name,
 	static = {},
@@ -76,4 +76,29 @@ function tdengine.create_class(name)
   setmetatable(class, metatable)
 
   return class
+end
+
+function tdengine.class(name)
+  local class = tdengine.define_class(name)
+  tdengine.add_new_to_class(class, tdengine.class_types)
+
+  tdengine.class_types[name] = class
+
+  return class
+end
+
+function tdengine.create_class(name)
+  params = params or {}
+
+  -- Find the matching type in Lua
+  class = tdengine.class_types[name]
+  if not class then
+	tdengine.log(string.format("could not find class type: type = %s", name))
+	return nil
+  end
+  
+  -- Construct the entity with a do-nothing constructor
+  local instance = class:new()
+
+  return instance
 end

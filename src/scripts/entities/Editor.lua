@@ -1,7 +1,7 @@
 local GLFW = require('glfw')
 local inspect = require('inspect')
 
-Editor = tdengine.entity('Editor')
+local Editor = tdengine.entity('Editor')
 function Editor:init(params)
   self.options = {
 	show_imgui_demo = false,
@@ -37,12 +37,16 @@ function Editor:init(params)
 
   self.selected = nil
   self.entity_editor = nil
+
+  self.input = tdengine.create_class('Input')
+  self.input:init()
   --local input = self:get_component('Input')
   --input:set_channel(tdengine.InputChannel.Editor)
   --input:enable()
 end
 
 function Editor:update(dt)
+  -- tdengine.log("%s", "hello")
   self:calculate_framerate()
 
   --self:handle_input()

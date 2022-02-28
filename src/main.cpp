@@ -21,6 +21,7 @@
 #include "lua_impl.hpp"
 #include "shader_impl.hpp"
 #include "transform_impl.hpp"
+#include "utils_impl.hpp"
 
 int main() {
 	tdns_log.init();

@@ -5,18 +5,6 @@ function tdengine.initialize()
 
   tdengine.seed()
   
-  -- Set up globals
-  tdengine.entities = {}
-  tdengine.entity_types = {}
-  tdengine.next_entity_id = 0
-  tdengine.state = {}
-
-  tdengine.current_layout = 'default'
-  tdengine.layout_stack = { 'default' }
-  tdengine.layout_index = 1
-  
-  tdengine.console_pipe = ''
-
   -- Load up static data
   tdengine.load_default_state()
 

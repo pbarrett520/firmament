@@ -411,56 +411,6 @@ std::string path_join(std::vector<std::string> items) {
 	// Trim trailing slash
 	return path.substr(0, path.size() - 1);
 }
-
-std::string script_path(std::string script) {
-	auto script_dir = absolute_path(path_join({"src", "scripts"}));
-	auto path = path_join({ script_dir, script });
-	normalize_path(path);
-	return path;
-}
-
-struct RelativePath {
-	RelativePath(std::string path) {
-		normalize_path(path);
-		this->path = path;
-	}
-	
-	std::string path;
-};
-	
-struct ScriptPath {
-	ScriptPath(std::string raw) {
-		normalize_path(raw);
-		this->path = raw;
-	}
-	ScriptPath(RelativePath relative) {
-		std::string absolute = script_path(relative.path);
-		normalize_path(absolute);
-		this->path = absolute;
-	}
-
-	std::string path;
-};
-
-struct AbsolutePath {
-	explicit AbsolutePath(std::string raw) {
-		normalize_path(raw);
-		this->path = raw;
-	}
-	AbsolutePath(RelativePath relative) {
-		std::string absolute = absolute_path(relative.path);
-		normalize_path(absolute);
-		this->path = absolute;
-	}
-
-	// Script paths are stored absolutely, so we can convert for free
-	AbsolutePath(ScriptPath absolute) {
-		this->path = absolute.path;
-	}
-
-	
-	std::string path;
-};
 	
 // @hack I'm sure there are PNG headers I could try parsing, but this works!
 bool is_png(std::string& asset_path) {
@@ -495,7 +445,8 @@ bool send_kill_signal = false;
 bool step_mode = false;
 
 // Set this string from a script, and we will pick up a new layout next tick
-const char* layout_to_load = nullptr; 
+#define LAYOUT_MAXPATH 256
+char layout_to_load[LAYOUT_MAXPATH] = {0};
 
 float framerate = 0.f;
 
@@ -670,33 +621,8 @@ void clear_input_text_buffer(const char* label) {
 	}
 }
 
-void init_imgui() {
-	IMGUI_CHECKVERSION();
-	ImGui::CreateContext();
-	ImGui_ImplGlfwGL3_Init(g_window, false);
-	
-	auto& imgui = ImGui::GetIO();
-	imgui.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-	ImGui::StyleColorsDark();
-
-	auto imgui_font = imgui.Fonts->AddFontFromFileTTF(g_editor_font_path.c_str(), g_editor_font_size);
-
-	imgui.IniFilename = nullptr;
-
-	// Engine will pick this up on the first tick (before ImGui renders, so no flickering)
-	layout_to_load = "default";
-}
-
-void load_imgui_layout() {
-	if (!layout_to_load) return;
-
-	auto relative = RelativePath(std::string("layouts/") + layout_to_load + ".ini");
-	auto layout = ScriptPath(relative);
-	ImGui::LoadIniSettingsFromDisk(layout.path.c_str());
-	tdns_log.write("Loading Imgui configuration from: " + layout.path, Log_Flags::File);
-
-	layout_to_load = nullptr;
-}
+void init_imgui();
+void load_imgui_layout();
 
 template <typename F>
 struct Defer {
@@ -723,7 +649,7 @@ Defer<F> operator+( defer_dummy, F&& f )
 #define defer auto _defer( __LINE__ ) = defer_dummy( ) + [ & ]( )
 
 using FileChangedCallback = std::function<void()>;
-using FileCreatedCallback = std::function<void(std::string)>;
+using FileCreatedCallback = std::function<void(const char*)>;
 struct FileWatcher {
 	std::map<std::string, std::filesystem::file_time_type> time_map;
 	std::map<std::string, FileChangedCallback> action_map;
@@ -794,7 +720,7 @@ struct FileWatcher {
 				if (!time_map.count(file_path)) {
 					time_map[file_path] = std::filesystem::last_write_time(file_path, error);
 					auto& on_create = dir_watchers[dir];
-					on_create(file_path);
+					on_create(file_path.c_str());
 				}
 			}
 		}			

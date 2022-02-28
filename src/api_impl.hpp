@@ -59,14 +59,16 @@ void API::toggle_console() {
 }
 
 void API::use_layout(const char* name) {
-	layout_to_load = name;
+	fm_layout(name, layout_to_load, LAYOUT_MAXPATH);
 }
 
 void API::save_layout(const char* name) {
-	auto relative = RelativePath(std::string("layouts/") + name + ".ini");
-	auto layout = ScriptPath(relative);
-	ImGui::SaveIniSettingsToDisk(layout.path.c_str());
-	tdns_log.write("Saved Imgui configuration: " + layout.path, Log_Flags::File);
+	// @firmament arena allocator
+	char* path = (char*)calloc(LAYOUT_MAXPATH, sizeof(char));
+	fm_layout(name, path, LAYOUT_MAXPATH);
+	
+	ImGui::SaveIniSettingsToDisk(path);
+	tdns_log.write(Log_Flags::File, "saved imgui layout: path = %s", path);
 }
 
 void API::draw_text(std::string text, float x, float y, int flags) {
@@ -81,12 +83,12 @@ void API::screen(const char* dimension) {
 	else if (!strcmp(dimension, "1440")) use_1440p();
 }
 
-void API::log(const char* message) {
-	tdns_log.write(message);
+void API::log(const char* fmt) {
+	tdns_log.write(Log_Flags::Default, fmt);
 }
 
 void API::log_to(const char* message, uint8_t flags) {
-	tdns_log.write(message, flags);
+	tdns_log.write(flags, message);
 }
 
 void API::use_step_mode() {
