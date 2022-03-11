@@ -35,4 +35,3 @@ end
 function Input:disable()
   tdengine.disable_input_channel(self.channel)
 end
-

@@ -67,13 +67,6 @@ typedef GLFW_KEY_TYPE key_t;
 #define ASCII_QMARK      63
 #define ASCII_UNDERSCORE 95
 
-#define INPUT_MASK_NONE   (1 << 0)
-#define INPUT_MASK_IMGUI  (1 << 1)
-#define INPUT_MASK_EDITOR (1 << 2)
-#define INPUT_MASK_GAME   (1 << 3)
-#define INPUT_MASK_PLAYER (1 << 4)
-#define INPUT_MASK_ALL    (0xF)
-
 // STL extensions 
 template<typename vec_type>
 void concat(std::vector<vec_type>& append_to, std::vector<vec_type>& append_from) {

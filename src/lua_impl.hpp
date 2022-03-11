@@ -127,6 +127,7 @@ void init_scripts() {
 
 	// Load in game scripts
 	lua_manager.script_dir(fm_entities);
+	lua_manager.script_dir(fm_components);
 	
 	// Set up basic game options
 	sol::protected_function init = state["tdengine"]["initialize"];

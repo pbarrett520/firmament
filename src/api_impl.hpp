@@ -169,6 +169,5 @@ void register_lua_api() {
 	state["tdengine"]["InputChannel"]["ImGui"] = INPUT_MASK_IMGUI;
 	state["tdengine"]["InputChannel"]["Editor"] = INPUT_MASK_EDITOR;
 	state["tdengine"]["InputChannel"]["Game"] = INPUT_MASK_GAME;
-	state["tdengine"]["InputChannel"]["Player"] = INPUT_MASK_PLAYER;
 	state["tdengine"]["InputChannel"]["All"] = INPUT_MASK_ALL;
 }

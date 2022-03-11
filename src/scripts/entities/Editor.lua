@@ -39,7 +39,8 @@ function Editor:init(params)
   self.entity_editor = nil
 
   self.input = tdengine.create_class('Input')
-  self.input:init()
+  self.input:set_channel(tdengine.InputChannel.Editor)
+  self.input:enable()
 end
 
 function Editor:update(dt)
@@ -57,11 +58,15 @@ function Editor:update(dt)
   
   imgui.End() -- dashboard
 
-  --self:dialogue_editor(dt)
+  self:dialogue_editor(dt)
 end
 
 function Editor:handle_input()
-  -- @spader You can't toggle it off because ImGui eats the input
+  -- If we're in ImGui mode, the input won't be reported to editor channel
+  if self.input:was_pressed(GLFW.Keys.RIGHT_ALT, tdengine.InputChannel.ImGui) then
+    tdengine.toggle_console()
+  end
+
   if self.input:was_pressed(GLFW.Keys.RIGHT_ALT) then
     tdengine.toggle_console()
   end
@@ -387,29 +392,9 @@ function Editor:dialogue_editor(dt)
   imgui.SameLine()
   imgui.InputText(id)
 
-  if imgui.Button('Try It!', button_size.x, button_size.y) then
-	 tdengine.layout('tiny')
-
-	 -- @hack: This works for this simple cutscene, but there will probably be
-	 -- more complex cutscenes in the future that need proper teardown to be
-	 -- idempotent...
-	 local text_box = tdengine.find_entity('TextBox')
-	 if text_box then
-		tdengine.destroy_entity(text_box.id)
-	 end
-	 
-	 local cutscene = {
-		{
-		   name = 'Dialogue',
-		   dialogue = self.ded.loaded
-		}
-	 }
-	 tdengine.do_cutscene_from_data(cutscene)
-  end
-
   imgui.Separator()
   
-  -- @ded:detail
+  -- Selected node detail view
   local selected = self.ded.nodes[self.ded.selected]
   if selected then
 	imgui.extensions.VariableName('kind')
@@ -507,32 +492,8 @@ function Editor:dialogue_editor(dt)
 	imgui.TreePop()
   end
   
-  if self.inslot then
-	imgui.Text('inslot: ' .. self.inslot.x .. ', ' .. self.inslot.y)
-  end
-  if self.pos then
-	imgui.Text('pos: ' .. self.pos.x .. ', ' .. self.pos.y)
-  end   
-
   imgui.Separator()
-  
-  local active = false
-  local done = false
-  local point = 0
-  local max_point = 0
-  local text_box = tdengine.find_entity('TextBox')
-  if text_box then
-	active = text_box.active
-	done = text_box.done
-	point = text_box.point
-	max_point = text_box.max_point
-  end
-
-  imgui.Text('active: ' .. tostring(active))
-  imgui.Text('done: ' .. tostring(done))
-  imgui.Text('point: ' .. tostring(point))
-  imgui.Text('max_point: ' .. tostring(max_point))
-  
+    
   imgui.EndChild() -- Sidebar
 
   imgui.SameLine()
@@ -873,25 +834,24 @@ function Editor:dialogue_editor(dt)
 		self.ded.scrolling = self.ded.scrolling:add(delta)
 	 end
 
-	 local input = self:get_component('Input')
-	 input:set_channel(tdengine.InputChannel.ImGui)
+	 self.input:set_channel(tdengine.InputChannel.ImGui)
 
 	 self.ded.scroll_per_second = 1000
 	 local delta = tdengine.vec2(0, 0)
- 	 if input:is_down(GLFW.Keys.W) then
+ 	 if self.input:is_down(GLFW.Keys.W) then
 		delta.y = delta.y + (self.ded.scroll_per_second * dt)
 	 end
- 	 if input:is_down(GLFW.Keys.S) then
+ 	 if self.input:is_down(GLFW.Keys.S) then
 		delta.y = delta.y - (self.ded.scroll_per_second * dt)
 	 end
- 	 if input:is_down(GLFW.Keys.A) then
+ 	 if self.input:is_down(GLFW.Keys.A) then
 		delta.x = delta.x + (self.ded.scroll_per_second * dt)
 	 end
- 	 if input:is_down(GLFW.Keys.D) then
+ 	 if self.input:is_down(GLFW.Keys.D) then
 		delta.x = delta.x - (self.ded.scroll_per_second * dt)
 	 end
 	 
-	 input:set_channel(tdengine.InputChannel.Editor)
+	 self.input:set_channel(tdengine.InputChannel.Editor)
 
 	 self.ded.scrolling = self.ded.scrolling:add(delta)
   end
@@ -969,4 +929,19 @@ function Editor:select_entity(entity)
   if self.selected then
 	self.entity_editor = imgui.extensions.TableEditor(self.selected)
   end
+end
+
+-- Take a coordinate in canvas' world space and convert it to
+-- the window's screen space (for DrawList)
+function Editor:canvas_world_to_window_screen(canvas_world)
+  local canvas_screen = canvas_world:add(self.ded.scrolling)
+  local window_screen = canvas_screen:add(self.ded.window_position)
+  return window_screen
+end
+
+-- Take a coordinate in the canvas' screen space and convert it to
+-- the window's screen space
+function Editor:canvas_screen_to_window_screen(canvas_screen)
+  local window_screen = canvas_screen:add(self.ded.window_position)
+  return window_screen
 end

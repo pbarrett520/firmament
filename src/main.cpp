@@ -49,10 +49,9 @@ int main() {
 		if (send_kill_signal) return 0;
 
 		file_watcher.update();
-		
-		glfwPollEvents();
 
-		fill_imgui_input();
+		input_manager.begin_frame();
+
 		load_imgui_layout();
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

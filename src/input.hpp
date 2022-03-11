@@ -1,3 +1,9 @@
+#define INPUT_MASK_NONE   0x0
+#define INPUT_MASK_IMGUI  0x1
+#define INPUT_MASK_EDITOR 0x2
+#define INPUT_MASK_GAME   0x4
+#define INPUT_MASK_ALL    0xFF
+
 struct InputManager {
 	bool should_update;
 	glm::vec2 px_pos;
@@ -5,8 +11,8 @@ struct InputManager {
 	glm::vec2 world_pos;
 	glm::vec2 scroll;
 
-	int8 mask = ~INPUT_MASK_IMGUI;
-	int8 old_mask = ~INPUT_MASK_IMGUI;
+	int8 mask     = INPUT_MASK_NONE;
+	int8 old_mask = INPUT_MASK_NONE;
 
 	bool is_down[GLFW_KEY_LAST];
 	bool was_down[GLFW_KEY_LAST];
@@ -17,24 +23,22 @@ struct InputManager {
 		fill_shift_map();
 	}
 
-	void enable_channel(int channel) {
+	void enable_channel(int8 channel) {
+		// When we stop feeding to ImGui, we restore the old mask. If we enable a channel now,
+		// it must be added to the old mask to persist when Imgui stops.
 		if (mask & INPUT_MASK_IMGUI) {
 			old_mask |= channel;
 		}
-		else {
-			mask |= channel;
-			old_mask = mask;
-		}
+		
+		mask |= channel;
 	}
 	
-	void disable_channel(int channel) {
+	void disable_channel(int8 channel) {
 		if (mask & INPUT_MASK_IMGUI){
 			old_mask &= ~channel;
 		}
-		else {
-			mask &= ~channel;
-			old_mask = mask;
-		}
+		
+		mask &= ~channel;
 	}
 
 	void start_imgui() {
@@ -43,6 +47,7 @@ struct InputManager {
 	}
 	
 	void stop_imgui() {
+		if (!(mask & INPUT_MASK_IMGUI)) return; 
 		mask = old_mask;
 	}
 	
@@ -85,15 +90,82 @@ struct InputManager {
 		return is_mod_down(mod_key, channel) && was_pressed(cmd_key, channel);
 	}
 
+	void begin_frame() {
+		// Fill the input manager's buffers with what GLFW tells us
+		glfwPollEvents();
+
+		// Determine whether ImGui is requesting key inputs
+		ImGuiIO& imgui = ImGui::GetIO();
+
+		// ImGui always gets mouse input, because how else would it know to request to capture keys?
+		imgui.MousePos = ImVec2((float)px_pos.x, (float)px_pos.y);
+		imgui.MouseDown[0] = is_down[GLFW_MOUSE_BUTTON_LEFT];
+		imgui.MouseDown[1] = is_down[GLFW_MOUSE_BUTTON_RIGHT];
+
+		// If ImGui isn't actively asking for input, don't give it anything
+		if (!(imgui.WantCaptureKeyboard || imgui.WantCaptureMouse)) {
+			stop_imgui();
+			return;
+		}	
+
+		// Tell the input manager that only reads to the input buffer from ImGui should go through.
+		start_imgui();
+
+		// Fill in the raw ImGui buffer
+		for (int key = 0; key < GLFW_KEY_LAST; key++) {
+			imgui.KeysDown[key] = is_down[key];
+		}
+	
+		// Fill in the input characters
+		// Non-alphas first. 
+		for (int key = GLFW_KEY_SPACE; key < GLFW_KEY_A; key++) {
+			if (was_pressed(key)) {
+				if (is_mod_down(GLFW_KEY_SHIFT)) {
+					imgui.AddInputCharacter(shift_map[key]);
+				} else {
+					imgui.AddInputCharacter(key);
+				}
+			}
+		}
+
+		for (int key = GLFW_KEY_LEFT_BRACKET; key < GLFW_KEY_GRAVE_ACCENT; key++) {
+			if (was_pressed(key)) {
+				if (is_mod_down(GLFW_KEY_SHIFT)) {
+					imgui.AddInputCharacter(shift_map[key]);
+				} else {
+					imgui.AddInputCharacter(key);
+				}
+			}
+		}
+		// Alphas have to be adjusted because GLFW uses the capital ASCII code
+		for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++) {
+			if (was_pressed(key)) {
+				if (is_mod_down(GLFW_KEY_SHIFT)) {
+					imgui.AddInputCharacter(key);
+				} else {
+					imgui.AddInputCharacter(key + 0x20);
+				}
+			}
+		}
+
+		// Add controller keys
+		imgui.KeyCtrl = imgui.KeysDown[GLFW_KEY_LEFT_CONTROL] || imgui.KeysDown[GLFW_KEY_RIGHT_CONTROL];
+		imgui.KeyShift = imgui.KeysDown[GLFW_KEY_LEFT_SHIFT] || imgui.KeysDown[GLFW_KEY_RIGHT_SHIFT];
+		imgui.KeyAlt = imgui.KeysDown[GLFW_KEY_LEFT_ALT] || imgui.KeysDown[GLFW_KEY_RIGHT_ALT];
+		imgui.KeySuper = imgui.KeysDown[GLFW_KEY_LEFT_SUPER] || imgui.KeysDown[GLFW_KEY_RIGHT_SUPER];
+
+	}
+
+	
 	void end_frame() {
 		// If we disabled inputs this frame for ImGui, re-enable and check again next frame
-		mask = old_mask;
+		stop_imgui();
 
 		fox_for(input_id, GLFW_KEY_LAST) {
 			was_down[input_id] = is_down[input_id];
 		}
 	}
-
+	
 	void fill_shift_map() {
 		fox_for(i, 128) {
 			shift_map[i] = 0;
@@ -156,69 +228,6 @@ struct InputManager {
 InputManager& get_input_manager() {
 	static InputManager manager;
 	return manager;
-}
-
-// ImGui gets the mouse coordinates every frame, so it knows if we're hovering it
-void fill_imgui_input() {
-	ImGuiIO& imgui = ImGui::GetIO();
-	auto& input_manager = get_input_manager();
-
-	// ImGui always gets mouse input, because how else would it know to request to capture keys?
-	imgui.MousePos = ImVec2((float)input_manager.px_pos.x, (float)input_manager.px_pos.y);
-	imgui.MouseDown[0] = input_manager.is_down[GLFW_MOUSE_BUTTON_LEFT];
-	imgui.MouseDown[1] = input_manager.is_down[GLFW_MOUSE_BUTTON_RIGHT];
-
-	// If ImGui isn't actively asking for input, don't give it anything
-	if (!(imgui.WantCaptureKeyboard || imgui.WantCaptureMouse)) {
-		input_manager.stop_imgui();
-		return;
-	}	
-
-	// Tell the input manager that only reads to the input buffer from ImGui should go through.
-	input_manager.start_imgui();
-
-	// Fill in the raw ImGui buffer
-	for (int key = 0; key < GLFW_KEY_LAST; key++) {
-		imgui.KeysDown[key] = input_manager.is_down[key];
-	}
-	
-	// Fill in the input characters
-	// Non-alphas first. 
-	for (int key = GLFW_KEY_SPACE; key < GLFW_KEY_A; key++) {
-		if (input_manager.was_pressed(key)) {
-			if (input_manager.is_mod_down(GLFW_KEY_SHIFT)) {
-				imgui.AddInputCharacter(input_manager.shift_map[key]);
-			} else {
-				imgui.AddInputCharacter(key);
-			}
-		}
-	}
-
-	for (int key = GLFW_KEY_LEFT_BRACKET; key < GLFW_KEY_GRAVE_ACCENT; key++) {
-		if (input_manager.was_pressed(key)) {
-			if (input_manager.is_mod_down(GLFW_KEY_SHIFT)) {
-				imgui.AddInputCharacter(input_manager.shift_map[key]);
-			} else {
-				imgui.AddInputCharacter(key);
-			}
-		}
-	}
-	// Alphas have to be adjusted because GLFW uses the capital ASCII code
-	for (int key = GLFW_KEY_A; key <= GLFW_KEY_Z; key++) {
-		if (input_manager.was_pressed(key)) {
-			if (input_manager.is_mod_down(GLFW_KEY_SHIFT)) {
-				imgui.AddInputCharacter(key);
-			} else {
-				imgui.AddInputCharacter(key + 0x20);
-			}
-		}
-	}
-
-	// Add controller keys
-	imgui.KeyCtrl = imgui.KeysDown[GLFW_KEY_LEFT_CONTROL] || imgui.KeysDown[GLFW_KEY_RIGHT_CONTROL];
-	imgui.KeyShift = imgui.KeysDown[GLFW_KEY_LEFT_SHIFT] || imgui.KeysDown[GLFW_KEY_RIGHT_SHIFT];
-	imgui.KeyAlt = imgui.KeysDown[GLFW_KEY_LEFT_ALT] || imgui.KeysDown[GLFW_KEY_RIGHT_ALT];
-	imgui.KeySuper = imgui.KeysDown[GLFW_KEY_LEFT_SUPER] || imgui.KeysDown[GLFW_KEY_RIGHT_SUPER];
 }
 
 // GLFW Callbacks
