@@ -40,16 +40,13 @@ function Editor:init(params)
 
   self.input = tdengine.create_class('Input')
   self.input:init()
-  --local input = self:get_component('Input')
-  --input:set_channel(tdengine.InputChannel.Editor)
-  --input:enable()
 end
 
 function Editor:update(dt)
   -- tdengine.log("%s", "hello")
   self:calculate_framerate()
 
-  --self:handle_input()
+  self:handle_input()
 
   imgui.SetNextWindowSize(300, 300)
   imgui.Begin('engine', true)
@@ -64,14 +61,15 @@ function Editor:update(dt)
 end
 
 function Editor:handle_input()
-  if input:was_pressed(GLFW.Keys.RIGHT_ALT) then
+  -- @spader You can't toggle it off because ImGui eats the input
+  if self.input:was_pressed(GLFW.Keys.RIGHT_ALT) then
     tdengine.toggle_console()
   end
 
-  if input:chord(GLFW.Keys.ALT, GLFW.Keys.J) then
+  if self.input:chord(GLFW.Keys.ALT, GLFW.Keys.J) then
 	 tdengine.previous_layout()
   end
-  if input:chord(GLFW.Keys.ALT, GLFW.Keys.L) then
+  if self.input:chord(GLFW.Keys.ALT, GLFW.Keys.L) then
 	 tdengine.next_layout()
   end
 end

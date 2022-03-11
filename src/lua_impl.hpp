@@ -23,11 +23,11 @@ void LuaState::script_file(const char* path) {
 
 	if (!result.valid()) {
 		sol::error error = result;
-		//tdns_log.write("Failed to script file: " + path.path);
+		tdns_log.write("failed to script file: path = %s", path);
 		tdns_log.write(error.what());
 	}
 
-	file_watcher.watch(path, [this, path](){
+	file_watcher.watch(path, [this](const char* path){
 		//tdns_log.write("@reload_script: " + path.path);
 		this->script_file(path);
 	});

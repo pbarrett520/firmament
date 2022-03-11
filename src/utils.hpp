@@ -648,7 +648,7 @@ Defer<F> operator+( defer_dummy, F&& f )
 
 #define defer auto _defer( __LINE__ ) = defer_dummy( ) + [ & ]( )
 
-using FileChangedCallback = std::function<void()>;
+using FileChangedCallback = std::function<void(const char*)>;
 using FileCreatedCallback = std::function<void(const char*)>;
 struct FileWatcher {
 	std::map<std::string, std::filesystem::file_time_type> time_map;
@@ -690,7 +690,8 @@ struct FileWatcher {
 			}
 			if (last_known_write_time < last_write_time) {
 				time_map[path] = last_write_time;
-				action_map[path]();
+				auto& on_change = action_map[path];
+				on_change(path.c_str());
 			}
 		}
 

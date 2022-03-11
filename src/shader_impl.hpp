@@ -186,7 +186,7 @@ void ShaderManager::add(std::string vs_path, std::string fs_path, std::string na
 	shader.init(vs_path, fs_path, name);
 	shaders[name] = shader;
 
-	file_watcher.watch(vs_path, [this, vs_path = vs_path](){
+	file_watcher.watch(vs_path, [this](const char* vs_path){
 		for (auto& [name, shader] : shaders) {
 			if (are_strings_equal(shader.vs_path, vs_path)) {
 				std::cout << "reloading shader: " << name << std::endl;
@@ -195,7 +195,7 @@ void ShaderManager::add(std::string vs_path, std::string fs_path, std::string na
 		}
 	});
 	
-	file_watcher.watch(fs_path, [this, fs_path = fs_path](){
+	file_watcher.watch(fs_path, [this](const char* fs_path){
 		for (auto& [name, shader] : shaders) {
 			if (are_strings_equal(shader.fs_path, fs_path)) {
 				std::cout << "reloading shader: " << name << std::endl;
