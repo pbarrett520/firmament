@@ -420,23 +420,6 @@ bool is_lua(std::string& path) {
 	return true;
 }
 
-// @hack There is a better way to do this
-std::string g_dialogue_font;
-std::string g_dialogue_font_path;
-int         g_dialogue_font_size;
-std::string g_editor_font;
-std::string g_editor_font_path;
-int         g_editor_font_size;
-
-// Global options
-bool debug_show_aabb = false;
-bool are_updates_paused = false;
-bool print_framerate = false;
-bool show_imgui_demo = false;
-bool show_console = false;
-bool send_kill_signal = false;
-bool step_mode = false;
-
 // Set this string from a script, and we will pick up a new layout next tick
 #define LAYOUT_MAXPATH 256
 char layout_to_load[LAYOUT_MAXPATH] = {0};

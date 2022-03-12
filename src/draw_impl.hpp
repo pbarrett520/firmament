@@ -62,7 +62,7 @@ void RenderEngine::render_text(float dt) {
 	auto shader = shaders.get("text");
 	shader->begin();
 
-	auto& font = g_fonts[g_dialogue_font];
+	auto& font = g_fonts[fm_gm_font];
 
 	// Text is raw 2D, so just use an orthographic projection
 	SRT transform = SRT::no_transform();

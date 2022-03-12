@@ -17,7 +17,7 @@ struct Log {
 	void write(std::string message, uint8_t flags = Log_Flags::Default);
 	void write(const char* fmt, ...);
 	void write(uint8_t flags, const char* fmt, ...);
-	void write(uint8_t flags, const char* fmt, va_list args);
+	void write_impl(uint8_t flags, const char* fmt, va_list args);
 	void zero_buffer();
 };
 Log tdns_log;
@@ -41,18 +41,18 @@ void Log::write(std::string message, uint8_t flags) {
 void Log::write(const char* fmt, ...) {
 	va_list fmt_args;
 	va_start(fmt_args, fmt);
-	write(Log_Flags::Default, fmt, fmt_args);
+	write_impl(Log_Flags::Default, fmt, fmt_args);
 	va_end(fmt_args);
 }
 
 void Log::write(uint8_t flags, const char* fmt, ...) {
 	va_list fmt_args;
 	va_start(fmt_args, fmt);
-	write(flags, fmt, fmt_args);
+	write_impl(flags, fmt, fmt_args);
 	va_end(fmt_args);
 }
 
-void Log::write(uint8_t flags, const char* fmt, va_list fmt_args) {
+void Log::write_impl(uint8_t flags, const char* fmt, va_list fmt_args) {
 	vsnprintf(&buffer[0], LOG_BUFFER_SIZE, fmt, fmt_args);
 
 	if (flags & Log_Flags::Console)

@@ -1,6 +1,7 @@
 #include "libs.hpp"
 
 #include "machine_conf.hpp"
+#include "options.hpp"
 #include "paths.hpp"
 #include "log.hpp"
 #include "utils.hpp"

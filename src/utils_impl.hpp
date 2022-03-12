@@ -7,7 +7,7 @@ void init_imgui() {
 	imgui.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 	ImGui::StyleColorsDark();
 
-	auto imgui_font = imgui.Fonts->AddFontFromFileTTF(g_editor_font_path.c_str(), g_editor_font_size);
+	auto imgui_font = imgui.Fonts->AddFontFromFileTTF(fm_ed_font_path, (float)fm_ed_font_size);
 
 	imgui.IniFilename = nullptr;
 

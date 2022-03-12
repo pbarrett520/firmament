@@ -55,20 +55,6 @@ void LuaState::script_dir(const char* path) {
 	}
 }
 
-void LuaState::load_options() {
-	sol::table options = state["tdengine"]["options"];
-	
-	g_dialogue_font = options["dialogue_font"];
-	g_dialogue_font_path = absolute_path(path_join({"asset", "fonts", g_dialogue_font}));
-	g_dialogue_font_path = g_dialogue_font_path + ".ttf";
-	g_dialogue_font_size = options["dialogue_font_size"];
-
-	g_editor_font = options["editor_font"];
-	g_editor_font_path = absolute_path(path_join({"asset", "fonts", g_editor_font}));
-	g_editor_font_path = g_editor_font_path + ".ttf";
-	g_editor_font_size = options["editor_font_size"];
-}
-
 void LuaState::update_entities(float dt) {
 	sol::protected_function update = state["tdengine"]["update_entities"];
 	auto result = update(dt);
@@ -114,8 +100,6 @@ void init_lua() {
 	// @firmament break out error code and load it first
 	sol::protected_function error_handler = lua_manager.state["tdengine"]["handle_error"];
 	sol::protected_function::set_default_handler(error_handler);
-
-	lua_manager.load_options();
 }
 
 // Lua itself has been initialized, and we've loaded in other assets our scripts

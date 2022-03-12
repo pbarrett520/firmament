@@ -13,7 +13,7 @@ void init_font(std::string font_path, int font_size) {
 	auto as_path = std::filesystem::path(font_path);
 	
 	Font font;
-	font.name = as_path.filename().stem();
+	font.name = as_path.filename().stem().string();
 	font.path = font_path;
 	font.size = font_size;
 	
@@ -67,8 +67,8 @@ void init_fonts() {
 		exit(0);
 	}
 
-	init_font(g_dialogue_font_path, g_dialogue_font_size);
-	init_font(g_editor_font_path, g_editor_font_size);
+	init_font(fm_gm_font_path, fm_gm_font_size);
+	init_font(fm_ed_font_path, fm_ed_font_size);
 
 	FT_Done_FreeType(freetype);
 
