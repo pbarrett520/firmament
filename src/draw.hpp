@@ -11,8 +11,8 @@ ENABLE_ENUM_FLAG(Text_Flags)
 
 struct TextRenderInfo {
 	std::string text;
-	glm::vec2 point;
-	Text_Flags flags;
+	Vector2 point;
+	Text_Flags flags = Text_Flags::None;
 };
 
 struct RenderEngine {
@@ -23,10 +23,15 @@ struct RenderEngine {
 	uint frame_buffer;
 	uint color_buffer;
 	
+	uint32 buffer;
+	uint32 vao;
+	uint32 texture;
+	
 	void init();
 	void remove_entity(int entity);
 	void render(float dt);
 	void render_text(float dt);
+	void render_text_old(float dt);
 	Camera& get_camera();
 };
 

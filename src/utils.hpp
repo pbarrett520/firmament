@@ -6,12 +6,6 @@
 #define EXIT_IF_ERROR(return_code) if ((return_code)) { return -1; }
 #define rand_float(max) (static_cast<float>(rand()) / static_cast<float>(RAND_MAX / (max)))
 
-typedef unsigned int uint;
-typedef int8_t int8;
-typedef int32_t int32;
-typedef int64_t int64;
-typedef unsigned char tdbyte;
-
 #if  defined(__APPLE__) || defined(__linux__)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #define __stdcall
@@ -22,9 +16,9 @@ typedef unsigned char tdbyte;
 #	ifdef assert
 #		undef assert
 #	endif
-#	define fox_assert(expr) if (!(expr)) _CrtDbgBreak()
+#	define fm_assert(expr) if (!(expr)) _CrtDbgBreak()
 #else
-#	define fox_assert(expr) assert(expr)
+#	define fm_assert(expr) assert(expr)
 #endif
 
 // C++ I love you, but you're bringing me down
@@ -174,13 +168,127 @@ std::vector<float> square_tex_coords = {
 };
 GLvoid* square_tex_coords_offset;
 
-std::vector<float> line_verts = {
-	0.f, 0.f, 1.f,
-	1.f, 1.f, 1.f,
+template<typename T>
+struct Array {
+	int32 size      = 0;
+	int32 capacity  = 0;
+	T* data         = nullptr;
+
+	T* operator[](uint32 index) { fm_assert(index < size); return data + index; }
 };
-std::vector<uint> line_indices = {
-	0, 1,
+
+template<typename T>
+fm_error arr_init(Array<T>* array, int32 capacity) {
+	array->size = 0;
+	array->capacity = capacity;
+	array->data = (T*)calloc(capacity, sizeof(T));
+	
+	if (array->data) return FM_ERR_SUCCESS;
+	return FM_ERR_FAILED_ALLOC;
+}
+
+template<typename T>
+fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
+	if (!data) return FM_ERR_NULL_PTR;
+	array->size = 0;
+	array->capacity = capacity;
+	array->data = data;
+	
+	return FM_ERR_SUCCESS;
+}
+
+template<typename T>
+T* arr_push(Array<T>* array, T* data, int32 count) {
+	int32 remaining = array->capacity - array->size;
+	if (remaining < count) return nullptr;
+	
+	memcpy(array->data + array->size, data, sizeof(T) * count);
+	T* out = array->data + array->size;
+	array->size += count;
+	return out;
+}
+
+template<typename T>
+T* arr_push(Array<T>* array, T data) {
+	fm_assert(array->size < array->capacity);
+	array->data[array->size] = data;
+	T* out = array->data + array->size;
+	array->size += 1;
+	return out;
+}
+
+template<typename T>
+T* arr_push(Array<T>* array) {
+	fm_assert(array->size < array->capacity);
+	array->data[array->size] = T();
+	T* out = array->data + array->size;
+	array->size += 1;
+	return out;
+}
+
+template<typename T>
+T* arr_concat(Array<T>* dest, Array<T>* source) {
+	fm_assert(dest->size + source->size < dest->capacity);
+	memcpy(dest->data + dest->size, source->data, sizeof(T) * source->count);
+	T* out = dest->data + dest->size;
+	dest->size += source->size;
+	return out;
+}
+
+template<typename T>
+T* arr_concat(Array<T>* dest, Array<T>* source, int32 count) {
+	fm_assert(dest->size + count < dest->capacity);
+	memcpy(dest->data + dest->size, source->data, sizeof(T) * count);
+	T* out = dest->data + dest->size;
+	dest->size += count;
+	return out;
+}
+
+template<typename T>
+T* arr_back(Array<T>* array) {
+	return array->data + (array->size - 1);
+}
+
+template<typename T>
+void arr_free(Array<T>* array) {
+	free(array->data);
+	array->data = nullptr;
+	array->size = 0;
+	array->capacity = 0;
+	return;
+}
+
+template<typename T>
+int32 arr_bytes(Array<T>* array) {
+	return array->capacity * sizeof(T);
+}
+
+struct Vector2 {
+	float32 x = 0;
+	float32 y = 0;
 };
+
+struct Mesh {
+	Vector2* verts      = nullptr;
+	Vector2* tex_coords = nullptr;
+	int32 count         = 0;
+};
+
+struct GlyphInfo {
+	Mesh* mesh = nullptr;
+	Vector2 size;
+	Vector2 bearing;
+};
+
+Array<Vector2>   vertex_buffer;
+Array<Vector2>   tc_buffer;
+Array<Mesh>      meshes;       
+Array<GlyphInfo> glyph_infos;
+
+#define VERT_BUFFER_SIZE 8096
+
+int32 ft_to_px(int32 ft_size) { return ft_size >> 6; }
+int32 px_to_ft(int32 ft_size) { return ft_size << 6; }
 
 GLFWwindow* g_window;
 

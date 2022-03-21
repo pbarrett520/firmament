@@ -45,7 +45,7 @@ build_options = {
             '4068'   # unknown pragma
         ],
         'machine': 'X64',
-        'out': 'tdengine.exe',
+        'out': 'firmament.exe',
         'runtime_library': 'MD',
         'warnings': [
             '4530',
@@ -77,7 +77,7 @@ build_options = {
             'CoreVideo',
             'IOKit'
         ],
-        'out': 'tdengine',
+        'out': 'firmament',
         'extras': [
             '-Wall',
             '-fpermissive'
@@ -102,7 +102,7 @@ build_options = {
             '-pthread',
             '-fmax-errors=10',
         ],
-        'out': 'tdengine'
+        'out': 'firmament'
     }
 }
 

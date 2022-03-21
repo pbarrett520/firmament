@@ -13,6 +13,7 @@
 #define _fm_bootstrap    _fm_core    "/" "bootstrap.lua"
 #define _fm_assets       _fm_root    "/" "asset"
 #define _fm_fonts        _fm_assets  "/" "fonts"
+#define _fm_atlas_gm     _fm_assets   "/" "atlas_gm.png"
 #define _fm_gm_font_path _fm_fonts   "/" _fm_gm_font ".ttf"
 #define _fm_ed_font_path _fm_fonts   "/" _fm_ed_font ".ttf"
 
@@ -37,3 +38,4 @@ const char* fm_assets = _fm_assets;
 const char* fm_fonts = _fm_fonts;
 const char* fm_gm_font_path = _fm_gm_font_path;
 const char* fm_ed_font_path = _fm_ed_font_path;
+const char* fm_atlas_gm = _fm_atlas_gm;

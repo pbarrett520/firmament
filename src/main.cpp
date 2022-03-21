@@ -1,8 +1,10 @@
 #include "libs.hpp"
 
 #include "machine_conf.hpp"
+#include "types.hpp"
 #include "options.hpp"
 #include "paths.hpp"
+#include "error.hpp"
 #include "log.hpp"
 #include "utils.hpp"
 #include "input.hpp"
@@ -43,6 +45,7 @@ int main() {
 	init_gl();
 	init_scripts();
 
+	init_new_draw_stuff();
 	// MAIN LOOP
 	while(!glfwWindowShouldClose(g_window)) {
 		double frame_start_time = glfwGetTime();
@@ -68,7 +71,7 @@ int main() {
 		// Render 
 		render_engine.render(seconds_per_update);
 		ImGui::Render();
-		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+		//ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(g_window);
 
 		// Clean up the frame

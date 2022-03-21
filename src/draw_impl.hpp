@@ -1,4 +1,6 @@
 void init_gl() {
+	auto& render_engine = get_render_engine();
+	
 	GLint flags;
 	glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
 	if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
@@ -10,12 +12,14 @@ void init_gl() {
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+
+
 }
 
 void draw_text(std::string text, glm::vec2 point, Text_Flags flags) {
 	TextRenderInfo info;
 	info.text = text;
-	info.point = point;
+	//info.point = point;
 	info.flags = flags;
 
 	auto& render_engine = get_render_engine();
@@ -58,6 +62,60 @@ void RenderEngine::render(float dt) {
 }
 
 void RenderEngine::render_text(float dt) {
+	auto& shaders = get_shader_manager();
+	auto shader = shaders.get("text");
+	shader->begin();
+
+	// Text is raw 2D, so just use an orthographic projection
+	SRT transform = SRT::no_transform();
+	glm::mat3 mat = mat3_from_transform(transform);
+	shader->set_mat3("transform", mat);
+	shader->set_int("sampler", 0);
+
+	Vector2        tmp_vx_data[VERT_BUFFER_SIZE];
+	Array<Vector2> tmp_vx_buffer;
+	arr_stack(&tmp_vx_buffer, &tmp_vx_data[0], VERT_BUFFER_SIZE);
+	
+	Vector2         tmp_tc_data[VERT_BUFFER_SIZE];
+	Array<Vector2>  tmp_tc_buffer;
+	arr_stack(&tmp_tc_buffer, &tmp_tc_data[0], VERT_BUFFER_SIZE);
+
+	for (const auto& info : text_infos) {
+		auto color = has_flag(info.flags, Text_Flags::Highlighted) ? Colors::TextHighlighted : Colors::TextWhite;
+		shader->set_vec3("text_color", color);
+
+		//auto px_point = px_from_screen(info.point);
+		for (char c : info.text) {
+			GlyphInfo* glyph = glyph_infos[c];
+			
+			arr_push(&tmp_vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+			arr_push(&tmp_tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+		}
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBindVertexArray(vao);
+
+	// Use the font atlas texture
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glBufferSubData(GL_ARRAY_BUFFER,
+					0,
+					sizeof(Vector2) * tmp_vx_buffer.size,
+					tmp_vx_buffer.data);
+	
+	glBufferSubData(GL_ARRAY_BUFFER,
+					sizeof(Vector2) * VERT_BUFFER_SIZE,
+					sizeof(Vector2) * tmp_tc_buffer.size,
+					tmp_tc_buffer.data);
+	
+	shader->check();
+	glDrawArrays(GL_TRIANGLES, 0, tmp_vx_buffer.size);
+	shader->end();
+}
+#if 0
+void RenderEngine::render_text_old(float dt) {
 	auto& shaders = get_shader_manager();
 	auto shader = shaders.get("text");
 	shader->begin();
@@ -126,3 +184,4 @@ void RenderEngine::render_text(float dt) {
 	shader->end();
 	text_infos.clear();
 }
+#endif
