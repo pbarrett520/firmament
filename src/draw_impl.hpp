@@ -12,8 +12,6 @@ void init_gl() {
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
-
-
 }
 
 void draw_text(std::string text, glm::vec2 point, Text_Flags flags) {
@@ -66,10 +64,8 @@ void RenderEngine::render_text(float dt) {
 	auto shader = shaders.get("text");
 	shader->begin();
 
-	// Text is raw 2D, so just use an orthographic projection
 	SRT transform = SRT::no_transform();
 	glm::mat3 mat = mat3_from_transform(transform);
-	shader->set_mat3("transform", mat);
 	shader->set_int("sampler", 0);
 
 	Vector2        tmp_vx_data[VERT_BUFFER_SIZE];
@@ -84,12 +80,27 @@ void RenderEngine::render_text(float dt) {
 		auto color = has_flag(info.flags, Text_Flags::Highlighted) ? Colors::TextHighlighted : Colors::TextWhite;
 		shader->set_vec3("text_color", color);
 
-		//auto px_point = px_from_screen(info.point);
+		Vector2 point = info.point;
+
 		for (char c : info.text) {
 			GlyphInfo* glyph = glyph_infos[c];
-			
-			arr_push(&tmp_vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+
+			// Copy the vertices into the intermediate bufer
+			Vector2* tmp_vx = arr_push(&tmp_vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
 			arr_push(&tmp_tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+
+			// Do a CPU side transformation
+			Vector2 gl_origin = { -1, 1 };
+			Vector2 offset = {
+				point.x - gl_origin.x,
+				point.y - gl_origin.y,
+			};
+			for (int32 i = 0; i < glyph->mesh->count; i++) {
+				tmp_vx[i].x += offset.x;
+				tmp_vx[i].y += offset.y;
+			}
+
+			point.x += glyph->advance.x;
 		}
 	}
 

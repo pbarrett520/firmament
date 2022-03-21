@@ -59,13 +59,13 @@ void API::toggle_console() {
 }
 
 void API::use_layout(const char* name) {
-	fm_layout(name, layout_to_load, LAYOUT_MAXPATH);
+	fm_layout(name, layout_to_load, MAX_PATH_LEN);
 }
 
 void API::save_layout(const char* name) {
 	// @firmament arena allocator
-	char* path = (char*)calloc(LAYOUT_MAXPATH, sizeof(char));
-	fm_layout(name, path, LAYOUT_MAXPATH);
+	char* path = (char*)calloc(MAX_PATH_LEN, sizeof(char));
+	fm_layout(name, path, MAX_PATH_LEN);
 	
 	ImGui::SaveIniSettingsToDisk(path);
 	tdns_log.write(Log_Flags::File, "saved imgui layout: path = %s", path);

@@ -23,7 +23,7 @@ void load_imgui_layout() {
 				   "load imgui layout: path = %s",
 				   layout_to_load);
 
-	memset(layout_to_load, 0, LAYOUT_MAXPATH);
+	memset(layout_to_load, 0, MAX_PATH_LEN);
 }
 
 void init_new_draw_stuff() {
@@ -50,14 +50,10 @@ void init_new_draw_stuff() {
 	}
 	
 	int32 ft_font_size = px_to_ft(fm_gm_font_size); // Scaled to FT's units, where 26.6 units = 1 pixel
-	FT_Set_Char_Size(face, 0, ft_font_size, 0, 0);
 
-	/* 
-	Font font;
-	font.name = fm_gm_font;
-	font.path = fm_gm_font_path;
-	font.size = fm_gm_font_size;
-	*/
+	// @firmament 16 is ridiculously small on my monitor. What I want is a way to have the size maintain consistent
+	// on different DPI monitors. I have no idea if the visual size will be consistent across machines.
+	FT_Set_Char_Size(face, 0, ft_font_size, 96, 96); 
 	
 	int num_glyphs = 128;
 	
@@ -67,10 +63,7 @@ void init_new_draw_stuff() {
 	int tex_height = font_height_px * glyphs_per_row;
 	int tex_width = tex_height;
 	char* buffer = (char*)calloc(tex_width * tex_height, sizeof(char));
-	// for (int32 i = 0; i < tex_width * tex_height; i++) {
-	// 	buffer[i] = 0b11111010;
-	// }
-	
+	defer { free(buffer); };
 
 	Vector2 point;
 	for (GLubyte c = 0; c < num_glyphs; c++) {
@@ -101,18 +94,28 @@ void init_new_draw_stuff() {
 		}
 
 		GlyphInfo* info = glyph_infos[c];
-		info->size    = { (float32)face->glyph->bitmap.width, (float32)face->glyph->bitmap.rows };
-		info->bearing = { (float32)face->glyph->bitmap_left,  (float32)face->glyph->bitmap_top };
+		info->size = {
+			magnitude_gl_from_screen(screen_x_from_px((float32)face->glyph->bitmap.width)),
+			magnitude_gl_from_screen(screen_y_from_px((float32)face->glyph->bitmap.rows)),
+		};
+		info->bearing = {
+			magnitude_gl_from_screen(screen_x_from_px(face->glyph->bitmap_left)),
+			magnitude_gl_from_screen(screen_y_from_px(face->glyph->bitmap_top)),
+		};
+		info->advance = {
+			magnitude_gl_from_screen(screen_x_from_px(face->glyph->advance.x / 64)),
+			magnitude_gl_from_screen(screen_y_from_px(face->glyph->advance.y / 64)),
+		};
 
 		// Build the mesh, put the data the GPU needs in the appropriate buffer
 		Mesh* mesh = arr_push(&meshes);
 
 		mesh->count = 6;
 		
-		gl_unit gl_left = -1;
-		gl_unit gl_right = gl_left + magnitude_gl_from_screen(screen_x_from_px(info->size.x));
-		gl_unit gl_top = 1;
-		gl_unit gl_bottom = gl_top - magnitude_gl_from_screen(screen_y_from_px(info->size.y));
+		gl_unit gl_left = -1 + info->bearing.x;
+		gl_unit gl_right = gl_left + info->size.x;
+		gl_unit gl_top = 1 + info->bearing.y;
+		gl_unit gl_bottom = gl_top - info->size.y;
 		Vector2 vertices[6] = {
 				{ gl_left,  gl_top },
 				{ gl_left,  gl_bottom },
@@ -125,9 +128,9 @@ void init_new_draw_stuff() {
 		mesh->verts = arr_push(&vertex_buffer, vertices, 6);
 
 		float tc_left = point.x / tex_width;
-		float tc_right = (point.x + info->size.x) / tex_width;
-		float tc_top = 1 - (point.y / tex_height);
-		float tc_bottom = 1 - ((point.y + info->size.y) / tex_height);
+		float tc_right = (point.x + face->glyph->bitmap.width) / tex_width;
+		float tc_top = 1 - (point.y / tex_height); // Y-axis coordinates are flipped, because we flip the texture
+		float tc_bottom = 1 - ((point.y + face->glyph->bitmap.rows) / tex_height);
 		Vector2 tex_coords[6] = {
 				{ tc_left,  tc_top },
 				{ tc_left,  tc_bottom },
@@ -147,7 +150,8 @@ void init_new_draw_stuff() {
 
 	auto& render_engine = get_render_engine();
 	TextRenderInfo render_info;
-	render_info.text = "F";
+	render_info.text = "joey, the striker fox";
+	render_info.point = { 0, 0 };
 	render_engine.text_infos.push_back(render_info);
 
 	char* tmp = (char*)calloc(tex_width, sizeof(char));
@@ -159,7 +163,7 @@ void init_new_draw_stuff() {
 		memcpy(btm, tmp, tex_width);
 	}
 
-		stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
+	stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
 
 	glGenTextures(1, &render_engine.texture);
 	glBindTexture(GL_TEXTURE_2D, render_engine.texture);
@@ -188,7 +192,7 @@ void init_new_draw_stuff() {
 	glEnableVertexAttribArray(0);
 
 	// Second attribute: tightly packed texcoords, after all the vertices
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)arr_bytes(&vertex_buffer));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)arr_bytes(&vertex_buffer));
 	glEnableVertexAttribArray(1);
 	// 1. Loop through the font:
 	// - Generate a texture atlas from the font, filling the texture coordinate buffer

@@ -21,6 +21,10 @@
 #	define fm_assert(expr) assert(expr)
 #endif
 
+#define MAX_PATH_LEN 256
+#define MAX_UNIFORMS 16
+#define MAX_UNIFORM_LEN 32
+
 // C++ I love you, but you're bringing me down
 template <typename T, bool = std::is_enum<T>::value>
 struct is_flag;
@@ -250,6 +254,12 @@ T* arr_back(Array<T>* array) {
 }
 
 template<typename T>
+T* arr_next(Array<T>* array) {
+	fm_assert(array->size != array->capacity);
+	return array->data + (array->size);
+}
+
+template<typename T>
 void arr_free(Array<T>* array) {
 	free(array->data);
 	array->data = nullptr;
@@ -261,6 +271,12 @@ void arr_free(Array<T>* array) {
 template<typename T>
 int32 arr_bytes(Array<T>* array) {
 	return array->capacity * sizeof(T);
+}
+
+template<typename T>
+void arr_clear(Array<T>* array) {
+	memset(array->data, 0, arr_bytes(array));
+	array->size = 0;
 }
 
 struct Vector2 {
@@ -278,6 +294,7 @@ struct GlyphInfo {
 	Mesh* mesh = nullptr;
 	Vector2 size;
 	Vector2 bearing;
+	Vector2 advance;
 };
 
 Array<Vector2>   vertex_buffer;
@@ -396,6 +413,12 @@ screen_unit screen_x_from_px(pixel_unit px) {
 	return px / screen_x;
 }
 screen_unit screen_y_from_px(pixel_unit px) {
+	return px / screen_y;
+}
+screen_unit screen_x_from_px(float32 px) {
+	return px / screen_x;
+}
+screen_unit screen_y_from_px(float32 px) {
 	return px / screen_y;
 }
 glm::vec2 screen_from_px(glm::ivec2 px) {
@@ -529,8 +552,7 @@ bool is_lua(std::string& path) {
 }
 
 // Set this string from a script, and we will pick up a new layout next tick
-#define LAYOUT_MAXPATH 256
-char layout_to_load[LAYOUT_MAXPATH] = {0};
+char layout_to_load[MAX_PATH_LEN] = {0};
 
 float framerate = 0.f;
 

@@ -1,6 +1,6 @@
-#define _fm_gm_font "apple_kid"
+#define _fm_gm_font "inconsolata"
 const char* fm_gm_font = _fm_gm_font;
-int32 fm_gm_font_size = 196;
+int32 fm_gm_font_size = 16;
 
 #define _fm_ed_font "inconsolata"
 const char* fm_ed_font = _fm_ed_font;

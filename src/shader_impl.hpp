@@ -1,7 +1,7 @@
-void Shader::init(std::string vs_path, std::string fs_path, std::string name) {
-	normalize_path(vs_path);
-	normalize_path(fs_path);
-	std::string paths[] = {
+void Shader::init(const char* vs_path, const char* fs_path, const char* name) {
+	arr_init(&uniforms_set_this_call, MAX_UNIFORMS);
+	
+	const char* paths[] = {
 		vs_path,
 		fs_path
 	};
@@ -13,18 +13,19 @@ void Shader::init(std::string vs_path, std::string fs_path, std::string name) {
 	
 	fox_for(ishader, 2) {
 		// Read in shader data
-		std::string path = paths[ishader];
-		FILE *shader_source_file = fopen(path.c_str(), "rb");
+		const char* path = paths[ishader];
+		FILE *shader_source_file = fopen(path, "rb");
 		if (!shader_source_file) {
-			tdns_log.write("@invalid_shader_file: " + path);
+			tdns_log.write("could not open shader file, file = %s", path);
 		}
 
 		fseek(shader_source_file, 0, SEEK_END);
 		unsigned int fsize = ftell(shader_source_file);
 		fseek(shader_source_file, 0, SEEK_SET);
 
-		// @leak
-		char *source = (char*)calloc(fsize + 1, sizeof(char));
+		char* source = (char*)calloc(fsize + 1, sizeof(char));
+		defer { free(source); };
+		
 		fread(source, fsize, 1, shader_source_file);
 		source[fsize] = 0;
 		fclose(shader_source_file);
@@ -35,15 +36,12 @@ void Shader::init(std::string vs_path, std::string fs_path, std::string name) {
 
 		glShaderSource(shader, 1, &source, NULL);
 
-		free(source);
-
 		glCompileShader(shader);
 
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
 		if (!success) {
 			glGetShaderInfoLog(shader, 512, NULL, compilation_status);
-			std::string message = "@shader_compile_error: ";
-			tdns_log.write(message + compilation_status);
+			tdns_log.write("shader compile error, err = %s", compilation_status);
 		}
 		glAttachShader(shader_program, shader);
 	}
@@ -53,143 +51,128 @@ void Shader::init(std::string vs_path, std::string fs_path, std::string name) {
 	glGetShaderiv(shader_program, GL_COMPILE_STATUS, &success);
 	if (!success) {
 		glGetShaderInfoLog(shader_program, 512, NULL, compilation_status);
-		std::string message = "@shader_compile_error: ";
-		tdns_log.write(message + compilation_status);
+		tdns_log.write("shader compile error, err = %s", compilation_status);
 	}
 
 	// Push the data into the shader. If anything fails, the shader won't get
 	// the new GL handles
 	id = shader_program;
 	glGetProgramiv(shader_program, GL_ACTIVE_UNIFORMS, (int*)&num_uniforms);
-	
-	this->name = name;
-	this->vs_path = vs_path;
-	this->fs_path = fs_path;
+
+	strncpy(this->name, name, MAX_PATH_LEN);
+	strncpy(this->vs_path, vs_path, MAX_PATH_LEN);
+	strncpy(this->fs_path, fs_path, MAX_PATH_LEN);
 }
 
-unsigned int Shader::get_uniform_loc(const char* name) {
+unsigned int Shader::get_uniform_loc(const char* uniform) {
 	// Shader failed to load properly. Don't spam the log.
 	if (num_uniforms == 0) return -1;
 	
-	auto loc = glGetUniformLocation(id, name);
+	auto loc = glGetUniformLocation(id, uniform);
 	if (loc == -1) {
-		tdns_log.write("@no_such_uniform: " + std::string(name) + ", " + std::string(this->name));
+		tdns_log.write("uniform does not exist: uniform = %s, shader = %s", uniform, this->name);
 	}
 	return loc;
 }
 
+void Shader::mark_uniform_set(const char* name) {
+	fm_assert(uniforms_set_this_call.size < MAX_UNIFORMS);
+	char (*arr) [MAX_UNIFORM_LEN] = arr_next(&uniforms_set_this_call);
+	char* buffer = &(*arr)[0];
+	strncpy(buffer, name, MAX_PATH_LEN);
+	uniforms_set_this_call.size += 1;
+	#if 0
+	for (int32 i = 0; i < MAX_UNIFORMS; i++) {
+		char* uniform = uniforms_set_this_call[i];
+		if (!strlen(uniform)) strncpy(uniform, name, MAX_PATH_LEN);
+	}
+	#endif
+}
+
 void Shader::set_vec4(const char* name, glm::vec4 vec) {
 	glUniform4f(get_uniform_loc(name), vec.x, vec.y, vec.z, vec.w);
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_vec3(const char* name, glm::vec3 vec) {
 	glUniform3f(get_uniform_loc(name), vec.x, vec.y, vec.z);
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_vec2(const char* name, glm::vec2 vec) {
 	glUniform2f(get_uniform_loc(name), vec.x, vec.y);
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_mat3(const char* name, glm::mat3 mat) {
 	glUniformMatrix3fv(get_uniform_loc(name), 1, GL_FALSE, glm::value_ptr(mat));
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_mat4(const char* name, glm::mat4 mat) {
 	glUniformMatrix4fv(get_uniform_loc(name), 1, GL_FALSE, glm::value_ptr(mat));
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_int(const char* name, GLint val) {
 	glUniform1i(get_uniform_loc(name), val);
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 void Shader::set_float(const char* name, GLfloat val) {
 	glUniform1f(get_uniform_loc(name), val);
-	if (!tdns_find(uniforms_set_this_call, name)) {
-		uniforms_set_this_call.push_back(name);
-	}
+	mark_uniform_set(name);
 }
 
 void Shader::begin() {
 	if (Shader::active != -1) {
-		tdns_log.write("Called begin() with shader: " + name + ", but there was already an active shader. Did you forget to call end()?");
-		exit(1);
+		tdns_log.write("tried to begin a shader when another was active, shader = %s", name);
+		return;
 	}
+	
 	glUseProgram(id);
 	Shader::active = id;
-	uniforms_set_this_call.clear();
+	arr_clear(&uniforms_set_this_call);
 }
 
 void Shader::check() {
-	if (uniforms_set_this_call.size() != num_uniforms) {
-		std::string msg = "You didn't fill in all of the uniforms! Shader was: " + std::string(name);
-		tdns_log.write(msg);
-		exit(1);
+	if (uniforms_set_this_call.size != num_uniforms) {
+		tdns_log.write("missing uniforms, shader = %s", name);
+		return;
 	}
 	if (Shader::active != (int)id) {
-		std::string msg = "Checked shader before draw, but it was not set. Did you forget to call begin()? Shader: " + name;
-		tdns_log.write(msg);
-		exit(1);
+		tdns_log.write("shader was not set before checked, shader = %s", name);
+		return;
 	}
 }
 
 void Shader::end() {
+	arr_clear(&uniforms_set_this_call);
 	Shader::active = -1;
 }
 
 void init_shaders() {
 	auto& shaders = get_shader_manager();
-	shaders.add(
-        absolute_path("asset/shaders/textured.vs"),
-	    absolute_path("asset/shaders/textured.fs"),
-	    "textured");
+
+	char vs_path [MAX_PATH_LEN] = {0};
+	char fs_path [MAX_PATH_LEN] = {0};
+
+	fm_shader("textured.vs", vs_path, MAX_PATH_LEN);
+	fm_shader("textured.fs", fs_path, MAX_PATH_LEN);
+	shaders.add(vs_path, fs_path, "textured");
+		
+	fm_shader("solid.vs", vs_path, MAX_PATH_LEN);
+	fm_shader("solid.fs", fs_path, MAX_PATH_LEN);
+	shaders.add(vs_path, fs_path, "solid");
 	
-	shaders.add(
-	    absolute_path("asset/shaders/textured.vs"),
-		absolute_path("asset/shaders/highlighted.fs"),
-		"highlighted");
-	
-	shaders.add(
-		absolute_path("asset/shaders/solid.vs"),
-		absolute_path("asset/shaders/solid.fs"),
-		"solid");
-	
-	shaders.add(
-        absolute_path("asset/shaders/textured.vs"),
-		absolute_path("asset/shaders/text.fs"),
-		"text");
-	
-	shaders.add(
-		absolute_path("asset/shaders/fade.vs"),
-		absolute_path("asset/shaders/fade.fs"),
-		"fade");
-	
-	shaders.add(
-		absolute_path("asset/shaders/battle_transition.vs"),
-		absolute_path("asset/shaders/battle_transition.fs"),
-		"battle_transition");
+	fm_shader("text.vs", vs_path, MAX_PATH_LEN);
+	fm_shader("text.fs", fs_path, MAX_PATH_LEN);
+	shaders.add(vs_path, fs_path, "text");
 }
 
-void ShaderManager::add(std::string vs_path, std::string fs_path, std::string name) {
+void ShaderManager::add(const char* vs_path, const char* fs_path, const char* name) {
 	Shader shader;
 	shader.init(vs_path, fs_path, name);
 	shaders[name] = shader;
 
 	file_watcher.watch(vs_path, [this](const char* vs_path){
 		for (auto& [name, shader] : shaders) {
-			if (are_strings_equal(shader.vs_path, vs_path)) {
-				std::cout << "reloading shader: " << name << std::endl;
+			if (!strcmp(shader.vs_path, vs_path)) {
+				tdns_log.write("reloading shader, shader = %s", name);
 				shader.init(shader.vs_path, shader.fs_path, shader.name);
 			}
 		}
@@ -197,8 +180,8 @@ void ShaderManager::add(std::string vs_path, std::string fs_path, std::string na
 	
 	file_watcher.watch(fs_path, [this](const char* fs_path){
 		for (auto& [name, shader] : shaders) {
-			if (are_strings_equal(shader.fs_path, fs_path)) {
-				std::cout << "reloading shader: " << name << std::endl;
+			if (!strcmp(shader.fs_path, fs_path)) {
+				tdns_log.write("reloading shader, shader = %s", name);
 				shader.init(shader.vs_path, shader.fs_path, shader.name);
 			}
 		}
@@ -208,7 +191,7 @@ void ShaderManager::add(std::string vs_path, std::string fs_path, std::string na
 Shader* ShaderManager::get(const char* name) {
 	auto it = shaders.find(name);
 	if (it == shaders.end()) {
-		tdns_log.write(std::string("@missing_shader: ") + name);
+		tdns_log.write("missing shader, shader = %s",  name);
 		return nullptr;
 	}
 
