@@ -1,4 +1,3 @@
-// Small quality of life macros and typedefs
 #define fox_max(a, b) (a) > (b) ? (a) : (b)
 #define fox_min(a, b) (a) > (b) ? (b) : (a)
 #define fox_for(iterName, iterCount) for (unsigned int iterName = 0; iterName < (iterCount); ++iterName)
@@ -6,12 +5,6 @@
 #define EXIT_IF_ERROR(return_code) if ((return_code)) { return -1; }
 #define rand_float(max) (static_cast<float>(rand()) / static_cast<float>(RAND_MAX / (max)))
 
-#if  defined(__APPLE__) || defined(__linux__)
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#define __stdcall
-#endif
-
-//Assert
 #ifdef _MSC_VER
 #	ifdef assert
 #		undef assert
@@ -22,16 +15,12 @@
 #endif
 
 #define MAX_PATH_LEN 256
-#define MAX_UNIFORMS 16
-#define MAX_UNIFORM_LEN 32
 
 // C++ I love you, but you're bringing me down
 template <typename T, bool = std::is_enum<T>::value>
 struct is_flag;
-
 template <typename T>
 struct is_flag<T, true> : std::false_type { };
-
 #define ENABLE_ENUM_FLAG(EnumType) template <> struct is_flag<EnumType> : std::true_type {};
 
 template <typename T, typename std::enable_if<is_flag<T>::value>::type* = nullptr>
@@ -39,13 +28,11 @@ T operator |(T lhs, T rhs) {
     using u_t = typename std::underlying_type<T>::type;
     return static_cast<T>(static_cast<u_t>(lhs) | static_cast<u_t>(rhs));
 }
-
 template <typename T, typename std::enable_if<is_flag<T>::value>::type* = nullptr>
 T operator &(T lhs, T rhs) {
     using u_t = typename std::underlying_type<T>::type;
     return static_cast<T>(static_cast<u_t>(lhs) & static_cast<u_t>(rhs));
 }
-
 template <typename T, typename std::enable_if<is_flag<T>::value>::type* = nullptr>
 bool has_flag(T lhs, T rhs) {
     using u_t = typename std::underlying_type<T>::type;
@@ -66,11 +53,6 @@ typedef GLFW_KEY_TYPE key_t;
 #define ASCII_UNDERSCORE 95
 
 // STL extensions 
-template<typename vec_type>
-void concat(std::vector<vec_type>& append_to, std::vector<vec_type>& append_from) {
-	append_to.insert(append_to.end(), append_from.begin(), append_from.end());
-}
-
 std::vector<std::string> split(const std::string &str, char delim) {
 	std::stringstream stream(str);
 	std::string item;
@@ -89,42 +71,6 @@ void string_replace(std::string& str, std::string from, std::string to) {
     }
 }
 
-bool does_string_contain_substr(std::string& str, std::string& substr) {
-	return str.find(substr) != std::string::npos;
-}
-
-#define tdns_find(vector, item) (find((vector).begin(), (vector).end(), (item)) != (vector).end()) 
-#define are_strings_equal(a, b) (!(a).compare((b)))
-
-
-glm::vec2 tdns_normalize(glm::vec2 vec) {
-	if (vec.x == 0.f && vec.y == 0.f) {
-		return vec;
-	}
-	
-	return glm::normalize(vec);
-}
-glm::vec3 tdns_normalize(glm::vec3 vec) {
-	if (vec.x == 0.f && vec.y == 0.f && vec.z == 0.f) {
-		return vec;
-	}
-	
-	return glm::normalize(vec);
-}
-
-#define TDENGINE_FLOATEQ_EPSILON .00005
-bool float_almost_equals(float a, float b) {
-	return glm::abs(a - b) < TDENGINE_FLOATEQ_EPSILON;
-}
-bool vec_almost_equals(glm::vec2 vec, glm::vec2 target) {
-	return glm::length(vec - target) < TDENGINE_FLOATEQ_EPSILON;
-}
-
-glm::vec2 vec_divide(glm::vec2 vec, float by) {
-	return glm::vec2 { vec.x / by, vec.y / by };
-}
-
-
 // Colors
 namespace Colors {
 	glm::vec4 Red = glm::vec4(1.f, 0.f, 0.f, 1.f);
@@ -138,39 +84,6 @@ namespace Colors {
 }
 #define ImGuiColor_Red ImVec4(1.f, 0.f, 0.f, 1.f)
 #define ImGuiColor_Green ImVec4(0.f, 1.f, 0.f, 1.f)
-	
-// Shape primitives
-std::vector<float> triangle_verts = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f,  0.5f, 0.0f
-};
-std::vector<uint> triangle_indices = {
-	0, 1, 2,
-};
-std::vector<float> triangle_tex_coords = {
-	0.0f, 0.0f,
-	1.f, 0.0f,
-	0.5f, 1.0f,
-};
-
-std::vector<float> square_verts = {
-	1.f,  1.f,
-	1.f, -1.f,
-	-1.f, -1.f,
-	-1.f,  1.f
-};
-std::vector<uint> square_indices = {
-	0, 1, 2,
-	2, 0, 3
-};
-std::vector<float> square_tex_coords = {
-	1.f, 1.f,
-	1.f, 0.0f,
-	0.f, 0.f,
-	0.f, 1.f,
-};
-GLvoid* square_tex_coords_offset;
 
 template<typename T>
 struct Array {
@@ -284,29 +197,6 @@ struct Vector2 {
 	float32 y = 0;
 };
 
-struct Mesh {
-	Vector2* verts      = nullptr;
-	Vector2* tex_coords = nullptr;
-	int32 count         = 0;
-};
-
-struct GlyphInfo {
-	Mesh* mesh = nullptr;
-	Vector2 size;
-	Vector2 bearing;
-	Vector2 advance;
-};
-
-Array<Vector2>   vertex_buffer;
-Array<Vector2>   tc_buffer;
-Array<Mesh>      meshes;       
-Array<GlyphInfo> glyph_infos;
-
-#define VERT_BUFFER_SIZE 8096
-
-int32 ft_to_px(int32 ft_size) { return ft_size >> 6; }
-int32 px_to_ft(int32 ft_size) { return ft_size << 6; }
-
 GLFWwindow* g_window;
 
 /*
@@ -334,21 +224,11 @@ Pixel coordinates have
  the rightmost at SCREEN_X,
  the bottommost at 0,
  the topmost at SCREEN_Y
- 
- 
- 
-Below are all the conversion functions. Using them and proper units is a bit verbose, 
-but is worth it to save the confusion of exchanging units (which is unavoidable). Also
-of note is that since we're using GLM vectors, it's not really convenient to have 
-conversions which use our typedefs, so conversions that take GLM vectors and single
-points are defined
 */
 typedef int32 pixel_unit;
 typedef float screen_unit;
 typedef float gl_unit;
 
-float internal_resolution_width = 320;
-float internal_resolution_height = 180;
 float screen_x = 320;
 float screen_y = 180;
 
@@ -436,9 +316,12 @@ glm::ivec2 px_from_screen(glm::vec2 screen) {
 	return glm::ivec2(floor(screen.x * screen_x), floor(screen.y * screen_y));
 }
 
+void* ogl_offset_to_ptr(int32 offset) {
+	return (char*)nullptr + offset;
+}
 
 /* Some utilities for dealing with files, directories, and paths */
-// @note @spader 9/4/2019 Realllllllyyyyyyy need a better way of making paths good
+// @note You only use this in the paths for Lua scripts in the file watcher
 #ifdef WIN32
 void normalize_path(std::string& str) {
 	string_replace(str, "/", "\\");

@@ -1,3 +1,6 @@
+#define MAX_UNIFORMS 16
+#define MAX_UNIFORM_LEN 32
+
 struct Shader {
 	char name    [MAX_PATH_LEN] = {0};
 	char vs_path [MAX_PATH_LEN] = {0};

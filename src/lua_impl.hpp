@@ -6,7 +6,6 @@ LuaState::LuaState() :
 void LuaState::prepend_to_search_path(std::string directory) {
 	directory = absolute_path(directory);
 	directory += "/?.lua";
-	normalize_path(directory);
 	tdns_log.write("Adding directory to Lua include path: " + directory, Log_Flags::File);
 		
 	// NEW_ITEM;old_path
@@ -41,7 +40,7 @@ void LuaState::script_dir(const char* path) {
 	
 	for (auto it = directory_iterator(path); it != directory_iterator(); it++) {
 		std::string next_path = it->path().string();
-		normalize_path(next_path);
+		//normalize_path(next_path);
 		
 		// Make sure the new file is a Lua script
 		if (is_regular_file(it->status())) {

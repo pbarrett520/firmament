@@ -1,3 +1,9 @@
+struct Mesh {
+	Vector2* verts      = nullptr;
+	Vector2* tex_coords = nullptr;
+	int32 count         = 0;
+};
+
 struct Camera {
 	float x;
 	float y;
@@ -27,15 +33,20 @@ struct RenderEngine {
 	uint32 vao;
 	uint32 texture;
 	
-	void init();
 	void remove_entity(int entity);
 	void render(float dt);
 	void render_text(float dt);
 	void render_text_old(float dt);
 	Camera& get_camera();
 };
-
 RenderEngine& get_render_engine();
 
+#define VERT_BUFFER_SIZE 8096
+Array<Vector2>   vertex_buffer;
+Array<Vector2>   tc_buffer;
+Array<Mesh>      meshes;       
+
 void init_gl();
+void init_render_engine();
+
 void draw_text(std::string text, glm::vec2 point, Text_Flags flags);

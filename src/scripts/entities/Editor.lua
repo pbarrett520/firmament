@@ -3,6 +3,7 @@ local inspect = require('inspect')
 
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
+  local x = 1
   self.options = {
 	show_imgui_demo = false,
   }
@@ -13,7 +14,7 @@ function Editor:init(params)
 	loaded = '',
 	selected = nil,
 	connecting = nil,
-	disconnecting = nil,
+	disconnecting = nil, 
 	deleting = nil,
 	scrolling = tdengine.vec2(0, 0),
 	scroll_per_second = 100,

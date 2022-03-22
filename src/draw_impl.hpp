@@ -12,6 +12,54 @@ void init_gl() {
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
+
+	// GPU buffer layout:
+	// [ quads for each character | texcoords for each character ]
+	//
+	// Both quads and texcoords are generated when we load the font -- we use the font size, plus the character's
+	// metrics (bearing, size), to make a quad. And then we use the bitmaps we load from the TTF file to create a
+	// texture atlas -- texcoords are with respect to this atlas.
+	
+	// Start the VAO
+	glGenVertexArrays(1, &render_engine.vao);
+	glBindVertexArray(render_engine.vao);
+
+	// Create a GPU buffer large enough to hold all the vertices and tex coords
+	glGenBuffers(1, &render_engine.buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, render_engine.buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector2) * VERT_BUFFER_SIZE * 2, NULL, GL_DYNAMIC_DRAW);
+
+	// Buffer attributes
+	// First attribute: tightly packed 2D vertices
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(0);
+
+	// Second attribute: tightly packed texcoords, after all the vertices
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(arr_bytes(&vertex_buffer)));
+	glEnableVertexAttribArray(1);
+}
+
+void init_render_engine() {
+	auto& render_engine = get_render_engine();
+	glGenFramebuffers(1, &render_engine.frame_buffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, render_engine.frame_buffer);
+
+	// Generate the color buffer, allocate GPU memory for it, and attach it to the frame buffer
+	glGenTextures(1, &render_engine.color_buffer);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, render_engine.color_buffer);	
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2560, 1440, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_engine.color_buffer, 0);
+	
+	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE) {
+		tdns_log.write("incomplete frame buffer, status = %s, meh = %d", status, 1);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void draw_text(std::string text, glm::vec2 point, Text_Flags flags) {
@@ -29,27 +77,6 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
-void RenderEngine::init() {
-	glGenFramebuffers(1, &frame_buffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
-
-	// Generate the color buffer, allocate GPU memory for it, and attach it to the frame buffer
-	glGenTextures(1, &color_buffer);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, color_buffer);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2560, 1440, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, color_buffer, 0);
-	
-	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status != GL_FRAMEBUFFER_COMPLETE) {
-		tdns_log.write("@incomplete_frame_buffer: " + std::to_string(status));
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
 
 Camera& RenderEngine::get_camera() {
 	return camera;

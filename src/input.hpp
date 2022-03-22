@@ -300,7 +300,7 @@ int init_glfw() {
 
 	glfwSetErrorCallback(GLFW_Error_Callback);
 
-	g_window = glfwCreateWindow((int)screen_x, (int)screen_y, "tdengine", NULL, NULL);
+	g_window = glfwCreateWindow((int)screen_x, (int)screen_y, "firmament", NULL, NULL);
 	if (g_window == NULL) {
 		tdns_log.write("Failed to create GLFW window");
 		glfwTerminate();

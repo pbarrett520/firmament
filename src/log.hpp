@@ -22,11 +22,6 @@ struct Log {
 };
 Log tdns_log;
 
-void Log::init() {
-	log_stream.open(fm_log, std::ofstream::out | std::ofstream::trunc);
-	zero_buffer();
-}
-
 void Log::zero_buffer() {
 	memset(&buffer[0], 0, LOG_BUFFER_SIZE);
 }
@@ -61,4 +56,9 @@ void Log::write_impl(uint8_t flags, const char* fmt, va_list fmt_args) {
 		log_stream << buffer << std::endl;
 
 	zero_buffer();
+}
+
+void init_log() {
+	tdns_log.log_stream.open(fm_log, std::ofstream::out | std::ofstream::trunc);
+	tdns_log.zero_buffer();
 }

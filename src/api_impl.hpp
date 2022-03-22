@@ -107,22 +107,6 @@ void API::resume_updates() {
 void API::set_imgui_demo(bool show) {
 	show_imgui_demo = show;
 }
-
-int API::font_advance(std::string font_name, char c) {
-	auto& font = g_fonts[font_name];
-	return font.advance(c);
-}
-
-sol::object API::font_info(std::string font_name) {
-	auto& font = g_fonts[font_name];
-	
-	auto info = Lua.state.create_table();
-	info["largest"] = Lua.state.create_table();
-	info["largest"]["x"] = font.px_largest.x;
-	info["largest"]["y"] = font.px_largest.y;
-
-	return info;
-}
 		
 void register_lua_api() {
 	auto& state = Lua.state;
@@ -149,8 +133,6 @@ void register_lua_api() {
 	state["tdengine"]["pause_updates"]             = &API::pause_updates;
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
-	state["tdengine"]["font_advance"]              = &font_advance;
-	state["tdengine"]["font_info"]                 = &font_info;
 
 	state["tdengine"]["draw_text"]                = &API::draw_text;
 
