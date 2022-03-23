@@ -25,10 +25,3 @@ void load_imgui_layout() {
 
 	memset(layout_to_load, 0, MAX_PATH_LEN);
 }
-
-void init_buffers() {
-	arr_init(&vertex_buffer, VERT_BUFFER_SIZE);
-	arr_init(&tc_buffer, VERT_BUFFER_SIZE);
-	arr_init(&meshes, 1024);
-	arr_init(&glyph_infos, 128);
-}

@@ -71,16 +71,45 @@ void API::save_layout(const char* name) {
 	tdns_log.write(Log_Flags::File, "saved imgui layout: path = %s", path);
 }
 
-void API::draw_text(std::string text, float x, float y, int flags) {
-	glm::vec2 point(x, y);
-	draw_text(text, point, static_cast<Text_Flags>(flags));
-}
-
 void API::screen(const char* dimension) {
 	if (!strcmp(dimension, "640")) use_640_360();
 	else if (!strcmp(dimension, "720")) use_720p();
 	else if (!strcmp(dimension, "1080")) use_1080p();
 	else if (!strcmp(dimension, "1440")) use_1440p();
+}
+
+void API::submit_text(sol::table request) {
+	auto& render_engine = get_render_engine();
+
+	TextRenderInfo info;
+	std::string text = request["text"];
+	fm_assert(text.size() < MAX_TEXT_LEN);
+	strncpy(info.text, text.c_str(), MAX_TEXT_LEN);
+
+	// No effect? Just give it to the renderer
+	if (request["effect"] == sol::lua_nil) {
+		arr_push(&text_buffer, info);
+		return;
+	};
+
+	// If there is an effect, figure out what type it is and parse it.
+	TextEffect effect;
+	effect.type = static_cast<TextEffectType>(request["effect"]["type"]);
+	if (effect.type == TextEffectType::OSCILLATE) {
+		OscillateEffect* effect_data = &effect.data.oscillate;
+		effect_data->amplitude = request["effect"]["amplitude"];
+		effect_data->frequency = request["effect"]["frequency"];
+	}
+	else if (effect.type == TextEffectType::RAINBOW) {
+		RainbowEffect* effect_data = &effect.data.rainbow;
+		effect_data->frequency = request["effect"]["frequency"];
+	}
+
+	// Then, add it to our buffer of effects and give the info the pointer to the stored effect
+	info.effects = arr_slice(&effect_buffer, effect_buffer.size, 1);
+	arr_push(&effect_buffer, effect);
+
+	arr_push(&text_buffer, info);
 }
 
 void API::log(const char* fmt) {
@@ -133,8 +162,7 @@ void register_lua_api() {
 	state["tdengine"]["pause_updates"]             = &API::pause_updates;
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
-
-	state["tdengine"]["draw_text"]                = &API::draw_text;
+	state["tdengine"]["submit_text"]               = &API::submit_text;
 
 	state["tdengine"]["flags"] = state.create_table();
 	state["tdengine"]["text_flags"] = state.create_table();

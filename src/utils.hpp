@@ -52,38 +52,21 @@ typedef GLFW_KEY_TYPE key_t;
 #define ASCII_QMARK      63
 #define ASCII_UNDERSCORE 95
 
-// STL extensions 
-std::vector<std::string> split(const std::string &str, char delim) {
-	std::stringstream stream(str);
-	std::string item;
-	std::vector<std::string> tokens;
-	while (getline(stream, item, delim)) {
-		tokens.push_back(item);
+float32 clamp(float32 val, float32 low, float32 hi) {
+	return fox_max(fox_min(val, hi), low);
+}
+
+void memfill(void* dst, int32 size, void* pattern, int32 pattern_size) {
+	char* cdst = (char*)dst;
+	char* cptn = (char*)pattern;
+	int i = 0;
+
+	while (true) {
+		if (i + pattern_size > size) return;
+		memcpy(cdst + i, cptn, pattern_size);
+		i += pattern_size;
 	}
-	return tokens;
 }
-
-void string_replace(std::string& str, std::string from, std::string to) {
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
-    }
-}
-
-// Colors
-namespace Colors {
-	glm::vec4 Red = glm::vec4(1.f, 0.f, 0.f, 1.f);
-	glm::vec4 Green = glm::vec4(0.f, 1.f, 0.f, 1.f);
-	glm::vec4 Blue = glm::vec4(0.f, 0.f, 1.f, 1.f);
-	glm::vec4 Brown = glm::vec4(173.f / 255.f, 133.f / 255.f, 74.f / 255.f, 1.f);
-	glm::vec4 Black = glm::vec4(0.f, 0.f, 0.f, 1.f);
-	glm::vec4 White4 = glm::vec4(1.f, 1.f, 1.f, 1.f);
-	glm::vec3 TextWhite = glm::vec3(1.f, 1.f, 1.f);
-	glm::vec3 TextHighlighted = glm::vec3(1.f, 0.f, 0.f);
-}
-#define ImGuiColor_Red ImVec4(1.f, 0.f, 0.f, 1.f)
-#define ImGuiColor_Green ImVec4(0.f, 1.f, 0.f, 1.f)
 
 template<typename T>
 struct Array {
@@ -112,6 +95,29 @@ fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 	array->data = data;
 	
 	return FM_ERR_SUCCESS;
+}
+
+template<typename T>
+Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
+	fm_assert(index > 0);
+	fm_assert(index + size <= array->size);
+	
+	Array<T> view;
+	view.size = size;
+	view.capacity = size;
+	view.data = array->data + index;
+	
+	return view;
+}
+
+template<typename T>
+Array<T> arr_view(T* data, int32 size) {
+	Array<T> view;
+	view.size = size;
+	view.capacity = size;
+	view.data = data;
+	
+	return view;
 }
 
 template<typename T>
@@ -192,10 +198,82 @@ void arr_clear(Array<T>* array) {
 	array->size = 0;
 }
 
+template<typename T>
+void arr_fill(Array<T>* array, T element) {
+	memfill(array->data, arr_bytes(array), &element, sizeof(T));
+	array->size = array->capacity; 
+}
+
+#define arr_for(array, it) for (auto (it) = (array).data; (it) != ((array).data + (array).size); (it)++)
+
 struct Vector2 {
 	float32 x = 0;
 	float32 y = 0;
 };
+
+struct Vector3 {
+	float32 x = 0;
+	float32 y = 0;
+	float32 z = 0;
+};
+
+struct Vector4 {
+	union {
+		float32 x = 0;
+		float32 r;
+	};
+	union {
+		float32 y = 0;
+		float32 g;
+	};
+	union {
+		float32 z = 0;
+		float32 b;
+	};
+	union {
+		float32 w = 0;
+		float32 a;
+	};
+};
+
+// STL extensions 
+std::vector<std::string> split(const std::string &str, char delim) {
+	std::stringstream stream(str);
+	std::string item;
+	std::vector<std::string> tokens;
+	while (getline(stream, item, delim)) {
+		tokens.push_back(item);
+	}
+	return tokens;
+}
+
+void string_replace(std::string& str, std::string from, std::string to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
+// Colors
+namespace Colors {
+	glm::vec4 Red = glm::vec4(1.f, 0.f, 0.f, 1.f);
+	glm::vec4 Green = glm::vec4(0.f, 1.f, 0.f, 1.f);
+	glm::vec4 Blue = glm::vec4(0.f, 0.f, 1.f, 1.f);
+	glm::vec4 Brown = glm::vec4(173.f / 255.f, 133.f / 255.f, 74.f / 255.f, 1.f);
+	glm::vec4 Black = glm::vec4(0.f, 0.f, 0.f, 1.f);
+	glm::vec4 White4 = glm::vec4(1.f, 1.f, 1.f, 1.f);
+	glm::vec3 TextWhite = glm::vec3(1.f, 1.f, 1.f);
+	glm::vec3 TextHighlighted = glm::vec3(1.f, 0.f, 0.f);
+}
+#define ImGuiColor_Red ImVec4(1.f, 0.f, 0.f, 1.f)
+#define ImGuiColor_Green ImVec4(0.f, 1.f, 0.f, 1.f)
+
+namespace colors {
+	Vector4 white = { 1, 1, 1, 1 };
+	Vector4 red   = { 1, 0, 0, 1 };
+};
+
 
 GLFWwindow* g_window;
 

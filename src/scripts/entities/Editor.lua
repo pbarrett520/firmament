@@ -44,7 +44,40 @@ function Editor:init(params)
   self.input:enable()
 end
 
+function submit_oscillate()
+  local request = {
+	text = 'joey, the striker fox',
+	effect = {
+	  type = 1,
+	  amplitude = .003,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_rainbow()
+  local request = {
+	text = 'joey, the striker fox',
+	effect = {
+	  type = 2,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_without_effect()
+  local request = {
+	text = 'joey, the striker fox'
+  }
+  tdengine.submit_text(request)
+end
+
 function Editor:update(dt)
+	
+  tdengine.do_once(submit_rainbow)
+
   -- tdengine.log("%s", "hello")
   self:calculate_framerate()
 

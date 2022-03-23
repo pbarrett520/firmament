@@ -110,11 +110,6 @@ void init_fonts() {
 		point.x += bitmap->width + 1;
 	}
 
-	auto& render_engine = get_render_engine();
-	TextRenderInfo render_info;
-	render_info.text = "joey, the striker fox";
-	render_info.point = { 0, 0 };
-	render_engine.text_infos.push_back(render_info);
 
 	char* tmp = (char*)calloc(tex_width, sizeof(char));
 	for (int32 i = 0; i != tex_height / 2; i++) {
@@ -127,6 +122,7 @@ void init_fonts() {
 
 	stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
 
+	auto& render_engine = get_render_engine();
 	glGenTextures(1, &render_engine.texture);
 	glBindTexture(GL_TEXTURE_2D, render_engine.texture);
 	glTexImage2D(GL_TEXTURE_2D,0, GL_RED, tex_width, tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);

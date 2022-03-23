@@ -7,9 +7,6 @@ bool        was_released(key_t id, int mask = INPUT_MASK_NONE);
 bool        is_down(key_t id, int mask = INPUT_MASK_NONE);
 bool        was_chord_pressed(key_t mod, key_t cmd, int mask = INPUT_MASK_NONE);
 	
-// Draw
-void        draw_text(std::string text, float x, float y, int flags);
-
 // Editor
 void        toggle_console();
 void        use_layout(const char* name);
@@ -24,9 +21,8 @@ void        set_imgui_demo(bool show);
 void        log(const char* message);
 void        log_to(const char* message, uint8_t flags);
 
-// Fonts
-int         font_advance(std::string font, char c);
-sol::object font_info(std::string font);
+// Text
+void        submit_text(sol::table request);
 
 // Utility
 sol::object screen_dimensions();

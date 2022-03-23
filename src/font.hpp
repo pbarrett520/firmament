@@ -17,6 +17,5 @@ struct Font {
 FT_Library freetype;
 GLuint font_vao, font_vert_buffer;
 std::map<std::string, Font> g_fonts;
-Array<GlyphInfo> glyph_infos;
 
 void init_fonts();

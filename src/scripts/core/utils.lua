@@ -182,6 +182,35 @@ function tdengine.frames(n)
   return n / 60
 end
 
+local do_once = {
+  info = nil,
+  args = nil
+}
+
+function tdengine.do_once(f, ...)
+  local info = debug.getinfo(f)
+
+  -- Edge case: First time we call this. Just run the function and mark down its info.
+  if do_once.info == nil then
+	f(...)
+	do_once.info = debug.getinfo(f)
+	do_once.args = { ... }
+	return
+  else
+	local line_match = do_once.info.linedefined == info.linedefined
+	local file_match = do_once.info.source == info.source
+	local args_match = table_eq_shallow(do_once.args, { ... })
+	local all_match =  line_match and file_match and args_match
+	if not all_match then
+	  f(...)
+	  do_once.info = debug.getinfo(f)
+	  do_once.args = { ... }
+	  return
+	end
+
+  end
+end
+
 function delete(array, value)
   local len = #array
   
@@ -277,3 +306,10 @@ function current_function_name()
   return debug.getinfo(2)
 end
 
+function table_eq_shallow(t1, t2)
+  for k, t1v in pairs(t1) do
+	t2v = t2[k]
+	if t1v ~= t2v then return false end
+  end
+  return true
+end

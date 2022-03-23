@@ -16,6 +16,7 @@
 #include "shader.hpp"
 #include "imgui/imgui_lua_bindings.hpp"
 #include "api.hpp"
+#include "buffers.hpp"
 
 #include "api_impl.hpp"
 #include "console_impl.hpp"
@@ -36,7 +37,6 @@ int main() {
 	init_lua();
 	init_glfw();
 	init_imgui();
-	init_render_engine();
 	init_shaders();
 	init_gl();
 	init_scripts();

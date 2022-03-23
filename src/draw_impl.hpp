@@ -27,56 +27,35 @@ void init_gl() {
 	// Create a GPU buffer large enough to hold all the vertices and tex coords
 	glGenBuffers(1, &render_engine.buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, render_engine.buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Vector2) * VERT_BUFFER_SIZE * 2, NULL, GL_DYNAMIC_DRAW);
+	
+	int32 gpu_buffer_size = 0;
+	gpu_buffer_size += arr_bytes(&vertex_buffer); // Vertex
+	gpu_buffer_size += arr_bytes(&tc_buffer); // Texture coordinate
+	gpu_buffer_size += arr_bytes(&color_buffer); // Color
+	glBufferData(GL_ARRAY_BUFFER, gpu_buffer_size, NULL, GL_DYNAMIC_DRAW);
 
 	// Buffer attributes
-	// First attribute: tightly packed 2D vertices
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	int32 gpu_offset = 0;
+	
+	// First attribute: 2D vertices
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(0));
 	glEnableVertexAttribArray(0);
+	gpu_offset += arr_bytes(&vertex_buffer);
 
-	// Second attribute: tightly packed texcoords, after all the vertices
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(arr_bytes(&vertex_buffer)));
+	// Second attribute: 2D Texture coordinates
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(gpu_offset));
 	glEnableVertexAttribArray(1);
-}
+	gpu_offset += arr_bytes(&tc_buffer);
 
-void init_render_engine() {
-	auto& render_engine = get_render_engine();
-	glGenFramebuffers(1, &render_engine.frame_buffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, render_engine.frame_buffer);
-
-	// Generate the color buffer, allocate GPU memory for it, and attach it to the frame buffer
-	glGenTextures(1, &render_engine.color_buffer);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, render_engine.color_buffer);	
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2560, 1440, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, render_engine.color_buffer, 0);
-	
-	auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (status != GL_FRAMEBUFFER_COMPLETE) {
-		tdns_log.write("incomplete frame buffer, status = %s, meh = %d", status, 1);
-	}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void draw_text(std::string text, glm::vec2 point, Text_Flags flags) {
-	TextRenderInfo info;
-	info.text = text;
-	//info.point = point;
-	info.flags = flags;
-
-	auto& render_engine = get_render_engine();
-	render_engine.text_infos.push_back(info);
+	// Third attribute: 4D Colors
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(gpu_offset));
+	glEnableVertexAttribArray(2);
 }
 
 RenderEngine& get_render_engine() {
 	static RenderEngine engine;
 	return engine;
 }
-
 
 Camera& RenderEngine::get_camera() {
 	return camera;
@@ -87,6 +66,7 @@ void RenderEngine::render(float dt) {
 }
 
 void RenderEngine::render_text(float dt) {
+	if (!text_buffer.size) return;
 	auto& shaders = get_shader_manager();
 	auto shader = shaders.get("text");
 	shader->begin();
@@ -95,6 +75,10 @@ void RenderEngine::render_text(float dt) {
 	glm::mat3 mat = mat3_from_transform(transform);
 	shader->set_int("sampler", 0);
 
+	// Fill the color buffer with the standard white color
+	arr_fill(&color_buffer, colors::white);
+
+	// Make intermediate buffers to hold vertices for this frame. We'll copy this to the GPU verbatim.
 	Vector2        tmp_vx_data[VERT_BUFFER_SIZE];
 	Array<Vector2> tmp_vx_buffer;
 	arr_stack(&tmp_vx_buffer, &tmp_vx_data[0], VERT_BUFFER_SIZE);
@@ -103,20 +87,21 @@ void RenderEngine::render_text(float dt) {
 	Array<Vector2>  tmp_tc_buffer;
 	arr_stack(&tmp_tc_buffer, &tmp_tc_data[0], VERT_BUFFER_SIZE);
 
-	for (const auto& info : text_infos) {
-		auto color = has_flag(info.flags, Text_Flags::Highlighted) ? Colors::TextHighlighted : Colors::TextWhite;
-		shader->set_vec3("text_color", color);
+	arr_for(text_buffer, info) {
+		int32 vx_begin = tmp_vx_buffer.size;
+		int32 count_elems = 0;
+		Vector2 point = info->point;
 
-		Vector2 point = info.point;
+		// Transform vertices by the point and copy them into the intermediate bufer
+		Array<char> text = arr_view(info->text, MAX_TEXT_LEN);
+		arr_for(text, c) {
+			if (*c == 0) break;
+			GlyphInfo* glyph = glyph_infos[*c];
 
-		for (char c : info.text) {
-			GlyphInfo* glyph = glyph_infos[c];
-
-			// Copy the vertices into the intermediate bufer
 			Vector2* tmp_vx = arr_push(&tmp_vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
-			arr_push(&tmp_tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+			Vector2* tmp_tc = arr_push(&tmp_tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+			count_elems += glyph->mesh->count;
 
-			// Do a CPU side transformation
 			Vector2 gl_origin = { -1, 1 };
 			Vector2 offset = {
 				point.x - gl_origin.x,
@@ -129,6 +114,14 @@ void RenderEngine::render_text(float dt) {
 
 			point.x += glyph->advance.x;
 		}
+
+		auto vx = arr_slice(&tmp_vx_buffer, vx_begin, count_elems);
+		auto tc = arr_slice(&tmp_tc_buffer, vx_begin, count_elems);
+		arr_for(info->effects, effect) {
+			auto do_effect = effect_f[(int32)effect->type];
+			do_effect(effect, dt, vx, tc, color_buffer);
+			effect->frames_elapsed++;
+		}
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -138,88 +131,77 @@ void RenderEngine::render_text(float dt) {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
-	glBufferSubData(GL_ARRAY_BUFFER,
-					0,
-					sizeof(Vector2) * tmp_vx_buffer.size,
-					tmp_vx_buffer.data);
+	int32 gpu_offset = 0;
 	
 	glBufferSubData(GL_ARRAY_BUFFER,
-					sizeof(Vector2) * VERT_BUFFER_SIZE,
-					sizeof(Vector2) * tmp_tc_buffer.size,
+					gpu_offset,
+					arr_bytes(&tmp_vx_buffer),
+					tmp_vx_buffer.data);
+	gpu_offset += arr_bytes(&vertex_buffer);
+	
+	glBufferSubData(GL_ARRAY_BUFFER,
+					gpu_offset,
+					arr_bytes(&tmp_tc_buffer),
 					tmp_tc_buffer.data);
+	gpu_offset += arr_bytes(&tc_buffer);
+
+	glBufferSubData(GL_ARRAY_BUFFER,
+					gpu_offset,
+					arr_bytes(&color_buffer),
+					color_buffer.data);
 	
 	shader->check();
 	glDrawArrays(GL_TRIANGLES, 0, tmp_vx_buffer.size);
 	shader->end();
 }
-#if 0
-void RenderEngine::render_text_old(float dt) {
-	auto& shaders = get_shader_manager();
-	auto shader = shaders.get("text");
-	shader->begin();
 
-	auto& font = g_fonts[fm_gm_font];
-
-	// Text is raw 2D, so just use an orthographic projection
-	SRT transform = SRT::no_transform();
-	glm::mat3 mat = mat3_from_transform(transform);
-	shader->set_mat3("transform", mat);
-	shader->set_int("sampler", 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, font_vert_buffer);
-	glBindVertexArray(font_vao);
-
-	for (const auto& info : text_infos) {
-		auto color = has_flag(info.flags, Text_Flags::Highlighted) ? Colors::TextHighlighted : Colors::TextWhite;
-		shader->set_vec3("text_color", color);
-
-		auto px_point = px_from_screen(info.point);
-		for (auto c : info.text) {
-			Character& freetype_char = font.characters[c];
-		
-			GLfloat left = static_cast<float>(px_point.x) + freetype_char.px_bearing.x;
-			GLfloat right = left + freetype_char.px_size.x;
-			GLfloat bottom = static_cast<float>(px_point.y) - (freetype_char.px_size.y - freetype_char.px_bearing.y); // Put the bearing point, not the bottom of the glyph, at requested Y
-			GLfloat top = bottom + freetype_char.px_size.y;
-			
-			gl_unit gl_left = gl_from_screen(screen_x_from_px((pixel_unit)left));
-			gl_unit gl_right = gl_from_screen(screen_x_from_px((pixel_unit)right));
-			gl_unit gl_bottom = gl_from_screen(screen_y_from_px((pixel_unit)bottom));
-			gl_unit gl_top = gl_from_screen(screen_y_from_px((pixel_unit)top));
-			
-			// FreeType loads the fonts upside down, which is why texture coordinates look wonky
-			GLfloat vertices[12][2] = {
-				// Vertices 
-				{ gl_left,  gl_top },
-				{ gl_left,  gl_bottom },
-				{ gl_right, gl_bottom },
-			
-				{ gl_left,  gl_top },
-				{ gl_right, gl_bottom },
-				{ gl_right, gl_top },
-			
-				// Texture coordinates
-				{ 0.f, 0.f },
-				{ 0.f, 1.f },
-				{ 1.f, 1.f },
-			
-				{ 0.f, 0.f },
-				{ 1.f, 1.f },
-				{ 1.f, 0.f }
-			};
-			
-			// Render glyph texture over quad
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, freetype_char.texture);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
-			
-			shader->check();
-			glDrawArrays(GL_TRIANGLES, 0, 6);
-		
-			px_point.x += (freetype_char.advance / 64);
-		}
-	}
-	shader->end();
-	text_infos.clear();
+// Effects
+void DoNoneEffect(
+    TextEffect* effect,
+	float32 dt,
+	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
+) {
+	fm_assert(!"DoNoneEffect");
 }
-#endif
+
+void DoOscillateEffect(
+    TextEffect* effect,
+	float32 dt,
+	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
+) {
+    OscillateEffect* oscillate = &effect->data.oscillate;
+
+	float32 sinv = sinf(effect->frames_elapsed / oscillate->frequency) * oscillate->amplitude;
+	float32 sinv2 = sinf((effect->frames_elapsed - 20) / oscillate->frequency) * oscillate->amplitude;
+	arr_for(vx_data, vx) {
+		int32 vi = vx - vx_data.data;
+		int32 ci = vi / 6;
+		if (ci % 2) vx->y -= sinv;
+		else vx->y += sinv2;
+	}
+	
+	tdns_log.write("DoOscillateEffect: %f, %d", sinv, effect->frames_elapsed);
+}
+
+void DoRainbowEffect(
+    TextEffect* effect,
+	float32 dt,
+	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
+) {
+    RainbowEffect* rainbow = &effect->data.rainbow;
+    float32 pi = 3.14;
+
+	float32 sin_input = effect->frames_elapsed / (float32)rainbow->frequency;
+	float32 sinr = clamp(sinf(sin_input), .3, 1);
+	float32 sing = clamp(sinf(sin_input + (pi / 4)), .3, 1);
+	float32 sinb = clamp(sinf(sin_input + (pi / 2)), .3, 1);
+	arr_for(clr_data, clr) {
+		int32 vi = clr - clr_data.data;
+		int32 ci = vi / 6;
+		if      (!(ci % 3)) { clr->r *= sing; clr->g *= sinb; clr->b *= sinr; }
+		else if (!(ci % 2)) { clr->r *= sinb; clr->g *= sinr; clr->b *= sing; }
+		else                { clr->r *= sinr; clr->g *= sing; clr->b *= sinb; }
+		
+	}
+	tdns_log.write("r = %f, g = %f, b = %f", sinr, sing, sinb);
+}
