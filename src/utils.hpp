@@ -111,16 +111,6 @@ Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
 }
 
 template<typename T>
-Array<T> arr_view(T* data, int32 size) {
-	Array<T> view;
-	view.size = size;
-	view.capacity = size;
-	view.data = data;
-	
-	return view;
-}
-
-template<typename T>
 T* arr_push(Array<T>* array, T* data, int32 count) {
 	int32 remaining = array->capacity - array->size;
 	if (remaining < count) return nullptr;
@@ -205,6 +195,50 @@ void arr_fill(Array<T>* array, T element) {
 }
 
 #define arr_for(array, it) for (auto (it) = (array).data; (it) != ((array).data + (array).size); (it)++)
+
+
+template<typename T>
+struct ArrayView {
+	int32 size      = 0;
+	int32 capacity  = 0;
+	T* data         = nullptr;
+
+	// @spader could make this const correct, whatever
+	T* operator[](uint32 index) { fm_assert(index < size); return data + index; }
+};
+
+template<typename T>
+ArrayView<T> arr_view(T* data, int32 size) {
+	ArrayView<T> view;
+	view.size = size;
+	view.capacity = size;
+	view.data = data;
+	
+	return view;
+}
+
+template<typename T>
+ArrayView<T> arr_view(Array<T>* array) {
+	ArrayView<T> view;
+	view.size = array->size;
+	view.capacity = array->size;
+	view.data = array->data;
+	
+	return view;
+}
+
+template<typename T>
+ArrayView<T> arr_view(Array<T>* array, int32 index, int32 count) {
+	fm_assert(index >= 0);
+	fm_assert(index + count <= array->size);
+
+	ArrayView<T> view;
+	view.size = count;
+	view.capacity = count;
+	view.data = array->data + index;
+	
+	return view;
+}
 
 struct Vector2 {
 	float32 x = 0;

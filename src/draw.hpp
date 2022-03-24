@@ -67,12 +67,34 @@ struct TextEffect {
 };
 
 #define MAX_TEXT_LEN 1024
+#define MAX_LINE_BREAKS 16
 struct TextRenderInfo {
-	char text [MAX_TEXT_LEN];
-	Vector2 point;
-	Array<TextEffect> effects;
-	Text_Flags flags = Text_Flags::None;
+	char text [MAX_TEXT_LEN] = { 0 };
+	int32 lbreaks [MAX_LINE_BREAKS] = { 0 };
+	Array<TextEffect> effects = { 0 };
 };
+
+
+struct TextBox {
+	Vector2 pos = { -.5, .5 };
+	Vector2 dim = { 1, 1 };
+	Vector2 pad = { 0, 0 };
+};
+TextBox main_text_box;
+
+Vector2 first_writeable_line(TextBox* text_box);
+
+struct TextRenderContext {
+	TextBox* box          = nullptr;
+	TextRenderInfo* info  = nullptr;
+	GlyphInfo* last_glyph = nullptr;
+	Vector2 point;
+	int32 written         = 0;
+	int32 idx_break       = 0;
+};
+
+void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info);
+void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph);
 
 struct RenderEngine {
 	Camera camera;

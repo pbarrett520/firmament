@@ -57,6 +57,32 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
+Vector2 first_writeable_line(TextBox* text_box) {
+	return {
+		text_box->pos.x + text_box->pad.x,
+		text_box->pos.y - text_box->dim.y + text_box->pad.y
+	};
+}
+
+void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info) {
+	ctx->box = box;
+	ctx->info = info;
+	ctx->point = first_writeable_line(box);
+}
+
+void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
+	ctx->last_glyph = glyph;
+	ctx->point.x += glyph->advance.x;
+	ctx->written++;
+
+	// Check if we need to advance the point in the Y axis due to a line break
+	int32 next_lbreak = ctx->info->lbreaks[ctx->idx_break];
+	if (next_lbreak == 0) return;
+	if (next_lbreak != ctx->written) return;
+
+	//ctx->point->y += 
+}
+
 Camera& RenderEngine::get_camera() {
 	return camera;
 }
@@ -90,10 +116,11 @@ void RenderEngine::render_text(float dt) {
 	arr_for(text_buffer, info) {
 		int32 vx_begin = tmp_vx_buffer.size;
 		int32 count_elems = 0;
-		Vector2 point = info->point;
+		TextRenderContext context;
+		text_ctx_init(&context, &main_text_box, info);
 
 		// Transform vertices by the point and copy them into the intermediate bufer
-		Array<char> text = arr_view(info->text, MAX_TEXT_LEN);
+		ArrayView<char> text = arr_view(info->text, MAX_TEXT_LEN);
 		arr_for(text, c) {
 			if (*c == 0) break;
 			GlyphInfo* glyph = glyph_infos[*c];
@@ -104,15 +131,15 @@ void RenderEngine::render_text(float dt) {
 
 			Vector2 gl_origin = { -1, 1 };
 			Vector2 offset = {
-				point.x - gl_origin.x,
-				point.y - gl_origin.y,
+				context.point.x - gl_origin.x,
+				context.point.y - gl_origin.y,
 			};
 			for (int32 i = 0; i < glyph->mesh->count; i++) {
 				tmp_vx[i].x += offset.x;
 				tmp_vx[i].y += offset.y;
 			}
 
-			point.x += glyph->advance.x;
+			text_ctx_advance(&context, glyph);
 		}
 
 		auto vx = arr_slice(&tmp_vx_buffer, vx_begin, count_elems);
@@ -189,12 +216,12 @@ void DoRainbowEffect(
 	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
 ) {
     RainbowEffect* rainbow = &effect->data.rainbow;
-    float32 pi = 3.14;
+    float32 pi = 3.14f;
 
 	float32 sin_input = effect->frames_elapsed / (float32)rainbow->frequency;
-	float32 sinr = clamp(sinf(sin_input), .3, 1);
-	float32 sing = clamp(sinf(sin_input + (pi / 4)), .3, 1);
-	float32 sinb = clamp(sinf(sin_input + (pi / 2)), .3, 1);
+	float32 sinr = clamp(sinf(sin_input), .3f, 1.f);
+	float32 sing = clamp(sinf(sin_input + (pi / 4)), .3f, 1.f);
+	float32 sinb = clamp(sinf(sin_input + (pi / 2)), .3f, 1.f);
 	arr_for(clr_data, clr) {
 		int32 vi = clr - clr_data.data;
 		int32 ci = vi / 6;

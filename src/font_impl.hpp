@@ -5,7 +5,8 @@ void init_fonts() {
 		tdns_log.write("Failed to initialize FreeType");
 		exit(0);
 	}
-		
+
+	
 	FT_Face face = nullptr;
 	if (FT_New_Face(fm_freetype, fm_gm_font_path, 0, &face)) {
 		tdns_log.write(Log_Flags::Console,
@@ -18,7 +19,16 @@ void init_fonts() {
 	FT_Set_Char_Size(face, 0, ft_font_size, 96, 96); 
 	
 	int num_glyphs = 128;
+
+	FontInfo font;
+	font.name = fm_gm_font;
+	font.glyphs = arr_view(&glyph_infos, glyph_infos.size, num_glyphs);
+	font.max_advance = {
+			magnitude_gl_from_screen(screen_x_from_px((float32)face->max_advance_width)),
+			magnitude_gl_from_screen(screen_y_from_px((float32)face->max_advance_height)),
+		};
 	
+	// Image buffer 
 	int32 font_height_px = face->size->metrics.height >> 6;
 	int32 glyphs_per_row = static_cast<int32>(ceil(sqrt(128)));
 	
@@ -27,6 +37,7 @@ void init_fonts() {
 	char* buffer = (char*)calloc(tex_width * tex_height, sizeof(char));
 	defer { free(buffer); };
 
+	// Read each character's bitmap into the image buffer
 	Vector2 point;
 	for (GLubyte c = 0; c < num_glyphs; c++) {
 		int failure = FT_Load_Char(face, c, FT_LOAD_RENDER);
@@ -121,7 +132,7 @@ void init_fonts() {
 		memcpy(btm, tmp, tex_width);
 	}
 
-	stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
+	//stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
 
 	auto& render_engine = get_render_engine();
 	glGenTextures(1, &render_engine.texture);

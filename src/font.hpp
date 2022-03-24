@@ -1,8 +1,15 @@
+struct Mesh;
 struct GlyphInfo {
 	Mesh* mesh = nullptr;
 	Vector2 size;
 	Vector2 bearing;
 	Vector2 advance;
+};
+
+struct FontInfo {
+	ArrayView<GlyphInfo> glyphs;
+	const char* name;
+	Vector2 max_advance;
 };
 
 struct Font {
@@ -14,8 +21,6 @@ struct Font {
 	int size;
 };
 
-FT_Library freetype;
-GLuint font_vao, font_vert_buffer;
 std::map<std::string, Font> g_fonts;
 
 void init_fonts();
