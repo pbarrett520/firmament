@@ -20,3 +20,143 @@ RULE #8: embrace the rectangle
 * tags
 * pin
 * log
+** 03/22/2022
+the most important thing is to write the actual mystery. another clue
+from disco elysium: you have several major players in the game
+(e.g. the union, the company, the police). it is not as simple as
+uncovering enough evidence to damn one of these parties. what really
+happened is complicated, nuanced, like the assassins in disco
+elysium. it's not as simple as finding a main character's fingerprints
+on the gun. it's also not a loony out of left field coming in. 
+
+quick idea: let the air filter incident be a big decision
+nexus. something that sets up a lot of stuff for later in the
+game. it all happens in a rush -- choices you make may save or doom
+some characters, pieces of evidence may be lost, characters may see
+different things.
+
+so, the question is: who done it? 
+
+the leaders have good incentives to do this. they realize that the
+engies are close to building or discovering a ship, or simply close to
+a technological breakthrough. they need something to scare people,
+reaffirm evangelicism. 
+
+hold on, think about the loony idea again. not to cop off disco too
+much, but one thing i actually like about the loony: you can have a
+thing happen that is absolutely a spark to a keg, and leaves a massive
+unfolding of what actually happened, only to find out it was
+chance. it's not what actually happened that's interesting, it's all
+of the unpeeling. anyway.
+
+another idea: one of the engies, a low level, does this
+accidentally. he confides to leadership afterward, and they lay webs
+to obscure him and the group from involvement. 
+
+another idea: also a low level engie, but this time it's because some
+mistake was _already_ made. some track left in disassembling the
+obelisk that could not be unmade but for drastic measures. 
+
+clue idea: someone is abnormally missing from the location of the
+incident, and does not have a good alibi
+
+clue idea: a low-level leader who does some engineering work and may
+have had access to the failed component
+
+another idea: infighting between subgroups inside the engies, which
+results in the subgroup going rogue and enacting a plan without
+signoff from the rest
+
+another idea: staged event by the leaders to reinforce the importance
+of orthodox adherence to the maintenance
+
+the world is hermetically sealed. it is a completely closed system. as
+far as this civilization is concerned, it is the whole universe. the
+discovery that this is not the case is astounding. this relates to the
+original idea: without nature around us, the universe would be far
+more mysterious
+
+clue idea: the failed part may be composed of several things instead
+of one simple thing. find those parts around the world, find
+equivalent parts missing from other things, people give hints about
+those parts.
+
+a subgroup who are a cross between police, thuggish enforcers, and
+fixers. they are the muscle of the leaders. one of them dies in the
+incident, but investigation can reveal that he wasn't actually killed
+in the incident. these are like the hardy boys. 
+
+another idea: a plant by someone long ago. maybe just regularly long
+ago -- a leader, very high up, learned how to subtly edit the
+maintenance in such a way that a single part would fail to be serviced
+in a non-obvious way. it was a collaboration between the leaders and
+the engies, or _one_ leader and engie. the reason ultimately being the
+same as that which spawned all of this: survival. ancient documents,
+institutional knowledge, something relays the message to the people of
+the reality around them. there is something outside. they can reach it
+with the technology they have. people are trying that, and it is
+nearly an extinction event. these messages are decrypted by a
+particularly brilliant citizen or pair of citizens, who decide that
+something has to be done to stop it from happening again -- without
+leaking the forbidden knowledge.
+
+ancient documents detailing of a past attempt at escape. encrypted, or
+encoded. 
+
+(a world full of secrets. not even a surgeon's room is sterile)
+
+encryption schemes, personal computers painstakingly built, messages
+placed in the obelisks, scraps of high-tech ultradurable paper used
+and reused for milennia
+
+embedding clues to completely arcane puzzles within the
+executable. including symbols in the package, a call stack which is
+meaningful. open a socket, listen on it until someone sends it a
+message. 
+
+that leaves us with three parallel threads:
+- the engies plans to deobfuscate the obelisk and use it to generate
+  arbitrary matter, ultimately going off-world and thus breaking free
+  from the cycle of maintenance
+- the leaders plans to activate a mother ship to go off-world, to
+  spread humanity and the gospel of man and life as the crux of the
+  universe
+- unravelling the ancestors plans of having eaten the forbidden fruit
+  and trying to put the apple back on the tree by sabotaging the
+  citadel
+
+it is kind of unsatisfying to have who done it be totally unrelated to
+any main character or group. 
+
+a situation where all of the components to read the ancient documents
+are present, but scattered. at the end, you can get two major pieces
+-- one from each faction -- that put everything together and unlock
+it. 
+
+a good way to structure this: start from the end, which i've already
+done. this is the ending. these are the leaves of the tree. then,
+start building tree from the leaves. for example -- arbitrary, not
+the real plot:
+- you must discover the ancestors plan
+  - you must gain a private key from the engies
+	- you must gain the trust of ma bell
+	  - you must do dirty work for ma bell
+		- you must hit a certain conversational trigger
+	  - you must complete another story objective that is very
+        important to the engies
+	- you must blackmail prometheus
+
+is it a tree or a graph? not entirely sure, don't care. the point is
+you start building threads that lead to your destination, and then
+slowly flesh out those threads. add alternate routes that let you skip
+to certain nodes of the graph -- multiple ways of getting there, if
+you will. 
+
+and try not to let it explode. half proof of concept, here. 
+
+technically, what do i need for the proof of concept?
+- push messages to the text box
+- scroll through the text box
+- make choices
+- save and load state
+- load the game with an arbitrary state + dialogue

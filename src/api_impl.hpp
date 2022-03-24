@@ -106,8 +106,8 @@ void API::submit_text(sol::table request) {
 	}
 
 	// Then, add it to our buffer of effects and give the info the pointer to the stored effect
-	info.effects = arr_slice(&effect_buffer, effect_buffer.size, 1);
 	arr_push(&effect_buffer, effect);
+	info.effects = arr_slice(&effect_buffer, 0, 1);
 
 	arr_push(&text_buffer, info);
 }

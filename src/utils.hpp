@@ -99,7 +99,7 @@ fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 
 template<typename T>
 Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
-	fm_assert(index > 0);
+	fm_assert(index >= 0);
 	fm_assert(index + size <= array->size);
 	
 	Array<T> view;
@@ -379,6 +379,7 @@ screen_unit screen_x_from_px(float32 px) {
 screen_unit screen_y_from_px(float32 px) {
 	return px / screen_y;
 }
+
 glm::vec2 screen_from_px(glm::ivec2 px) {
 	return glm::vec2(px.x / screen_x, px.y / screen_y);
 }
@@ -518,7 +519,7 @@ char layout_to_load[MAX_PATH_LEN] = {0};
 float framerate = 0.f;
 
 /* Random shit */
-void __stdcall gl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void *userParam) {
+void gl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void *userParam) {
 	(void)userParam;
 	
 	switch (id) {

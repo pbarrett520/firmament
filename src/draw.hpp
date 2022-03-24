@@ -22,6 +22,7 @@ enum class TextEffectType {
 	RAINBOW   = 2,
 	COUNT     = RAINBOW + 1,
 };
+constexpr int32 COUNT_TEXT_EFFECTS = static_cast<int32>(TextEffectType::COUNT);
 
 // Text effect implementations. Each effect consists of two things:
 // 1. A struct containing the data for the effect, which is unioned into a TextEffect struct
@@ -47,7 +48,7 @@ void DoRainbowEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Ve
 
 // All effects. Indexed by effect type to get the correct functor.
 typedef void (*TextEffectF)(TextEffect*, float32, Array<Vector2>, Array<Vector2>, Array<Vector4>);
-TextEffectF effect_f [TextEffectType::COUNT] = {
+TextEffectF effect_f [COUNT_TEXT_EFFECTS] = {
 	&DoNoneEffect,
 	&DoOscillateEffect,
 	&DoRainbowEffect

@@ -55,18 +55,18 @@ void init_fonts() {
 			}
 		}
 
-		GlyphInfo* info = glyph_infos[c];
-		info->size = {
+		GlyphInfo info;
+		info.size = {
 			magnitude_gl_from_screen(screen_x_from_px((float32)face->glyph->bitmap.width)),
 			magnitude_gl_from_screen(screen_y_from_px((float32)face->glyph->bitmap.rows)),
 		};
-		info->bearing = {
+		info.bearing = {
 			magnitude_gl_from_screen(screen_x_from_px(face->glyph->bitmap_left)),
 			magnitude_gl_from_screen(screen_y_from_px(face->glyph->bitmap_top)),
 		};
-		info->advance = {
-			magnitude_gl_from_screen(screen_x_from_px(face->glyph->advance.x / 64)),
-			magnitude_gl_from_screen(screen_y_from_px(face->glyph->advance.y / 64)),
+		info.advance = {
+			magnitude_gl_from_screen(screen_x_from_px((float32)face->glyph->advance.x / 64)),
+			magnitude_gl_from_screen(screen_y_from_px((float32)face->glyph->advance.y / 64)),
 		};
 
 		// Build the mesh, put the data the GPU needs in the appropriate buffer
@@ -74,10 +74,10 @@ void init_fonts() {
 
 		mesh->count = 6;
 		
-		gl_unit gl_left = -1 + info->bearing.x;
-		gl_unit gl_right = gl_left + info->size.x;
-		gl_unit gl_top = 1 + info->bearing.y;
-		gl_unit gl_bottom = gl_top - info->size.y;
+		gl_unit gl_left = -1 + info.bearing.x;
+		gl_unit gl_right = gl_left + info.size.x;
+		gl_unit gl_top = 1 + info.bearing.y;
+		gl_unit gl_bottom = gl_top - info.size.y;
 		Vector2 vertices[6] = {
 				{ gl_left,  gl_top },
 				{ gl_left,  gl_bottom },
@@ -104,8 +104,9 @@ void init_fonts() {
 		};
 		mesh->tex_coords = arr_push(&tc_buffer, tex_coords, 6);
 
-		info->mesh = mesh;
-		
+		info.mesh = mesh;
+
+		arr_push(&glyph_infos, info);
 		// Advance the point horizontally for the next character
 		point.x += bitmap->width + 1;
 	}
