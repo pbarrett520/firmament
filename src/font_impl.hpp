@@ -66,29 +66,29 @@ void init_fonts() {
 			}
 		}
 
-		GlyphInfo info;
-		info.size = {
+		GlyphInfo glyph;
+		glyph.size = {
 			magnitude_gl_from_screen(screen_x_from_px((float32)face->glyph->bitmap.width)),
 			magnitude_gl_from_screen(screen_y_from_px((float32)face->glyph->bitmap.rows)),
 		};
-		info.bearing = {
+		glyph.bearing = {
 			magnitude_gl_from_screen(screen_x_from_px(face->glyph->bitmap_left)),
 			magnitude_gl_from_screen(screen_y_from_px(face->glyph->bitmap_top)),
 		};
-		info.advance = {
+		glyph.advance = {
 			magnitude_gl_from_screen(screen_x_from_px((float32)face->glyph->advance.x / 64)),
 			magnitude_gl_from_screen(screen_y_from_px((float32)face->glyph->advance.y / 64)),
 		};
 
 		// Build the mesh, put the data the GPU needs in the appropriate buffer
-		Mesh* mesh = arr_push(&meshes);
+		Mesh* mesh = arr_push(&mesh_infos);
 
 		mesh->count = 6;
 		
-		gl_unit gl_left = -1 + info.bearing.x;
-		gl_unit gl_right = gl_left + info.size.x;
-		gl_unit gl_top = 1 + info.bearing.y;
-		gl_unit gl_bottom = gl_top - info.size.y;
+		gl_unit gl_left = -1 + glyph.bearing.x;
+		gl_unit gl_right = gl_left + glyph.size.x;
+		gl_unit gl_top = 1 + glyph.bearing.y;
+		gl_unit gl_bottom = gl_top - glyph.size.y;
 		Vector2 vertices[6] = {
 				{ gl_left,  gl_top },
 				{ gl_left,  gl_bottom },
@@ -98,7 +98,7 @@ void init_fonts() {
 				{ gl_right, gl_bottom },
 				{ gl_right, gl_top },
 		};
-		mesh->verts = arr_push(&vertex_buffer, vertices, 6);
+		mesh->verts = arr_push(&vx_data, vertices, 6);
 
 		float tc_left = point.x / tex_width;
 		float tc_right = (point.x + face->glyph->bitmap.width) / tex_width;
@@ -113,11 +113,11 @@ void init_fonts() {
 				{ tc_right, tc_bottom },
 				{ tc_right, tc_top },
 		};
-		mesh->tex_coords = arr_push(&tc_buffer, tex_coords, 6);
+		mesh->tex_coords = arr_push(&tc_data, tex_coords, 6);
 
-		info.mesh = mesh;
+		glyph.mesh = mesh;
 
-		arr_push(&glyph_infos, info);
+		arr_push(&glyph_infos, glyph);
 		// Advance the point horizontally for the next character
 		point.x += bitmap->width + 1;
 	}

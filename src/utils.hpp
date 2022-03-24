@@ -88,6 +88,18 @@ fm_error arr_init(Array<T>* array, int32 capacity) {
 }
 
 template<typename T>
+fm_error arr_init(Array<T>* array, int32 capacity, T fill) {
+	array->size = 0;
+	array->capacity = capacity;
+	array->data = (T*)calloc(capacity, sizeof(T));
+	
+	if (!array->data) return FM_ERR_FAILED_ALLOC;
+	arr_fill(array, T);
+	
+	return FM_ERR_SUCCESS;
+}
+
+template<typename T>
 fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 	if (!data) return FM_ERR_NULL_PTR;
 	array->size = 0;
@@ -185,6 +197,11 @@ int32 arr_bytes(Array<T>* array) {
 template<typename T>
 void arr_clear(Array<T>* array) {
 	memset(array->data, 0, arr_bytes(array));
+	array->size = 0;
+}
+
+template<typename T>
+void arr_fastclear(Array<T>* array) {
 	array->size = 0;
 }
 

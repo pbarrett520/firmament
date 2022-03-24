@@ -29,9 +29,9 @@ void init_gl() {
 	glBindBuffer(GL_ARRAY_BUFFER, render_engine.buffer);
 	
 	int32 gpu_buffer_size = 0;
-	gpu_buffer_size += arr_bytes(&vertex_buffer); // Vertex
+	gpu_buffer_size += arr_bytes(&vx_buffer); // Vertex
 	gpu_buffer_size += arr_bytes(&tc_buffer); // Texture coordinate
-	gpu_buffer_size += arr_bytes(&color_buffer); // Color
+	gpu_buffer_size += arr_bytes(&cr_buffer); // Color
 	glBufferData(GL_ARRAY_BUFFER, gpu_buffer_size, NULL, GL_DYNAMIC_DRAW);
 
 	// Buffer attributes
@@ -40,7 +40,7 @@ void init_gl() {
 	// First attribute: 2D vertices
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(0));
 	glEnableVertexAttribArray(0);
-	gpu_offset += arr_bytes(&vertex_buffer);
+	gpu_offset += arr_bytes(&vx_buffer);
 
 	// Second attribute: 2D Texture coordinates
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(gpu_offset));
@@ -102,20 +102,14 @@ void RenderEngine::render_text(float dt) {
 	shader->set_int("sampler", 0);
 
 	// Fill the color buffer with the standard white color
-	arr_fill(&color_buffer, colors::white);
-
-	// Make intermediate buffers to hold vertices for this frame. We'll copy this to the GPU verbatim.
-	Vector2        tmp_vx_data[VERT_BUFFER_SIZE];
-	Array<Vector2> tmp_vx_buffer;
-	arr_stack(&tmp_vx_buffer, &tmp_vx_data[0], VERT_BUFFER_SIZE);
-	
-	Vector2         tmp_tc_data[VERT_BUFFER_SIZE];
-	Array<Vector2>  tmp_tc_buffer;
-	arr_stack(&tmp_tc_buffer, &tmp_tc_data[0], VERT_BUFFER_SIZE);
+	arr_fill(&cr_buffer, colors::white);
+	arr_fastclear(&vx_buffer);
+	arr_fastclear(&tc_buffer);
 
 	arr_for(text_buffer, info) {
-		int32 vx_begin = tmp_vx_buffer.size;
-		int32 count_elems = 0;
+		int32 vx_begin = vx_buffer.size;
+		int32 cr_begin = cr_buffer.size;
+		int32 count_vx = 0;
 		TextRenderContext context;
 		text_ctx_init(&context, &main_text_box, info);
 
@@ -125,9 +119,9 @@ void RenderEngine::render_text(float dt) {
 			if (*c == 0) break;
 			GlyphInfo* glyph = glyph_infos[*c];
 
-			Vector2* tmp_vx = arr_push(&tmp_vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
-			Vector2* tmp_tc = arr_push(&tmp_tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
-			count_elems += glyph->mesh->count;
+			Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+			Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+			count_vx += glyph->mesh->count;
 
 			Vector2 gl_origin = { -1, 1 };
 			Vector2 offset = {
@@ -135,18 +129,21 @@ void RenderEngine::render_text(float dt) {
 				context.point.y - gl_origin.y,
 			};
 			for (int32 i = 0; i < glyph->mesh->count; i++) {
-				tmp_vx[i].x += offset.x;
-				tmp_vx[i].y += offset.y;
+				vx[i].x += offset.x;
+				vx[i].y += offset.y;
 			}
 
 			text_ctx_advance(&context, glyph);
 		}
 
-		auto vx = arr_slice(&tmp_vx_buffer, vx_begin, count_elems);
-		auto tc = arr_slice(&tmp_tc_buffer, vx_begin, count_elems);
+		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
+		// those to the text's effects to modify
+		auto vx = arr_slice(&vx_buffer, vx_begin, count_vx);
+		auto tc = arr_slice(&tc_buffer, vx_begin, count_vx);
+		auto cr = arr_slice(&cr_buffer, vx_begin, count_vx);
 		arr_for(info->effects, effect) {
 			auto do_effect = effect_f[(int32)effect->type];
-			do_effect(effect, dt, vx, tc, color_buffer);
+			do_effect(effect, dt, vx, tc, cr);
 			effect->frames_elapsed++;
 		}
 	}
@@ -162,23 +159,23 @@ void RenderEngine::render_text(float dt) {
 	
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&tmp_vx_buffer),
-					tmp_vx_buffer.data);
-	gpu_offset += arr_bytes(&vertex_buffer);
+					arr_bytes(&vx_buffer),
+					vx_buffer.data);
+	gpu_offset += arr_bytes(&vx_buffer);
 	
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&tmp_tc_buffer),
-					tmp_tc_buffer.data);
+					arr_bytes(&tc_buffer),
+					tc_buffer.data);
 	gpu_offset += arr_bytes(&tc_buffer);
 
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&color_buffer),
-					color_buffer.data);
+					arr_bytes(&cr_buffer),
+					cr_buffer.data);
 	
 	shader->check();
-	glDrawArrays(GL_TRIANGLES, 0, tmp_vx_buffer.size);
+	glDrawArrays(GL_TRIANGLES, 0, vx_buffer.size);
 	shader->end();
 }
 
