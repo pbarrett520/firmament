@@ -75,6 +75,7 @@ struct MainTextBox {
 
 MainTextBox main_box;
 
+// @cleanup
 enum class TextBoxType {
 	MAIN = 0,
 	CHOICE = 1

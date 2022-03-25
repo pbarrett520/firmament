@@ -143,7 +143,9 @@ void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
 	if (next_lbreak == 0) return;
 	if (next_lbreak != ctx->written) return;
 
-	ctx->point.y -= ctx->font->descender;
+	ctx->idx_break++;
+	ctx->point.x = ctx->box->pos.x + ctx->box->pad.x;
+	ctx->point.y -= ctx->font->max_advance.y;
 }
 
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
@@ -153,17 +155,26 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 		return;
 	}
 
+	// Reset
 	ctx->point.x = ctx->box->pos.x + ctx->box->pad.x;
 	ctx->written = 0;
 	ctx->idx_break = 0;
 
-	int32 count_lines = 0;
-	for (int32 i = 0; i < MAX_LINE_BREAKS; i++) {
-		if (!ctx->info->lbreaks[i]) break;
-		count_lines++;
-	}
+	// @cleanup
+	auto adjust_point = [&](auto info) {
+		int32 count_lines = 0;
+		for (int32 i = 0; i < MAX_LINE_BREAKS; i++) {
+			if (!info->lbreaks[i]) break;
+			count_lines++;
+		}
 
-	ctx->point.y += ctx->font->max_advance.y * (count_lines + 1);
+		ctx->point.y += ctx->font->max_advance.y * (count_lines + 1);
+	};
+
+	adjust_point(ctx->info);
+
+	ctx->info = info;
+	adjust_point(ctx->info);
 }
 
 

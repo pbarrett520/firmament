@@ -156,6 +156,7 @@ void API::submit_dbg_geometry(sol::table request) {
 		rect->sx = (float32)request["size"]["x"];
 		rect->sy = (float32)request["size"]["y"];
 	}
+	// @cleanup
 	else if (rq.type == DbgRenderType::TEXT_BOX) {
 		DbgRenderTextBox* tbox = &rq.data.tbox;
 		tbox->type = static_cast<TextBoxType>(request["text_box"]);
