@@ -21,13 +21,13 @@ void        set_imgui_demo(bool show);
 void        log(const char* message);
 void        log_to(const char* message, uint8_t flags);
 
-// Text
+// Rendering
 void        submit_text(sol::table request);
+void        submit_dbg_geometry(sol::table request);
 
 // Utility
 sol::object screen_dimensions();
 sol::object cursor();
-sol::object camera();
 }
 
 void register_lua_api();

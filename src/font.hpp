@@ -10,17 +10,8 @@ struct FontInfo {
 	ArrayView<GlyphInfo> glyphs;
 	const char* name;
 	Vector2 max_advance;
+	float32 ascender;
+	float32 descender;
 };
-
-struct Font {
-	uint advance(char c);
-	
-	glm::ivec2 px_largest;
-	std::string name;
-	std::string path;
-	int size;
-};
-
-std::map<std::string, Font> g_fonts;
 
 void init_fonts();

@@ -24,9 +24,12 @@ void init_fonts() {
 	font.name = fm_gm_font;
 	font.glyphs = arr_view(&glyph_infos, glyph_infos.size, num_glyphs);
 	font.max_advance = {
-			magnitude_gl_from_screen(screen_x_from_px((float32)face->max_advance_width)),
-			magnitude_gl_from_screen(screen_y_from_px((float32)face->max_advance_height)),
-		};
+		magnitude_gl_from_screen(screen_x_from_px((float32)face->max_advance_width)),
+		magnitude_gl_from_screen(screen_y_from_px((float32)face->max_advance_height)),
+	};
+	font.ascender = magnitude_gl_from_screen(screen_y_from_px((float32)face->ascender / 64));
+	font.descender = magnitude_gl_from_screen(screen_y_from_px((float32)face->descender / 64));
+	arr_push(&font_infos, font);
 	
 	// Image buffer 
 	int32 font_height_px = face->size->metrics.height >> 6;

@@ -1,6 +1,54 @@
 local GLFW = require('glfw')
 local inspect = require('inspect')
 
+function submit_oscillate()
+  local request = {
+	text = 'joey, the striker fox',
+	effect = {
+	  type = 1,
+	  amplitude = .003,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_rainbow()
+  local request = {
+	text = 'joey, the striker fox',
+	effect = {
+	  type = 2,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_without_effect()
+  local request = {
+	text = 'joey, the striker fox'
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_dbg_quad()
+  local request = {
+	type = 1,
+	pos = tdengine.vec2(-.5, .5),
+	color = tdengine.color(0, 0, 1, .5),
+	size = tdengine.vec2(1, 1)
+  }
+  tdengine.submit_dbg_geometry(request)
+end
+
+function submit_dbg_tbox(t)
+  local request = {
+	type = 2,
+	text_box = t
+  }
+  tdengine.submit_dbg_geometry(request)
+end
+
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
   local x = 1
@@ -42,43 +90,13 @@ function Editor:init(params)
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.Editor)
   self.input:enable()
-end
 
-function submit_oscillate()
-  local request = {
-	text = 'joey, the striker fox',
-	effect = {
-	  type = 1,
-	  amplitude = .003,
-	  frequency = 15
-	}
-  }
-  tdengine.submit_text(request)
-end
-
-function submit_rainbow()
-  local request = {
-	text = 'joey, the striker fox',
-	effect = {
-	  type = 2,
-	  frequency = 15
-	}
-  }
-  tdengine.submit_text(request)
-end
-
-function submit_without_effect()
-  local request = {
-	text = 'joey, the striker fox'
-  }
-  tdengine.submit_text(request)
+  submit_rainbow()
 end
 
 function Editor:update(dt)
-	
-  tdengine.do_once(submit_rainbow)
-
-  -- tdengine.log("%s", "hello")
+  submit_dbg_tbox(0)
+  submit_dbg_tbox(1)
   self:calculate_framerate()
 
   self:handle_input()
@@ -122,9 +140,6 @@ function Editor:engine_viewer()
 
   local cursor = tdengine.vec2(tdengine.cursor()):truncate(3)
   imgui.extensions.Vec2('cursor', cursor)
-
-  local camera = tdengine.vec2(tdengine.camera()):truncate(3)
-  imgui.extensions.Vec2('camera', camera)
 end
 
 function Editor:draw_entity_viewer()

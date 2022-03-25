@@ -4,17 +4,9 @@ struct Mesh {
 	int32 count         = 0;
 };
 
-struct Camera {
-	float x;
-	float y;
-};
-
-enum class Text_Flags : int {
-	None        = 0,
-	Highlighted = 1 << 0
-};
-ENABLE_ENUM_FLAG(Text_Flags)
-
+//
+// Text effects
+//
 struct TextEffect;
 enum class TextEffectType {
 	NONE      = 0,
@@ -54,7 +46,7 @@ TextEffectF effect_f [COUNT_TEXT_EFFECTS] = {
 	&DoRainbowEffect
 };
 
-
+// The struct that contains everything an effect function needs to modify character data
 union EffectData {
 	OscillateEffect oscillate;
 	RainbowEffect   rainbow;
@@ -66,6 +58,19 @@ struct TextEffect {
 	EffectData data;
 };
 
+// The main text box, and the request to push text items to it
+struct TextBox {
+	Vector2 pos;
+	Vector2 dim;
+	Vector2 pad;
+	Vector4 dbg_color;
+};
+
+enum class TextBoxType {
+	MAIN = 0,
+	CHOICE = 1
+};
+
 #define MAX_TEXT_LEN 1024
 #define MAX_LINE_BREAKS 16
 struct TextRenderInfo {
@@ -74,44 +79,65 @@ struct TextRenderInfo {
 	Array<TextEffect> effects = { 0 };
 };
 
-
-struct TextBox {
-	Vector2 pos = { -.5, .5 };
-	Vector2 dim = { 1, 1 };
-	Vector2 pad = { 0, 0 };
+// Requests for drawing debug geometry
+enum class DbgRenderType {
+	RECT = 1,
+	TEXT_BOX = 2
 };
-TextBox main_text_box;
 
-Vector2 first_writeable_line(TextBox* text_box);
+struct DbgRenderRect {
+	float sx;
+	float sy;
+};
 
+struct DbgRenderTextBox {
+	TextBoxType type;
+};
+
+union DbgRenderData {
+	DbgRenderRect rect;
+	DbgRenderTextBox tbox;
+};
+
+struct DbgRenderRequest {
+	DbgRenderType type;
+	Vector2 pos;
+	Vector4 color = { 1.f, 0.f, 0.f, .5f };
+
+	DbgRenderData data;
+};
+
+// Used for smoothing over advancing the point when rendering characters
 struct TextRenderContext {
 	TextBox* box          = nullptr;
 	TextRenderInfo* info  = nullptr;
+	FontInfo* font        = nullptr;
+
 	GlyphInfo* last_glyph = nullptr;
 	Vector2 point;
 	int32 written         = 0;
 	int32 idx_break       = 0;
 };
 
-void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info);
+void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, FontInfo* font);
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph);
 
-struct RenderEngine {
-	Camera camera;
 
+struct RenderEngine {
 	uint32 buffer;
 	uint32 vao;
 	uint32 texture;
+
+	uint32 dbg_buffer;
+	uint32 dbg_vao;
 	
 	void remove_entity(int entity);
 	void render(float dt);
 	void render_text(float dt);
-	void render_text_old(float dt);
-	Camera& get_camera();
+	void render_dbg_geometry(float dt);
 };
 RenderEngine& get_render_engine();
 
 void init_gl();
+void init_tbox();
 void init_render_engine();
-
-void draw_text(std::string text, glm::vec2 point, Text_Flags flags);

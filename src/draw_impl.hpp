@@ -13,7 +13,7 @@ void init_gl() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_BLEND);
 
-	// GPU buffer layout:
+	// GPU buffer 1 layout:
 	// [ quads for each character | texcoords for each character ]
 	//
 	// Both quads and texcoords are generated when we load the font -- we use the font size, plus the character's
@@ -50,6 +50,62 @@ void init_gl() {
 	// Third attribute: 4D Colors
 	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(gpu_offset));
 	glEnableVertexAttribArray(2);
+	
+
+	// GPU buffer 2 layout:
+	// [ vertices for each character  ]
+	//
+	// This buffer is for rendering untextured debug geometry over stuff in the game. You
+	// can color it with a uniform in the shader.
+	
+	// Create a GPU buffer and VAO
+	glGenVertexArrays(1, &render_engine.dbg_vao);
+	glBindVertexArray(render_engine.dbg_vao);
+
+	gpu_buffer_size = 0;
+	gpu_buffer_size += arr_bytes(&dbg_vx_buffer);
+	gpu_buffer_size += arr_bytes(&dbg_cr_buffer);
+	glGenBuffers(1, &render_engine.dbg_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, render_engine.dbg_buffer);
+	glBufferData(GL_ARRAY_BUFFER, gpu_buffer_size, NULL, GL_DYNAMIC_DRAW);
+
+	gpu_offset = 0;
+
+	// First attribute: 2D vertices
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(0));
+	glEnableVertexAttribArray(0);
+	gpu_offset += arr_bytes(&dbg_vx_buffer);
+
+	// Second attribute: 4D colors
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, ogl_offset_to_ptr(gpu_offset));
+	glEnableVertexAttribArray(1);
+}
+
+// The order of these matter -- we use an enum field to index the text box array
+void init_tbox() {
+	TextBox* main = arr_push(&tbox_data);
+	main->pos = {
+		-2.f / 3.f, // 1/6 of the screen from the left side
+		1
+	};
+	main->dim = {
+		4.f / 3.f, // take up 2/3 of the screen horizontally
+		1.5f       // take up 3/4 of the screen vertically
+	};
+	main->pad = { .025f, .025f };
+	main->dbg_color = colors::dbg_textbox;
+	
+	TextBox* choice = arr_push(&tbox_data);
+	choice->pos = {
+		-2.f / 3.f,
+		-.5f  // start 3/4 down the screen (adjacent to text box)
+	};
+	choice->dim = {
+		4.f / 3.f, // take up 2/3 of the screen horizontally
+		.5f        // take up 1/4 of the screen vertically
+	};
+	choice->pad = { .025f, .025f };
+	choice->dbg_color = colors::dbg_choicebox;
 }
 
 RenderEngine& get_render_engine() {
@@ -57,17 +113,14 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
-Vector2 first_writeable_line(TextBox* text_box) {
-	return {
-		text_box->pos.x + text_box->pad.x,
-		text_box->pos.y - text_box->dim.y + text_box->pad.y
-	};
-}
-
-void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info) {
+void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, FontInfo* font) {
 	ctx->box = box;
 	ctx->info = info;
-	ctx->point = first_writeable_line(box);
+	ctx->font = font;
+	ctx->point = {
+		box->pos.x + box->pad.x,
+		box->pos.y - box->dim.y + box->pad.y - font->descender
+	};
 }
 
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
@@ -83,22 +136,85 @@ void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
 	//ctx->point->y += 
 }
 
-Camera& RenderEngine::get_camera() {
-	return camera;
+void RenderEngine::render(float dt) {	
+	render_dbg_geometry(dt);
+	render_text(dt);
 }
 
-void RenderEngine::render(float dt) {	
-	render_text(dt);
+void RenderEngine::render_dbg_geometry(float dt) {
+	if (!dbg_rq_buffer.size) return;
+	
+	auto& shaders = get_shader_manager();
+	auto shader = shaders.get("solid");
+	shader->begin();
+
+	// Fill the color buffer with the standard white color
+	arr_fastclear(&dbg_vx_buffer);
+	arr_fastclear(&dbg_cr_buffer);
+
+	arr_for(dbg_rq_buffer, rq) {
+		// Generate vertices for whatever kind of request it is
+		if (rq->type == DbgRenderType::RECT) {
+			float32 top = rq->pos.y;
+			float32 bottom = rq->pos.y - rq->data.rect.sy;
+			float32 left = rq->pos.x;
+			float32 right = rq->pos.x + rq->data.rect.sx;
+			
+			Vector2 vxs [6] = fm_quad(top, bottom, left, right);
+			arr_push(&dbg_vx_buffer, vxs, 6);
+
+			Vector4 colors [6] = fm_quad_color(rq->color);
+			arr_push(&dbg_cr_buffer, colors, 6);
+		}
+		else if (rq->type == DbgRenderType::TEXT_BOX) {
+			int32 index = static_cast<int32>(rq->data.tbox.type);
+			TextBox* box = tbox_data[index];
+			
+			float32 top = box->pos.y;
+			float32 bottom = box->pos.y - box->dim.y;
+			float32 left = box->pos.x;
+			float32 right = box->pos.x + box->dim.x;
+
+			Vector2 vxs [6] = fm_quad(top, bottom, left, right);
+			arr_push(&dbg_vx_buffer, vxs, 6);
+
+			Vector4 colors [6] = fm_quad_color(box->dbg_color);
+			arr_push(&dbg_cr_buffer, colors, 6);
+		}
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, dbg_buffer);
+	glBindVertexArray(dbg_vao);
+
+	int32 gpu_offset = 0;
+	
+	glBufferSubData(GL_ARRAY_BUFFER,
+					gpu_offset,
+					arr_bytes(&dbg_vx_buffer),
+					dbg_vx_buffer.data);
+	gpu_offset += arr_bytes(&dbg_vx_buffer);
+	
+	glBufferSubData(GL_ARRAY_BUFFER,
+					gpu_offset,
+					arr_bytes(&dbg_cr_buffer),
+					dbg_cr_buffer.data);
+	
+	shader->check();
+	glDrawArrays(GL_TRIANGLES, 0, dbg_vx_buffer.size);
+	shader->end();
+	
+	arr_clear(&dbg_rq_buffer);
 }
 
 void RenderEngine::render_text(float dt) {
 	if (!text_buffer.size) return;
+
+	TextBox* main_box = tbox_data[static_cast<int32>(TextBoxType::MAIN)];
+	
 	auto& shaders = get_shader_manager();
 	auto shader = shaders.get("text");
 	shader->begin();
-
-	SRT transform = SRT::no_transform();
-	glm::mat3 mat = mat3_from_transform(transform);
+	
 	shader->set_int("sampler", 0);
 
 	// Fill the color buffer with the standard white color
@@ -111,7 +227,7 @@ void RenderEngine::render_text(float dt) {
 		int32 cr_begin = cr_buffer.size;
 		int32 count_vx = 0;
 		TextRenderContext context;
-		text_ctx_init(&context, &main_text_box, info);
+		text_ctx_init(&context, main_box, info, font_infos[0]);
 
 		// Transform vertices by the point and copy them into the intermediate bufer
 		ArrayView<char> text = arr_view(info->text, MAX_TEXT_LEN);

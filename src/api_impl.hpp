@@ -45,15 +45,6 @@ sol::object API::screen_dimensions() {
 	return out;
 }
 
-sol::object API::camera() {
-	auto& renderer = get_render_engine();
-	
-	auto out = Lua.state.create_table();
-	out["x"] = renderer.camera.x;
-	out["y"] = renderer.camera.y;
-	return out;
-}
-
 void API::toggle_console() {
 	show_console = !show_console;
 }
@@ -112,6 +103,41 @@ void API::submit_text(sol::table request) {
 	arr_push(&text_buffer, info);
 }
 
+void API::submit_dbg_geometry(sol::table request) {
+	auto& render_engine = get_render_engine();
+
+	DbgRenderRequest rq;
+
+	// Request type specific fields
+	rq.type = static_cast<DbgRenderType>(request["type"]);
+	if (rq.type == DbgRenderType::RECT) {
+		rq.pos = {
+			(float32)request["pos"]["x"],
+			(float32)request["pos"]["y"]
+		};
+
+		if (request["color"] != sol::lua_nil) {
+			rq.color = {
+				(float32)request["color"]["r"],
+				(float32)request["color"]["g"],
+				(float32)request["color"]["b"],
+				(float32)request["color"]["a"]
+			};
+		}
+		
+		DbgRenderRect* rect = &rq.data.rect;
+		rect->sx = (float32)request["size"]["x"];
+		rect->sy = (float32)request["size"]["y"];
+	}
+	else if (rq.type == DbgRenderType::TEXT_BOX) {
+		DbgRenderTextBox* tbox = &rq.data.tbox;
+		tbox->type = static_cast<TextBoxType>(request["text_box"]);
+	}
+	
+	arr_push(&dbg_rq_buffer, rq);
+}
+
+
 void API::log(const char* fmt) {
 	tdns_log.write(Log_Flags::Default, fmt);
 }
@@ -149,7 +175,6 @@ void register_lua_api() {
 	state["tdengine"]["was_released"]              = &was_pressed;
 	state["tdengine"]["was_chord_pressed"]         = &was_chord_pressed;
 	state["tdengine"]["cursor"]                    = &cursor;
-	state["tdengine"]["camera"]                    = &camera;
 	state["tdengine"]["save_layout"]               = &save_layout;
 	state["tdengine"]["use_layout"]                = &use_layout;
 	state["tdengine"]["frame_time"]                = seconds_per_update;
@@ -163,11 +188,7 @@ void register_lua_api() {
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
 	state["tdengine"]["submit_text"]               = &API::submit_text;
-
-	state["tdengine"]["flags"] = state.create_table();
-	state["tdengine"]["text_flags"] = state.create_table();
-	state["tdengine"]["text_flags"]["none"] = Text_Flags::None;
-	state["tdengine"]["text_flags"]["highlighted"] = Text_Flags::Highlighted;
+	state["tdengine"]["submit_dbg_geometry"]       = &API::submit_dbg_geometry;
 
 	state["tdengine"]["log_flags"]= state.create_table();	
 	state["tdengine"]["log_flags"]["console"] = Log_Flags::Console;	

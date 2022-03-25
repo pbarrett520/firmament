@@ -321,8 +321,10 @@ namespace Colors {
 #define ImGuiColor_Green ImVec4(0.f, 1.f, 0.f, 1.f)
 
 namespace colors {
-	Vector4 white = { 1, 1, 1, 1 };
-	Vector4 red   = { 1, 0, 0, 1 };
+	Vector4 white         = { 1.00f, 1.00f, 1.00f, 1.00f };
+	Vector4 red           = { 1.00f, 0.00f, 0.00f, 1.00f };
+	Vector4 dbg_textbox   = { 0.25f, 0.35f, 0.45f, 0.50f };
+	Vector4 dbg_choicebox = { 0.10f, 0.50f, 0.50f, 0.50f };
 };
 
 
@@ -863,3 +865,16 @@ bool dumb_is_valid_png(std::filesystem::path path) {
 
 	return data != nullptr;
 }
+
+#define fm_quad(top, bottom, left, right) \
+    {                                     \
+        { left, top },                    \
+        { left, bottom },                 \
+        { right, bottom },                \
+                                          \
+        { left, top },                    \
+        { right, bottom },                \
+        { right, top }                    \
+    }                                     
+	
+#define fm_quad_color(color) { color, color, color, color, color, color }
