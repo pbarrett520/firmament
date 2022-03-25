@@ -27,8 +27,6 @@ Array<GlyphInfo> glyph_infos;
 Array<Vector2>   vx_data;
 #define TC_INFO_SIZE VX_INFO_SIZE
 Array<Vector2>   tc_data;
-#define TEXT_BOX_INFO_SIZE 32
-Array<TextBox>   tbox_data;
 
 void init_buffers() {
 	arr_init(&vx_buffer,     VERT_BUFFER_SIZE);
@@ -45,6 +43,5 @@ void init_buffers() {
 	arr_init(&glyph_infos,   GLYPH_INFO_SIZE);
 	arr_init(&vx_data,       VX_INFO_SIZE);
 	arr_init(&tc_data,       TC_INFO_SIZE);
-	arr_init(&tbox_data,     TEXT_BOX_INFO_SIZE);
 }
 

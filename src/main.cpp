@@ -39,7 +39,7 @@ int main() {
 	init_imgui();
 	init_shaders();
 	init_gl();
-	init_tbox();
+	init_text_boxes();
 	init_scripts();
 	init_fonts();
 

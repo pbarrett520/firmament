@@ -68,6 +68,15 @@ void memfill(void* dst, int32 size, void* pattern, int32 pattern_size) {
 	}
 }
 
+void* ogl_offset_to_ptr(int32 offset) {
+	return (char*)nullptr + offset;
+}
+
+template<typename T, uint32 N>
+T* arr_to_ptr(T (&array)[N]) {
+	return &array[0];
+}
+
 template<typename T>
 struct Array {
 	int32 size      = 0;
@@ -464,10 +473,6 @@ glm::ivec2 px_coords_from_gl_coords(glm::vec2 gl_coords) {
 
 glm::ivec2 px_from_screen(glm::vec2 screen) {
 	return glm::ivec2(floor(screen.x * screen_x), floor(screen.y * screen_y));
-}
-
-void* ogl_offset_to_ptr(int32 offset) {
-	return (char*)nullptr + offset;
 }
 
 /* Some utilities for dealing with files, directories, and paths */

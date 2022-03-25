@@ -41,10 +41,11 @@ function submit_dbg_quad()
   tdengine.submit_dbg_geometry(request)
 end
 
-function submit_dbg_tbox(t)
+function submit_dbg_tbox()
   local request = {
 	type = 2,
-	text_box = t
+	main = true,
+	choice = true
   }
   tdengine.submit_dbg_geometry(request)
 end
@@ -104,8 +105,7 @@ function Editor:update(dt)
 	  submit_oscillate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi et diam neque. Morbi condimentum, metus non ultrices facilisis, ex tortor congue nibh, eget blandit neque magna faucibus enim. Proin fermentum mollis ipsum sit amet suscipit. Curabitur sed ante vulputate, vestibulum orci ut, rutrum odio. Aenean pretium tempus nisl quis sagittis. Cras non nulla vestibulum, tincidunt lacus in, molestie lacus. Praesent tincidunt risus eu mauris pharetra, eu mattis libero pharetra. Sed sit amet massa tristique, commodo magna eu, pellentesque leo. Sed mollis, nisi a scelerisque mattis, ex massa sagittis nisi, sed semper risus diam vitae lectus. Pellentesque gravida maximus eros a. ')
   end)
 
-  submit_dbg_tbox(0)
-  submit_dbg_tbox(1)
+  submit_dbg_tbox()
   self:calculate_framerate()
 
   self:handle_input()

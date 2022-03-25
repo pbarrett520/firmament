@@ -82,42 +82,41 @@ void init_gl() {
 }
 
 // The order of these matter -- we use an enum field to index the text box array
-void init_tbox() {
-	TextBox* main = arr_push(&tbox_data);
-	main->pos = {
-		-2.f / 3.f, // 1/6 of the screen from the left side
-		1
-	};
-	main->dim = {
-		4.f / 3.f, // take up 2/3 of the screen horizontally
-		1.5f       // take up 3/4 of the screen vertically
-	};
-	main->pad = { .025f, .025f };
-	main->dbg_color = colors::dbg_textbox;
+void init_text_boxes() {
+	Mesh* mesh;
+	float32 top, bottom, left, right;
 
-	// hardcode!!!!!!!
-	main_box.pos = {
-		-2.f / 3.f, // 1/6 of the screen from the left side
-		1
-	};
-	main_box.dim = {
-		4.f / 3.f, // take up 2/3 of the screen horizontally
-		1.5f       // take up 3/4 of the screen vertically
-	};
+	// Main box
+	mesh = arr_push(&mesh_infos);
+	top     = +1.000f;
+	bottom  = -0.500f;
+	left    = -0.667f;
+	right   = +0.667f;
+	Vector2 mvx [6] = fm_quad(top, bottom, left, right);
+	mesh->verts = arr_push(&vx_data, arr_to_ptr(mvx), 6);
+	mesh->count = 6;
+
+	main_box.mesh = mesh;
+	main_box.pos = { left, top };
+	main_box.dim = { right - left, top - bottom };
 	main_box.pad = { .025f, .025f };
 	main_box.dbg_color = colors::dbg_textbox;
-	
-	TextBox* choice = arr_push(&tbox_data);
-	choice->pos = {
-		-2.f / 3.f,
-		-.5f  // start 3/4 down the screen (adjacent to text box)
-	};
-	choice->dim = {
-		4.f / 3.f, // take up 2/3 of the screen horizontally
-		.5f        // take up 1/4 of the screen vertically
-	};
-	choice->pad = { .025f, .025f };
-	choice->dbg_color = colors::dbg_choicebox;
+
+	// Choice box
+	mesh = arr_push(&mesh_infos);
+	top     = -0.500f;
+	bottom  = -1.000f;
+	left    = -0.667f;
+	right   = +0.667f;
+	Vector2 cvx [6] = fm_quad(top, bottom, left, right);
+	mesh->verts = arr_push(&vx_data, arr_to_ptr(cvx), 6);
+	mesh->count = 6;
+
+	choice_box.mesh = mesh;
+	choice_box.pos = { left, top };
+	choice_box.dim = { right - left, top - bottom };
+	choice_box.pad = { .025f, .025f };
+	choice_box.dbg_color = colors::dbg_choicebox;
 }
 
 RenderEngine& get_render_engine() {
@@ -125,13 +124,14 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
-void text_ctx_init(TextRenderContext* ctx, TextBox* box, FontInfo* font) {
-	ctx->box = box;
+void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
 	ctx->font = font;
 	ctx->point = {
-		box->pos.x + box->pad.x,
-		box->pos.y - box->dim.y + box->pad.y - font->descender
+		main_box.pos.x + main_box.pad.x,
+		main_box.pos.y - main_box.dim.y + main_box.pad.y - font->descender
 	};
+
+	ctx->max_lines = floorf((main_box.dim.y - main_box.pad.y) / font->max_advance.y);
 }
 
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
@@ -144,7 +144,7 @@ void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
 	if (next_lbreak != ctx->written) return;
 
 	ctx->idx_break++;
-	ctx->point.x = ctx->box->pos.x + ctx->box->pad.x;
+	ctx->point.x = main_box.pos.x + main_box.pad.x;
 	ctx->point.y -= ctx->font->max_advance.y;
 }
 
@@ -155,8 +155,8 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 		return;
 	}
 
-	// Reset
-	ctx->point.x = ctx->box->pos.x + ctx->box->pad.x;
+	// Resetap
+	ctx->point.x = main_box.pos.x + main_box.pad.x;
 	ctx->written = 0;
 	ctx->idx_break = 0;
 
@@ -209,19 +209,17 @@ void RenderEngine::render_dbg_geometry(float dt) {
 			arr_push(&dbg_cr_buffer, colors, 6);
 		}
 		else if (rq->type == DbgRenderType::TEXT_BOX) {
-			int32 index = static_cast<int32>(rq->data.tbox.type);
-			TextBox* box = tbox_data[index];
+			if (rq->data.tbox.render_main) {
+				arr_push(&dbg_vx_buffer, main_box.mesh->verts, main_box.mesh->count);
+				Vector4 colors [6] = fm_quad_color(main_box.dbg_color);
+				arr_push(&dbg_cr_buffer, colors, 6);
+			}
 			
-			float32 top = box->pos.y;
-			float32 bottom = box->pos.y - box->dim.y;
-			float32 left = box->pos.x;
-			float32 right = box->pos.x + box->dim.x;
-
-			Vector2 vxs [6] = fm_quad(top, bottom, left, right);
-			arr_push(&dbg_vx_buffer, vxs, 6);
-
-			Vector4 colors [6] = fm_quad_color(box->dbg_color);
-			arr_push(&dbg_cr_buffer, colors, 6);
+			if (rq->data.tbox.render_choice) {
+				arr_push(&dbg_vx_buffer, choice_box.mesh->verts, choice_box.mesh->count);
+				Vector4 colors [6] = fm_quad_color(choice_box.dbg_color);
+				arr_push(&dbg_cr_buffer, colors, 6);
+			}
 		}
 	}
 
@@ -251,9 +249,8 @@ void RenderEngine::render_dbg_geometry(float dt) {
 void RenderEngine::render_text(float dt) {
 	if (!text_buffer.size) return;
 
-	TextBox* main_box = tbox_data[static_cast<int32>(TextBoxType::MAIN)];
 	TextRenderContext context;
-	text_ctx_init(&context, main_box, font_infos[0]);
+	text_ctx_init(&context, font_infos[0]);
 	
 	auto& shaders = get_shader_manager();
 	auto shader = shaders.get("text");
@@ -283,6 +280,7 @@ void RenderEngine::render_text(float dt) {
 
 		// Transform vertices by the point and copy them into the intermediate bufer
 		ArrayView<char> text = arr_view(info->text, MAX_TEXT_LEN);
+		ArrayView<int32> breaks = arr_view(arr_to_ptr(info->lbreaks), MAX_LINE_BREAKS);
 		arr_for(text, c) {
 			if (*c == 0) break;
 			GlyphInfo* glyph = glyph_infos[*c];

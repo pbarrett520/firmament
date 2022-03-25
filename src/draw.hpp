@@ -58,39 +58,37 @@ struct TextEffect {
 	EffectData data;
 };
 
-// The main text box, and the request to push text items to it
-struct TextBox {
+// Various areas that we write text to
+struct MainTextBox {
+	Mesh* mesh;
 	Vector2 pos;
 	Vector2 dim;
 	Vector2 pad;
 	Vector4 dbg_color;
 };
+MainTextBox main_box;
 
-struct MainTextBox {
+struct ChoiceBox {
+	Mesh* mesh;
 	Vector2 pos;
 	Vector2 dim;
 	Vector2 pad;
-	Vector4 dbg_color;	
+	Vector4 dbg_color;
 };
+ChoiceBox choice_box;
 
-MainTextBox main_box;
-
-// @cleanup
-enum class TextBoxType {
-	MAIN = 0,
-	CHOICE = 1
-};
-
+// Request for drawing text to the main text box
 #define MAX_TEXT_LEN 1024
 #define MAX_LINE_BREAKS 16
 struct TextRenderInfo {
-	char text [MAX_TEXT_LEN] = { 0 };
-	int32 lbreaks [MAX_LINE_BREAKS] = { 0 };
-	Array<TextEffect> effects = { 0 };
+	char              text    [MAX_TEXT_LEN]    = { 0 };
+	int32             lbreaks [MAX_LINE_BREAKS] = { 0 };
+	Array<TextEffect> effects                   = { 0 };
 };
 
 // Requests for drawing debug geometry
 enum class DbgRenderType {
+	NONE = 0,
 	RECT = 1,
 	TEXT_BOX = 2
 };
@@ -99,11 +97,10 @@ struct DbgRenderRect {
 	float sx;
 	float sy;
 };
-
 struct DbgRenderTextBox {
-	TextBoxType type;
+	bool render_main;
+	bool render_choice;
 };
-
 union DbgRenderData {
 	DbgRenderRect rect;
 	DbgRenderTextBox tbox;
@@ -115,20 +112,21 @@ struct DbgRenderRequest {
 	Vector4 color = { 1.f, 0.f, 0.f, .5f };
 
 	DbgRenderData data;
+
+	DbgRenderRequest() { type = DbgRenderType::NONE; data = {0}; }
 };
 
 // Used for smoothing over advancing the point when rendering characters
 struct TextRenderContext {
-	TextBox* box          = nullptr;
 	TextRenderInfo* info  = nullptr;
 	FontInfo* font        = nullptr;
 
 	Vector2 point;
+	int32 max_lines       = 0
 	int32 written         = 0;
 	int32 idx_break       = 0;
 };
-
-void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, FontInfo* font);
+void text_ctx_init(TextRenderContext* ctx, TextRenderInfo* info, FontInfo* font);
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph);
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);
 
@@ -149,5 +147,5 @@ struct RenderEngine {
 RenderEngine& get_render_engine();
 
 void init_gl();
-void init_tbox();
+void init_text_boxes();
 void init_render_engine();
