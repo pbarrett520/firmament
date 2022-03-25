@@ -94,6 +94,18 @@ void init_tbox() {
 	};
 	main->pad = { .025f, .025f };
 	main->dbg_color = colors::dbg_textbox;
+
+	// hardcode!!!!!!!
+	main_box.pos = {
+		-2.f / 3.f, // 1/6 of the screen from the left side
+		1
+	};
+	main_box.dim = {
+		4.f / 3.f, // take up 2/3 of the screen horizontally
+		1.5f       // take up 3/4 of the screen vertically
+	};
+	main_box.pad = { .025f, .025f };
+	main_box.dbg_color = colors::dbg_textbox;
 	
 	TextBox* choice = arr_push(&tbox_data);
 	choice->pos = {
@@ -113,9 +125,8 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
-void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, FontInfo* font) {
+void text_ctx_init(TextRenderContext* ctx, TextBox* box, FontInfo* font) {
 	ctx->box = box;
-	ctx->info = info;
 	ctx->font = font;
 	ctx->point = {
 		box->pos.x + box->pad.x,
@@ -124,7 +135,6 @@ void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, F
 }
 
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
-	ctx->last_glyph = glyph;
 	ctx->point.x += glyph->advance.x;
 	ctx->written++;
 
@@ -133,8 +143,29 @@ void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
 	if (next_lbreak == 0) return;
 	if (next_lbreak != ctx->written) return;
 
-	//ctx->point->y += 
+	ctx->point.y -= ctx->font->descender;
 }
+
+void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
+	// First use
+	if (!ctx->info) {
+		ctx->info = info;
+		return;
+	}
+
+	ctx->point.x = ctx->box->pos.x + ctx->box->pad.x;
+	ctx->written = 0;
+	ctx->idx_break = 0;
+
+	int32 count_lines = 0;
+	for (int32 i = 0; i < MAX_LINE_BREAKS; i++) {
+		if (!ctx->info->lbreaks[i]) break;
+		count_lines++;
+	}
+
+	ctx->point.y += ctx->font->max_advance.y * (count_lines + 1);
+}
+
 
 void RenderEngine::render(float dt) {	
 	render_dbg_geometry(dt);
@@ -210,6 +241,8 @@ void RenderEngine::render_text(float dt) {
 	if (!text_buffer.size) return;
 
 	TextBox* main_box = tbox_data[static_cast<int32>(TextBoxType::MAIN)];
+	TextRenderContext context;
+	text_ctx_init(&context, main_box, font_infos[0]);
 	
 	auto& shaders = get_shader_manager();
 	auto shader = shaders.get("text");
@@ -222,12 +255,20 @@ void RenderEngine::render_text(float dt) {
 	arr_fastclear(&vx_buffer);
 	arr_fastclear(&tc_buffer);
 
-	arr_for(text_buffer, info) {
+	// get baseline point
+	// iterate through text requests backwards
+	// calculate how many lines must be rendered (pre-calculated)
+	// move the point up that many lines
+	// iterate through each character, render, move point down for newlines
+	// apply effects
+	// move line up [count_lines_written] + 1
+
+	arr_rfor(text_buffer, info) {
+		text_ctx_chunk(&context, info);
+		
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
 		int32 count_vx = 0;
-		TextRenderContext context;
-		text_ctx_init(&context, main_box, info, font_infos[0]);
 
 		// Transform vertices by the point and copy them into the intermediate bufer
 		ArrayView<char> text = arr_view(info->text, MAX_TEXT_LEN);

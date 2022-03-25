@@ -123,6 +123,14 @@ Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
 }
 
 template<typename T>
+int32 arr_index(Array<T>* array, T* element) {
+	int32 index = element - array.data;
+	assert(index >= 0);
+	assert(index < array.size);
+	return index;
+}
+
+template<typename T>
 T* arr_push(Array<T>* array, T* data, int32 count) {
 	int32 remaining = array->capacity - array->size;
 	if (remaining < count) return nullptr;
@@ -212,6 +220,7 @@ void arr_fill(Array<T>* array, T element) {
 }
 
 #define arr_for(array, it) for (auto (it) = (array).data; (it) != ((array).data + (array).size); (it)++)
+#define arr_rfor(array, it) for (auto (it) = (array).data + array.size - 1; (it) >= ((array).data); (it)--)
 
 
 template<typename T>
@@ -256,6 +265,15 @@ ArrayView<T> arr_view(Array<T>* array, int32 index, int32 count) {
 	
 	return view;
 }
+
+template<typename T>
+int32 arr_index(ArrayView<T>* array, T* element) {
+	int32 index = element - array->data;
+	fm_assert(index >= 0);
+	fm_assert(index < array->size);
+	return index;
+}
+
 
 struct Vector2 {
 	float32 x = 0;

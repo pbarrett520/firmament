@@ -73,10 +73,37 @@ void API::submit_text(sol::table request) {
 	auto& render_engine = get_render_engine();
 
 	TextRenderInfo info;
-	std::string text = request["text"];
-	fm_assert(text.size() < MAX_TEXT_LEN);
-	strncpy(info.text, text.c_str(), MAX_TEXT_LEN);
+	std::string text_copy = request["text"];
+	fm_assert(text_copy.size() < MAX_TEXT_LEN);
+	strncpy(info.text, text_copy.c_str(), MAX_TEXT_LEN);
 
+	// Calculate line breaks based on size of text box
+	ArrayView<char> text = arr_view(info.text, MAX_TEXT_LEN);
+	FontInfo* font = font_infos[0];
+	MainTextBox* box = &main_box;
+	Vector2 point = {
+		box->pos.x + box->pad.x,
+		box->pos.y - box->dim.y + box->pad.y - font->descender
+	};
+	float32 max_x =  box->pos.x + box->dim.x - box->pad.x;
+	
+	Array<int32> lbreaks;
+	arr_stack(&lbreaks, &info.lbreaks[0], MAX_LINE_BREAKS);
+	
+	arr_for(text, c) {
+		if (*c == 0) break;
+
+		GlyphInfo* glyph = font->glyphs[*c];
+		point.x += glyph->advance.x;
+
+		if (point.x >= max_x) {
+			arr_push(&lbreaks, arr_index(&text, c));
+			point.x = box->pos.x + box->pad.x;
+			point.y -= font->descender;
+		}
+	}
+	
+	
 	// No effect? Just give it to the renderer
 	if (request["effect"] == sol::lua_nil) {
 		arr_push(&text_buffer, info);
@@ -97,8 +124,8 @@ void API::submit_text(sol::table request) {
 	}
 
 	// Then, add it to our buffer of effects and give the info the pointer to the stored effect
+	info.effects = arr_slice(&effect_buffer, effect_buffer.size, 1);
 	arr_push(&effect_buffer, effect);
-	info.effects = arr_slice(&effect_buffer, 0, 1);
 
 	arr_push(&text_buffer, info);
 }

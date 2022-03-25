@@ -1,9 +1,9 @@
 local GLFW = require('glfw')
 local inspect = require('inspect')
 
-function submit_oscillate()
+function submit_oscillate(text)
   local request = {
-	text = 'joey, the striker fox',
+	text = text,
 	effect = {
 	  type = 1,
 	  amplitude = .003,
@@ -13,9 +13,9 @@ function submit_oscillate()
   tdengine.submit_text(request)
 end
 
-function submit_rainbow()
+function submit_rainbow(text)
   local request = {
-	text = 'joey, the striker fox',
+	text = text,
 	effect = {
 	  type = 2,
 	  frequency = 15
@@ -91,10 +91,19 @@ function Editor:init(params)
   self.input:set_channel(tdengine.InputChannel.Editor)
   self.input:enable()
 
-  submit_rainbow()
 end
 
 function Editor:update(dt)
+
+  -- tdengine.do_once(function()
+  -- 	  submit_rainbow('joey, the striker fox')
+  -- 	  submit_rainbow('i left my home in norfolk, virginia')
+  -- end)
+
+  tdengine.do_once(function()
+	  submit_oscillate('vash the stampede')
+  end)
+
   submit_dbg_tbox(0)
   submit_dbg_tbox(1)
   self:calculate_framerate()

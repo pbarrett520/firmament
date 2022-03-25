@@ -66,6 +66,15 @@ struct TextBox {
 	Vector4 dbg_color;
 };
 
+struct MainTextBox {
+	Vector2 pos;
+	Vector2 dim;
+	Vector2 pad;
+	Vector4 dbg_color;	
+};
+
+MainTextBox main_box;
+
 enum class TextBoxType {
 	MAIN = 0,
 	CHOICE = 1
@@ -113,7 +122,6 @@ struct TextRenderContext {
 	TextRenderInfo* info  = nullptr;
 	FontInfo* font        = nullptr;
 
-	GlyphInfo* last_glyph = nullptr;
 	Vector2 point;
 	int32 written         = 0;
 	int32 idx_break       = 0;
@@ -121,6 +129,7 @@ struct TextRenderContext {
 
 void text_ctx_init(TextRenderContext* ctx, TextBox* box, TextRenderInfo* info, FontInfo* font);
 void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph);
+void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);
 
 
 struct RenderEngine {
