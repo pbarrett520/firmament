@@ -46,7 +46,7 @@ build_options = {
         ],
         'machine': 'X64',
         'out': 'firmament.exe',
-        'runtime_library': 'MD',
+        'runtime_library': 'MDd',
         'warnings': [
             '4530',
             '4201',
@@ -57,7 +57,7 @@ build_options = {
         'extras': [
             '/nologo',
             '/D_CRT_SECURE_NO_WARNINGS',
-            '/W2'
+            '/W2',
         ]
     },
     'Darwin': {

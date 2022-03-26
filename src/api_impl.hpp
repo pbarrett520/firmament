@@ -195,7 +195,19 @@ void API::resume_updates() {
 void API::set_imgui_demo(bool show) {
 	show_imgui_demo = show;
 }
-		
+
+void API::setopts(sol::table opts) {
+	if (opts["scroll_speed"] != sol::lua_nil) {
+		options::scroll_speed = (float32)opts["scroll_speed"];
+	}
+	if (opts["scroll_lerp"] != sol::lua_nil) {
+		options::scroll_lerp = (float32)opts["scroll_lerp"];
+	}
+	if (opts["smooth_scroll"] != sol::lua_nil) {
+		options::smooth_scroll = opts["scroll_lerp"];
+	}
+}
+
 void register_lua_api() {
 	auto& state = Lua.state;
 	
@@ -222,6 +234,7 @@ void register_lua_api() {
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
 	state["tdengine"]["submit_text"]               = &API::submit_text;
 	state["tdengine"]["submit_dbg_geometry"]       = &API::submit_dbg_geometry;
+	state["tdengine"]["setopts"]                   = &API::setopts;
 
 	state["tdengine"]["log_flags"]= state.create_table();	
 	state["tdengine"]["log_flags"]["console"] = Log_Flags::Console;	

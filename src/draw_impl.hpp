@@ -200,7 +200,7 @@ void RenderEngine::render_text(float dt) {
 				};
 				for (int32 i = 0; i < glyph->mesh->count; i++) {
 					vx[i].x += offset.x;
-					vx[i].y += offset.y;
+					vx[i].y += offset.y + text_ctx_scroll(&context);
 				}
 
 				text_ctx_advance(&context, glyph);

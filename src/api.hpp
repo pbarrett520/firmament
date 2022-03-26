@@ -28,6 +28,7 @@ void        submit_dbg_geometry(sol::table request);
 // Utility
 sol::object screen_dimensions();
 sol::object cursor();
+void setopts(sol::table opts);
 }
 
 void register_lua_api();

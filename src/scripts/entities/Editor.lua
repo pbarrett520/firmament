@@ -157,7 +157,7 @@ function Editor:engine_viewer()
   local cursor = tdengine.vec2(tdengine.cursor()):truncate(3)
   imgui.extensions.Vec2('cursor', cursor)
 
-  imgui.extensions.Vec2('scroll', tdengine.engine_stats.scroll)
+  imgui.extensions.Table(tdengine.engine_stats.scroll);
 end
 
 function Editor:draw_entity_viewer()

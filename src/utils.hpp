@@ -52,6 +52,18 @@ typedef GLFW_KEY_TYPE key_t;
 #define ASCII_QMARK      63
 #define ASCII_UNDERSCORE 95
 
+#define FM_FLOATEQ_EPSILON .00005
+bool fm_floateq(float a, float b) {
+	return abs(a - b) < FM_FLOATEQ_EPSILON;
+}
+
+float32 fm_lerp(float32 a, float32 b, float32 t) {
+	fm_assert(t >= 0.f);
+	fm_assert(t <= 1.f);
+
+	return (a * (1 - t)) + (b * t);
+}
+
 float32 clamp(float32 val, float32 low, float32 hi) {
 	return fox_max(fox_min(val, hi), low);
 }
@@ -121,7 +133,7 @@ fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 template<typename T>
 Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
 	fm_assert(index >= 0);
-	fm_assert(index + size <= array->size);
+	fm_assert(index + size <= array->capacity);
 	
 	Array<T> view;
 	view.size = size;
@@ -265,7 +277,7 @@ ArrayView<T> arr_view(Array<T>* array) {
 template<typename T>
 ArrayView<T> arr_view(Array<T>* array, int32 index, int32 count) {
 	fm_assert(index >= 0);
-	fm_assert(index + count <= array->size);
+	fm_assert(index + count <= array->capacity);
 
 	ArrayView<T> view;
 	view.size = count;

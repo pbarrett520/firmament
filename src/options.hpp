@@ -13,3 +13,10 @@ bool show_imgui_demo = false;
 bool show_console = false;
 bool send_kill_signal = false;
 bool step_mode = false;
+
+namespace options {
+	float32 scroll_speed  = 0.05f;
+	float32 scroll_lerp   = 0.500f;
+	bool    smooth_scroll = false;
+};
+

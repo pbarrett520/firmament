@@ -61,7 +61,7 @@ int main() {
 		// Do a couple utility things we do each frame
 		load_imgui_layout();
 		update_engine_stats_lua();
-		mtb_update_scroll(&main_box);
+		mtb_update_scroll(&main_box, seconds_per_update);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

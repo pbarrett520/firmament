@@ -3,9 +3,7 @@ inspect = require('inspect')
 function tdengine.initialize()
   tdengine.screen('1080')
   tdengine.seed()
-  tdengine.engine_stats = {
-	scroll = {}
-  }
+  tdengine.engine_stats = {}
   
   -- Load up static data
   tdengine.load_default_state()
