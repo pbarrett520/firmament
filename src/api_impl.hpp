@@ -122,6 +122,7 @@ void API::submit_text(sol::table request) {
 		OscillateEffect* effect_data = &effect.data.oscillate;
 		effect_data->amplitude = request["effect"]["amplitude"];
 		effect_data->frequency = request["effect"]["frequency"];
+		effect_data->rnd = rand_float(3);
 	}
 	else if (effect.type == TextEffectType::RAINBOW) {
 		RainbowEffect* effect_data = &effect.data.rainbow;

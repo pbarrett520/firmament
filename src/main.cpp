@@ -48,6 +48,8 @@ int main() {
 	init_scripts();
 	init_fonts();
 
+	srand(time(NULL));
+
 	while(!glfwWindowShouldClose(g_window)) {
 		double frame_start_time = glfwGetTime();
 		

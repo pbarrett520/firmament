@@ -174,7 +174,7 @@ void RenderEngine::render_text(float dt) {
 	arr_rfor(text_buffer, info) {
 		if (text_ctx_full(&context)) break;
 		text_ctx_chunk(&context, info);
-		
+	
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
 		int32 count_vx = 0;
@@ -200,7 +200,7 @@ void RenderEngine::render_text(float dt) {
 				};
 				for (int32 i = 0; i < glyph->mesh->count; i++) {
 					vx[i].x += offset.x;
-					vx[i].y += offset.y + text_ctx_scroll(&context);
+					vx[i].y += offset.y;
 				}
 
 				text_ctx_advance(&context, glyph);

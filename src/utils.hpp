@@ -120,6 +120,8 @@ fm_error arr_init(Array<T>* array, int32 capacity, T fill) {
 	return FM_ERR_SUCCESS;
 }
 
+// Use case: You declare some array on the stack. It's empty, and you only want to modify its elements
+// using an Array. Call this to wrap it in an empty Array of the correct capacity.
 template<typename T>
 fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 	if (!data) return FM_ERR_NULL_PTR;
@@ -130,6 +132,8 @@ fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
 	return FM_ERR_SUCCESS;
 }
 
+// Use case: You have some contiguous data filled out somewhere (maybe in another Array, maybe in a C
+// array). You want to RW a subarray using Array functions. Call this to wrap the subarray. 
 template<typename T>
 Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
 	fm_assert(index >= 0);
@@ -141,6 +145,16 @@ Array<T> arr_slice(Array<T>* array, int32 index, int32 size) {
 	view.data = array->data + index;
 	
 	return view;
+}
+
+template<typename T>
+Array<T> arr_slice(T* data, int32 size) {
+	Array<T> arr;
+	arr.size = size;
+	arr.capacity = size;
+	arr.data = data;
+	
+	return arr;
 }
 
 template<typename T>
@@ -913,3 +927,13 @@ bool dumb_is_valid_png(std::filesystem::path path) {
     }                                     
 	
 #define fm_quad_color(color) { color, color, color, color, color, color }
+
+// Cast sets of six vertices to this to make editing easier
+struct fm_quadview {
+	Vector2 tl;
+	Vector2 bl;
+	Vector2 br;
+	Vector2 tl2;
+	Vector2 br2;
+	Vector2 tr;
+};

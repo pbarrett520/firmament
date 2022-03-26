@@ -50,12 +50,12 @@ struct TextRenderContext {
 	FontInfo* font        = nullptr;
 
 	Vector2 point;
-	int32 max_lines       = 0;
-	int32 count_lines_written         = 0;
-	bool  is_single_line        = false;
-	bool  is_chunk_done = false;
-	int32 ib       = 0;
-	int32 ilb       = 0;
+	int32 skipped             = 0;
+	int32 max_lines           = 0;
+	int32 count_lines_written = 0;
+	bool  is_chunk_done       = false;
+	int32 ib                  = 0;
+	int32 ilb                 = 0;
 };
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font);
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);

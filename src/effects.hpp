@@ -25,6 +25,7 @@ void DoNoneEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Vecto
 struct OscillateEffect {
 	float32 amplitude;
 	float32 frequency;
+	float32 rnd;
 };
 void DoOscillateEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Vector2> tc, Array<Vector4> clr);
 

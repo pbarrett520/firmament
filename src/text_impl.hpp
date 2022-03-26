@@ -48,6 +48,8 @@ void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
 }
 
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
+	ctx->is_chunk_done = false;
+	
 	// A line of separation between chunks
 	if (ctx->count_lines_written) {
 		ctx->point.y += ctx->font->max_advance.y;
@@ -56,10 +58,14 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 	
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
 
-	ctx->is_chunk_done = false;
 	ctx->ib = info->count_lb - 2;
 	ctx->ilb = info->count_lb - 1;
 
+	auto mtb = &main_box;
+	if (ctx->skipped < mtb->line_scroll) {
+		ctx->skipped += info->count_lb - 1;
+		ctx->is_chunk_done = true;
+	}
 	ctx->info = info;
 }
 
@@ -104,7 +110,7 @@ void mtb_update_scroll(MainTextBox* mtb, float dt) {
 	auto& input = get_input_manager();
 	
 	if (input.scroll.y > 0) mtb->line_scroll++;
-	else if (input.scroll.y < 0) mtb->line_scroll--;
+	else if (input.scroll.y < 0) mtb->line_scroll = fox_max(mtb->line_scroll--, 0);
 }
 
 void mtb_update_scroll_smooth(MainTextBox* mtb, float dt) {
