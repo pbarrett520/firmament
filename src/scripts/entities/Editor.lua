@@ -96,14 +96,21 @@ end
 
 function Editor:update(dt)
 
+  tdengine.do_once(function()
+	  submit_oscillate('nicholas')
+	  submit_oscillate('tom')
+	  submit_oscillate('thomas')
+	  submit_oscillate('spencer')
+	  submit_rainbow('mr hands')
+  end)
   -- tdengine.do_once(function()
   -- 	  submit_rainbow('joey, the striker fox')
   -- 	  submit_rainbow('i left my home in norfolk, virginia')
   -- end)
 
-  tdengine.do_once(function()
-	  submit_oscillate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi et diam neque. Morbi condimentum, metus non ultrices facilisis, ex tortor congue nibh, eget blandit neque magna faucibus enim. Proin fermentum mollis ipsum sit amet suscipit. Curabitur sed ante vulputate, vestibulum orci ut, rutrum odio. Aenean pretium tempus nisl quis sagittis. Cras non nulla vestibulum, tincidunt lacus in, molestie lacus. Praesent tincidunt risus eu mauris pharetra, eu mattis libero pharetra. Sed sit amet massa tristique, commodo magna eu, pellentesque leo. Sed mollis, nisi a scelerisque mattis, ex massa sagittis nisi, sed semper risus diam vitae lectus. Pellentesque gravida maximus eros a. ')
-  end)
+  -- tdengine.do_once(function()
+  -- 	  submit_oscillate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi et diam neque. Morbi condimentum, metus non ultrices facilisis, ex tortor congue nibh, eget blandit neque magna faucibus enim. Proin fermentum mollis ipsum sit amet suscipit. Curabitur sed ante vulputate, vestibulum orci ut, rutrum odio. Aenean pretium tempus nisl quis sagittis. Cras non nulla vestibulum, tincidunt lacus in, molestie lacus. Praesent tincidunt risus eu mauris pharetra, eu mattis libero pharetra. Sed sit amet massa tristique, commodo magna eu, pellentesque leo. Sed mollis, nisi a scelerisque mattis, ex massa sagittis nisi, sed semper risus diam vitae lectus. Pellentesque gravida maximus eros a. ')
+  -- end)
 
   submit_dbg_tbox()
   self:calculate_framerate()

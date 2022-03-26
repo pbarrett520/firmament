@@ -89,6 +89,8 @@ void API::submit_text(sol::table request) {
 	
 	Array<int32> lbreaks;
 	arr_stack(&lbreaks, &info.lbreaks[0], MAX_LINE_BREAKS);
+
+	arr_push(&lbreaks, 0);
 	
 	arr_for(text, c) {
 		if (*c == 0) break;
@@ -102,6 +104,9 @@ void API::submit_text(sol::table request) {
 			point.y -= font->descender;
 		}
 	}
+
+	arr_push(&lbreaks, text.size);
+	info.count_lb = lbreaks.size;
 	
 	
 	// No effect? Just give it to the renderer

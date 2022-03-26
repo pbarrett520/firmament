@@ -81,102 +81,10 @@ void init_gl() {
 	glEnableVertexAttribArray(1);
 }
 
-// The order of these matter -- we use an enum field to index the text box array
-void init_text_boxes() {
-	Mesh* mesh;
-	float32 top, bottom, left, right;
-
-	// Main box
-	mesh = arr_push(&mesh_infos);
-	top     = +1.000f;
-	bottom  = -0.500f;
-	left    = -0.667f;
-	right   = +0.667f;
-	Vector2 mvx [6] = fm_quad(top, bottom, left, right);
-	mesh->verts = arr_push(&vx_data, arr_to_ptr(mvx), 6);
-	mesh->count = 6;
-
-	main_box.mesh = mesh;
-	main_box.pos = { left, top };
-	main_box.dim = { right - left, top - bottom };
-	main_box.pad = { .025f, .025f };
-	main_box.dbg_color = colors::dbg_textbox;
-
-	// Choice box
-	mesh = arr_push(&mesh_infos);
-	top     = -0.500f;
-	bottom  = -1.000f;
-	left    = -0.667f;
-	right   = +0.667f;
-	Vector2 cvx [6] = fm_quad(top, bottom, left, right);
-	mesh->verts = arr_push(&vx_data, arr_to_ptr(cvx), 6);
-	mesh->count = 6;
-
-	choice_box.mesh = mesh;
-	choice_box.pos = { left, top };
-	choice_box.dim = { right - left, top - bottom };
-	choice_box.pad = { .025f, .025f };
-	choice_box.dbg_color = colors::dbg_choicebox;
-}
-
 RenderEngine& get_render_engine() {
 	static RenderEngine engine;
 	return engine;
 }
-
-void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
-	ctx->font = font;
-	ctx->point = {
-		main_box.pos.x + main_box.pad.x,
-		main_box.pos.y - main_box.dim.y + main_box.pad.y - font->descender
-	};
-
-	ctx->max_lines = floorf((main_box.dim.y - main_box.pad.y) / font->max_advance.y);
-}
-
-void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
-	ctx->point.x += glyph->advance.x;
-	ctx->written++;
-
-	// Check if we need to advance the point in the Y axis due to a line break
-	int32 next_lbreak = ctx->info->lbreaks[ctx->idx_break];
-	if (next_lbreak == 0) return;
-	if (next_lbreak != ctx->written) return;
-
-	ctx->idx_break++;
-	ctx->point.x = main_box.pos.x + main_box.pad.x;
-	ctx->point.y -= ctx->font->max_advance.y;
-}
-
-void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
-	// First use
-	if (!ctx->info) {
-		ctx->info = info;
-		return;
-	}
-
-	// Resetap
-	ctx->point.x = main_box.pos.x + main_box.pad.x;
-	ctx->written = 0;
-	ctx->idx_break = 0;
-
-	// @cleanup
-	auto adjust_point = [&](auto info) {
-		int32 count_lines = 0;
-		for (int32 i = 0; i < MAX_LINE_BREAKS; i++) {
-			if (!info->lbreaks[i]) break;
-			count_lines++;
-		}
-
-		ctx->point.y += ctx->font->max_advance.y * (count_lines + 1);
-	};
-
-	adjust_point(ctx->info);
-
-	ctx->info = info;
-	adjust_point(ctx->info);
-}
-
 
 void RenderEngine::render(float dt) {	
 	render_dbg_geometry(dt);
@@ -263,45 +171,44 @@ void RenderEngine::render_text(float dt) {
 	arr_fastclear(&vx_buffer);
 	arr_fastclear(&tc_buffer);
 
-	// get baseline point
-	// iterate through text requests backwards
-	// calculate how many lines must be rendered (pre-calculated)
-	// move the point up that many lines
-	// iterate through each character, render, move point down for newlines
-	// apply effects
-	// move line up [count_lines_written] + 1
-
 	arr_rfor(text_buffer, info) {
+		if (text_ctx_full(&context)) break;
 		text_ctx_chunk(&context, info);
 		
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
 		int32 count_vx = 0;
+		
+		// Algorithm: Iterate through requests in LIFO order, so that the newest requests are rendered
+		// first. Then, iterate over their line breaks, starting from the last line. Iterate the line,
+		// and move to the line above. Move to the next request.
+		while (!text_ctx_chunkdone(&context)) {
+			auto line = text_ctx_readline(&context);
+			
+			arr_for(line, c) {
+				if (*c == 0) break;
+				GlyphInfo* glyph = glyph_infos[*c];
 
-		// Transform vertices by the point and copy them into the intermediate bufer
-		ArrayView<char> text = arr_view(info->text, MAX_TEXT_LEN);
-		ArrayView<int32> breaks = arr_view(arr_to_ptr(info->lbreaks), MAX_LINE_BREAKS);
-		arr_for(text, c) {
-			if (*c == 0) break;
-			GlyphInfo* glyph = glyph_infos[*c];
+				Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+				Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+				count_vx += glyph->mesh->count;
 
-			Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
-			Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
-			count_vx += glyph->mesh->count;
+				Vector2 gl_origin = { -1, 1 };
+				Vector2 offset = {
+					context.point.x - gl_origin.x,
+					context.point.y - gl_origin.y,
+				};
+				for (int32 i = 0; i < glyph->mesh->count; i++) {
+					vx[i].x += offset.x;
+					vx[i].y += offset.y;
+				}
 
-			Vector2 gl_origin = { -1, 1 };
-			Vector2 offset = {
-				context.point.x - gl_origin.x,
-				context.point.y - gl_origin.y,
-			};
-			for (int32 i = 0; i < glyph->mesh->count; i++) {
-				vx[i].x += offset.x;
-				vx[i].y += offset.y;
+				text_ctx_advance(&context, glyph);
 			}
 
-			text_ctx_advance(&context, glyph);
+			text_ctx_nextline(&context);
 		}
-
+		
 		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
 		// those to the text's effects to modify
 		auto vx = arr_slice(&vx_buffer, vx_begin, count_vx);
@@ -343,55 +250,4 @@ void RenderEngine::render_text(float dt) {
 	shader->check();
 	glDrawArrays(GL_TRIANGLES, 0, vx_buffer.size);
 	shader->end();
-}
-
-// Effects
-void DoNoneEffect(
-    TextEffect* effect,
-	float32 dt,
-	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
-) {
-	fm_assert(!"DoNoneEffect");
-}
-
-void DoOscillateEffect(
-    TextEffect* effect,
-	float32 dt,
-	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
-) {
-    OscillateEffect* oscillate = &effect->data.oscillate;
-
-	float32 sinv = sinf(effect->frames_elapsed / oscillate->frequency) * oscillate->amplitude;
-	float32 sinv2 = sinf((effect->frames_elapsed - 20) / oscillate->frequency) * oscillate->amplitude;
-	arr_for(vx_data, vx) {
-		int32 vi = vx - vx_data.data;
-		int32 ci = vi / 6;
-		if (ci % 2) vx->y -= sinv;
-		else vx->y += sinv2;
-	}
-	
-	tdns_log.write("DoOscillateEffect: %f, %d", sinv, effect->frames_elapsed);
-}
-
-void DoRainbowEffect(
-    TextEffect* effect,
-	float32 dt,
-	Array<Vector2> vx_data, Array<Vector2> tc_data, Array<Vector4> clr_data
-) {
-    RainbowEffect* rainbow = &effect->data.rainbow;
-    float32 pi = 3.14f;
-
-	float32 sin_input = effect->frames_elapsed / (float32)rainbow->frequency;
-	float32 sinr = clamp(sinf(sin_input), .3f, 1.f);
-	float32 sing = clamp(sinf(sin_input + (pi / 4)), .3f, 1.f);
-	float32 sinb = clamp(sinf(sin_input + (pi / 2)), .3f, 1.f);
-	arr_for(clr_data, clr) {
-		int32 vi = clr - clr_data.data;
-		int32 ci = vi / 6;
-		if      (!(ci % 3)) { clr->r *= sing; clr->g *= sinb; clr->b *= sinr; }
-		else if (!(ci % 2)) { clr->r *= sinb; clr->g *= sinr; clr->b *= sing; }
-		else                { clr->r *= sinr; clr->g *= sing; clr->b *= sinb; }
-		
-	}
-	tdns_log.write("r = %f, g = %f, b = %f", sinr, sing, sinb);
 }
