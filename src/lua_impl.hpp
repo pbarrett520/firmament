@@ -127,3 +127,10 @@ void init_scripts() {
 		tdns_log.write(err.what());
 	}
 }
+
+void update_engine_stats_lua() {
+	auto& input_manager = get_input_manager();
+	
+	Lua.state["tdengine"]["engine_stats"]["scroll"]["x"] = input_manager.scroll.x;
+	Lua.state["tdengine"]["engine_stats"]["scroll"]["y"] = input_manager.scroll.y;
+}

@@ -13,3 +13,4 @@ struct LuaState {
 
 void init_lua();
 void init_scripts();
+void update_engine_stats_lua();

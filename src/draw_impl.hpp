@@ -232,19 +232,19 @@ void RenderEngine::render_text(float dt) {
 	
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&vx_buffer),
+					vx_buffer.size * sizeof(Vector2),
 					vx_buffer.data);
 	gpu_offset += arr_bytes(&vx_buffer);
 	
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&tc_buffer),
+					tc_buffer.size * sizeof(Vector2),
 					tc_buffer.data);
 	gpu_offset += arr_bytes(&tc_buffer);
 
 	glBufferSubData(GL_ARRAY_BUFFER,
 					gpu_offset,
-					arr_bytes(&cr_buffer),
+					cr_buffer.size * sizeof(Vector4),
 					cr_buffer.data);
 	
 	shader->check();

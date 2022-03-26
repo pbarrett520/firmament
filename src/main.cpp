@@ -25,6 +25,7 @@
 #include "draw_impl.hpp"
 #include "effects_impl.hpp"
 #include "font_impl.hpp"
+#include "input_impl.hpp"
 #include "lua_impl.hpp"
 #include "shader_impl.hpp"
 #include "text_impl.hpp"
@@ -54,12 +55,17 @@ int main() {
 
 		file_watcher.update();
 
+		// After this, inputs are set for the frame
 		input_manager.begin_frame();
 
+		// Do a couple utility things we do each frame
 		load_imgui_layout();
+		update_engine_stats_lua();
+		mtb_update_scroll(&main_box);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// After this, all ImGui calls are live. Anything before this is ignored.
 		ImGui_ImplGlfwGL3_NewFrame();
 		
 		if (show_imgui_demo) ImGui::ShowDemoWindow();
@@ -71,7 +77,7 @@ int main() {
 		// Render 
 		render_engine.render(seconds_per_update);
 		ImGui::Render();
-		//ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(g_window);
 
 		// Clean up the frame
