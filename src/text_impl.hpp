@@ -36,6 +36,13 @@ void init_text_boxes() {
 	choice_box.dbg_color = colors::dbg_choicebox;
 }
 
+void cbx_init(ChoiceBox* cbx) {
+	arr_init(&cbx->choices, MAX_CHOICES);
+}
+
+void cbx_add(ChoiceBox* cbx, ChoiceInfo choice) {
+	arr_push(&cbx->choices, choice);
+}
 
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
 	ctx->font = font;
@@ -63,7 +70,7 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 
 	auto mtb = &main_box;
 	if (ctx->skipped < mtb->line_scroll) {
-		ctx->skipped += info->count_lb - 1;
+		ctx->skipped++;
 		ctx->is_chunk_done = true;
 	}
 	ctx->info = info;

@@ -87,17 +87,14 @@ RenderEngine& get_render_engine() {
 }
 
 void RenderEngine::render(float dt) {	
-	render_dbg_geometry(dt);
-	render_text(dt);
+	render_dbg_geometry();
+	render_mtb(dt);
+	send_gpu_commands();
 }
 
-void RenderEngine::render_dbg_geometry(float dt) {
+void render_dbg_geometry() {
 	if (!dbg_rq_buffer.size) return;
 	
-	auto& shaders = get_shader_manager();
-	auto shader = shaders.get("solid");
-	shader->begin();
-
 	// Fill the color buffer with the standard white color
 	arr_fastclear(&dbg_vx_buffer);
 	arr_fastclear(&dbg_cr_buffer);
@@ -130,41 +127,15 @@ void RenderEngine::render_dbg_geometry(float dt) {
 			}
 		}
 	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, dbg_buffer);
-	glBindVertexArray(dbg_vao);
-
-	int32 gpu_offset = 0;
-	
-	glBufferSubData(GL_ARRAY_BUFFER,
-					gpu_offset,
-					arr_bytes(&dbg_vx_buffer),
-					dbg_vx_buffer.data);
-	gpu_offset += arr_bytes(&dbg_vx_buffer);
-	
-	glBufferSubData(GL_ARRAY_BUFFER,
-					gpu_offset,
-					arr_bytes(&dbg_cr_buffer),
-					dbg_cr_buffer.data);
-	
-	shader->check();
-	glDrawArrays(GL_TRIANGLES, 0, dbg_vx_buffer.size);
-	shader->end();
 	
 	arr_clear(&dbg_rq_buffer);
 }
 
-void RenderEngine::render_text(float dt) {
+void render_mtb(float32 dt) {
 	if (!text_buffer.size) return;
-
+	
 	TextRenderContext context;
 	text_ctx_init(&context, font_infos[0]);
-	
-	auto& shaders = get_shader_manager();
-	auto shader = shaders.get("text");
-	shader->begin();
-	
-	shader->set_int("sampler", 0);
 
 	// Fill the color buffer with the standard white color
 	arr_fill(&cr_buffer, colors::white);
@@ -220,34 +191,48 @@ void RenderEngine::render_text(float dt) {
 			effect->frames_elapsed++;
 		}
 	}
+}
 
-	glBindBuffer(GL_ARRAY_BUFFER, buffer);
-	glBindVertexArray(vao);
+void send_gpu_commands() {
+	auto& render_engine = get_render_engine();
+	auto& shaders = get_shader_manager();
+	Shader* shader;
+
+	// Text
+	shader = shaders.get("text");
+	shader->begin();
+	shader->set_int("sampler", 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, render_engine.buffer);
+	glBindVertexArray(render_engine.vao);
 
 	// Use the font atlas texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, texture);
+	glBindTexture(GL_TEXTURE_2D, render_engine.texture);
 
-	int32 gpu_offset = 0;
-	
-	glBufferSubData(GL_ARRAY_BUFFER,
-					gpu_offset,
-					vx_buffer.size * sizeof(Vector2),
-					vx_buffer.data);
-	gpu_offset += arr_bytes(&vx_buffer);
-	
-	glBufferSubData(GL_ARRAY_BUFFER,
-					gpu_offset,
-					tc_buffer.size * sizeof(Vector2),
-					tc_buffer.data);
-	gpu_offset += arr_bytes(&tc_buffer);
+	GlBufferContext context;
+	glctx_sub_data(&context, &vx_buffer);
+	glctx_sub_data(&context, &tc_buffer);
+	glctx_sub_data(&context, &cr_buffer);
 
-	glBufferSubData(GL_ARRAY_BUFFER,
-					gpu_offset,
-					cr_buffer.size * sizeof(Vector4),
-					cr_buffer.data);
-	
 	shader->check();
 	glDrawArrays(GL_TRIANGLES, 0, vx_buffer.size);
 	shader->end();
+
+	// Debug geometry
+	shader = shaders.get("solid");
+	shader->begin();
+
+
+	glBindBuffer(GL_ARRAY_BUFFER, render_engine.dbg_buffer);
+	glBindVertexArray(render_engine.dbg_vao);
+
+	memset(&context, 0, sizeof(GlBufferContext));
+	glctx_sub_data(&context, &dbg_vx_buffer);
+	glctx_sub_data(&context, &dbg_cr_buffer);
+	
+	shader->check();
+	glDrawArrays(GL_TRIANGLES, 0, dbg_vx_buffer.size);
+	shader->end();
+
 }

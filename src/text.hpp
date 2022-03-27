@@ -21,14 +21,28 @@ MainTextBox main_box;
 void mtb_update_scroll(MainTextBox* mtb, float dt);
 void mtb_update_scroll_smooth(MainTextBox* mtb, float dt);
 
+#define MAX_CHOICE_LEN 256
+struct ChoiceInfo {
+	char text [MAX_CHOICE_LEN] = { 0 };
+};
+
+#define MAX_CHOICES 8
 struct ChoiceBox {
 	Mesh* mesh;
 	Vector2 pos;
 	Vector2 dim;
 	Vector2 pad;
 	Vector4 dbg_color;
+
+	Array<ChoiceInfo> choices;
 };
 ChoiceBox choice_box;
+void cbx_init(ChoiceBox* cbx);
+void cbx_add(ChoiceBox* cbx, ChoiceInfo choice);
+
+struct ChoiceRenderContext {
+	
+};
 
 // Request for drawing text to the main text box.
 //

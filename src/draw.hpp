@@ -34,6 +34,27 @@ struct DbgRenderRequest {
 	DbgRenderRequest() { type = DbgRenderType::NONE; data = {0}; }
 };
 
+// In this game, GPU buffers map 1:1 to CPU buffers. For example, we have a CPU buffer of vertices
+// which we fill in each frame and send to the GPU verbatim. This context lets us fill the GPU buffers
+// while keeping track of the running offset.
+struct GlBufferContext {
+	int32 offset = 0;
+};
+void glctx_sub_data(GlBufferContext* ctx, Array<Vector2>* arr) {
+	glBufferSubData(GL_ARRAY_BUFFER,
+					ctx->offset,
+					arr->size * sizeof(Vector2),
+					arr->data);
+	ctx->offset += arr_bytes(arr);
+};
+void glctx_sub_data(GlBufferContext* ctx, Array<Vector4>* arr) {
+	glBufferSubData(GL_ARRAY_BUFFER,
+					ctx->offset,
+					arr->size * sizeof(Vector4),
+					arr->data);
+	ctx->offset += arr_bytes(arr);
+};
+
 struct RenderEngine {
 	uint32 buffer;
 	uint32 vao;
@@ -42,12 +63,12 @@ struct RenderEngine {
 	uint32 dbg_buffer;
 	uint32 dbg_vao;
 	
-	void remove_entity(int entity);
 	void render(float dt);
-	void render_text(float dt);
-	void render_dbg_geometry(float dt);
 };
 RenderEngine& get_render_engine();
 
 void init_gl();
 void init_render_engine();
+void render_mtb(float32 dt);
+void render_dbg_geometry();
+void send_gpu_commands();
