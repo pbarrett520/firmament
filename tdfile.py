@@ -117,15 +117,16 @@ class Builder(tdbuild.base_builder):
         super().run()
         
     def setup(self):
-        tdbuild.print_info('creating src/machine_conf.hpp')
         cwd = os.path.normpath(os.getcwd())
         cwd = os.path.join(cwd, '')
         cwd = cwd.replace('\\', '/')
-        print(cwd)
+        cwd = cwd.strip('/')
+        tdbuild.print_info('creating src/machine_conf.hpp')
+        tdbuild.print_info(f'project root is {cwd}')
         
         machine_conf = os.path.join(cwd, 'src', 'machine_conf.hpp')
 
-        code = f'#define fm_root "{cwd}";'
+        code = f'#define _fm_root "{cwd}"'
         with open(machine_conf, 'w') as f:
             f.write(code)
         pass
