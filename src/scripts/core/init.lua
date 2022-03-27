@@ -1,7 +1,7 @@
 inspect = require('inspect')
 
 function tdengine.initialize()
-  tdengine.screen('1080')
+  tdengine.screen('1440')
   tdengine.seed()
   tdengine.engine_stats = {}
   

@@ -25,7 +25,7 @@ tdengine.console_shortcuts = {
   },
   layout = {
 	help = 'use a predefined imgui layout',
-	proc = tdengine.layout
+	proc = function(l) tdengine.layout(l) end
   },
   list = {
 	help = 'list all commands and their help messages',
@@ -71,3 +71,4 @@ tdengine.console_shortcuts = {
 for name, data in pairs(tdengine.console_shortcuts) do
   _G[name] = data.proc
 end
+

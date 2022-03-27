@@ -34,6 +34,8 @@ void init_text_boxes() {
 	choice_box.dim = { right - left, top - bottom };
 	choice_box.pad = { .025f, .025f };
 	choice_box.dbg_color = colors::dbg_choicebox;
+
+	arr_init(&choice_box.choices, MAX_CHOICES);
 }
 
 void cbx_init(ChoiceBox* cbx) {
@@ -49,10 +51,10 @@ void cbx_clear(ChoiceBox* cbx) {
 };
 
 void choice_ctx_init(ChoiceRenderContext* ctx, FontInfo* font) {
-	ctx->font = ctx->font;
+	ctx->font = font;
 	ctx->point = {
 		choice_box.pos.x + choice_box.pad.x,
-		choice_box.pos.y + choice_box.pad.y + font->ascender
+		choice_box.pos.y - choice_box.pad.y - font->ascender
 	};
 }
 
@@ -62,7 +64,8 @@ void choice_ctx_advance(ChoiceRenderContext* ctx, GlyphInfo* glyph) {
 
 void choice_ctx_nextline(ChoiceRenderContext* ctx) {
 	ctx->point.x = choice_box.pos.x + choice_box.pad.x;
-	ctx->point.y += ctx->font->max_advance.y;
+	ctx->point.y -= ctx->font->max_advance.y;
+	ctx->point.y -= ctx->font->max_advance.y;
 }
 
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {

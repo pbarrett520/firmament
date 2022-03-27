@@ -95,6 +95,7 @@ void RenderEngine::render(float dt) {
 
 	render_dbg_geometry();
 	render_mtb(dt);
+	render_cbx();
 	send_gpu_commands();
 }
 

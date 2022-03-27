@@ -247,8 +247,8 @@ void register_lua_api() {
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
 	state["tdengine"]["submit_text"]               = &API::submit_text;
-	state["tdengine"]["submit_choice"]               = &API::submit_text;
-	state["tdengine"]["clear_choices"]               = &API::submit_text;
+	state["tdengine"]["submit_choice"]             = &API::submit_choice;
+	state["tdengine"]["clear_choices"]             = &API::clear_choices;
 	state["tdengine"]["submit_dbg_geometry"]       = &API::submit_dbg_geometry;
 	state["tdengine"]["setopts"]                   = &API::setopts;
 
