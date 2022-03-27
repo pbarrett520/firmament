@@ -69,6 +69,19 @@ void API::screen(const char* dimension) {
 	else if (!strcmp(dimension, "1440")) use_1440p();
 }
 
+void API::submit_choice(sol::table request) {
+	ChoiceBox* cbx = &choice_box;
+	ChoiceInfo* choice = arr_push(&cbx->choices);
+	
+	std::string text_copy = request["text"];
+	fm_assert(text_copy.size() < MAX_CHOICE_LEN);
+	strncpy(choice->text, text_copy.c_str(), MAX_CHOICE_LEN);
+}
+
+void API::clear_choices() {
+	cbx_clear(&choice_box);
+}
+
 void API::submit_text(sol::table request) {
 	auto& render_engine = get_render_engine();
 
@@ -234,6 +247,8 @@ void register_lua_api() {
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
 	state["tdengine"]["submit_text"]               = &API::submit_text;
+	state["tdengine"]["submit_choice"]               = &API::submit_text;
+	state["tdengine"]["clear_choices"]               = &API::submit_text;
 	state["tdengine"]["submit_dbg_geometry"]       = &API::submit_dbg_geometry;
 	state["tdengine"]["setopts"]                   = &API::setopts;
 

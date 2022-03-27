@@ -86,19 +86,53 @@ RenderEngine& get_render_engine() {
 	return engine;
 }
 
-void RenderEngine::render(float dt) {	
+void RenderEngine::render(float dt) {
+	arr_fill(&cr_buffer, colors::white);
+	arr_fastclear(&vx_buffer);
+	arr_fastclear(&tc_buffer);
+	arr_fastclear(&dbg_vx_buffer);
+	arr_fastclear(&dbg_cr_buffer);
+
 	render_dbg_geometry();
 	render_mtb(dt);
 	send_gpu_commands();
 }
 
+void render_cbx() {
+	ChoiceBox* cbx = &choice_box;
+	ChoiceRenderContext context;
+	choice_ctx_init(&context, font_infos[0]);
+	
+	arr_for(cbx->choices, choice) {
+		auto text = arr_view(choice->text);
+		arr_for(text, c) {
+			if (*c == 0) break;
+
+			GlyphInfo* glyph = glyph_infos[*c];
+
+			Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+			Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+
+			Vector2 gl_origin = { -1, 1 };
+			Vector2 offset = {
+				context.point.x - gl_origin.x,
+				context.point.y - gl_origin.y,
+			};
+			for (int32 i = 0; i < glyph->mesh->count; i++) {
+				vx[i].x += offset.x;
+				vx[i].y += offset.y;
+			}
+
+			choice_ctx_advance(&context, glyph);
+		}
+
+		choice_ctx_nextline(&context);
+	}
+}
+
 void render_dbg_geometry() {
 	if (!dbg_rq_buffer.size) return;
 	
-	// Fill the color buffer with the standard white color
-	arr_fastclear(&dbg_vx_buffer);
-	arr_fastclear(&dbg_cr_buffer);
-
 	arr_for(dbg_rq_buffer, rq) {
 		// Generate vertices for whatever kind of request it is
 		if (rq->type == DbgRenderType::RECT) {
@@ -136,11 +170,6 @@ void render_mtb(float32 dt) {
 	
 	TextRenderContext context;
 	text_ctx_init(&context, font_infos[0]);
-
-	// Fill the color buffer with the standard white color
-	arr_fill(&cr_buffer, colors::white);
-	arr_fastclear(&vx_buffer);
-	arr_fastclear(&tc_buffer);
 
 	arr_rfor(text_buffer, info) {
 		if (text_ctx_full(&context)) break;

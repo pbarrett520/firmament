@@ -39,10 +39,16 @@ struct ChoiceBox {
 ChoiceBox choice_box;
 void cbx_init(ChoiceBox* cbx);
 void cbx_add(ChoiceBox* cbx, ChoiceInfo choice);
+void cbx_clear(ChoiceBox* cbx);
 
 struct ChoiceRenderContext {
-	
+	FontInfo* font = nullptr;
+	Vector2 point;
 };
+void choice_ctx_init(ChoiceRenderContext* ctx, FontInfo* font);
+void choice_ctx_advance(ChoiceRenderContext* ctx, GlyphInfo* glyph);
+void choice_ctx_nextline(ChoiceRenderContext* ctx);
+
 
 // Request for drawing text to the main text box.
 //

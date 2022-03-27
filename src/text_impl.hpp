@@ -44,6 +44,27 @@ void cbx_add(ChoiceBox* cbx, ChoiceInfo choice) {
 	arr_push(&cbx->choices, choice);
 }
 
+void cbx_clear(ChoiceBox* cbx) {
+	arr_clear(&cbx->choices);
+};
+
+void choice_ctx_init(ChoiceRenderContext* ctx, FontInfo* font) {
+	ctx->font = ctx->font;
+	ctx->point = {
+		choice_box.pos.x + choice_box.pad.x,
+		choice_box.pos.y + choice_box.pad.y + font->ascender
+	};
+}
+
+void choice_ctx_advance(ChoiceRenderContext* ctx, GlyphInfo* glyph) {
+	ctx->point.x += glyph->advance.x;
+}
+
+void choice_ctx_nextline(ChoiceRenderContext* ctx) {
+	ctx->point.x = choice_box.pos.x + choice_box.pad.x;
+	ctx->point.y += ctx->font->max_advance.y;
+}
+
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
 	ctx->font = font;
 	ctx->point = {
@@ -52,6 +73,7 @@ void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
 	};
 
 	ctx->max_lines = (int32)floorf((main_box.dim.y - main_box.pad.y) / font->max_advance.y);
+	ctx->max_lines--;
 }
 
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {

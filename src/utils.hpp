@@ -301,6 +301,17 @@ ArrayView<T> arr_view(Array<T>* array, int32 index, int32 count) {
 	return view;
 }
 
+template<typename T, int32 N>
+ArrayView<T> arr_view(T (&array)[N]) {
+	ArrayView<T> view;
+	view.size = N;
+	view.capacity = N;
+	view.data = array;
+	
+	return view;
+}
+
+
 template<typename T>
 int32 arr_index(ArrayView<T>* array, T* element) {
 	int32 index = element - array->data;

@@ -70,5 +70,6 @@ RenderEngine& get_render_engine();
 void init_gl();
 void init_render_engine();
 void render_mtb(float32 dt);
+void render_cbx();
 void render_dbg_geometry();
 void send_gpu_commands();
