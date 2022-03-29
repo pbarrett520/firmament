@@ -264,6 +264,7 @@ function Editor:make_dialogue_node(kind)
 end
 
 function Editor:ded_load(name)
+  if #name == 0 then return end
   self.ded.loaded = name
   self.ded.selected = nil
   self.ded.connecting = nil
@@ -279,23 +280,22 @@ function Editor:ded_load(name)
   end
   
   -- Load the GUI data
-  filepath = 'layouts/dialogue/' .. name
-  package.loaded[filepath] = nil
-  status, self.ded.layout_data = pcall(require, filepath)
-  if not status then
+  self.ded.layout_data = dofile(tdengine.paths.dialogue_layout(name))
+  if not self.ded.layout_data then
 	self.ded.nodes = {}
+	self.self.ded.layout_data = {}
 	
-	tdengine.log('ded:@no_gui_layout:' .. filepath)
+	tdengine.log('no gui layout for dialogue, path = ' .. layout_path)
 	return
   end
 end
 
 function Editor:ded_save(name)
+  if #name == 0 then return end
   local serpent = require('serpent')
 
   -- Save out the engine data
-  local data_path = 'src/scripts/dialogue/' .. name .. '.lua'
-  data_path = tdengine.paths.absolute(data_path)
+  local data_path = tdengine.paths.dialogue(name)
   local data_file = io.open(data_path, 'w')
   if data_file then
 	data_file:write('return ')
@@ -306,8 +306,7 @@ function Editor:ded_save(name)
   end
 
   -- Save out the layout data
-  local layout_path = 'src/scripts/layouts/dialogue/' .. name .. '.lua'
-  layout_path = tdengine.paths.absolute(layout_path)
+  local layout_path = tdengine.paths.dialogue_layout(name)
   local layout_file = io.open(layout_path, 'w')
   if layout_file then
 	layout_file:write('return ')
@@ -327,33 +326,9 @@ function Editor:ded_new(name)
 	print('ded_new(): empty name')
 	return
   end
-  local serpent = require('serpent')
-  local empty = {}
 
-  -- Save out the engine data
-  local data_path = 'src/scripts/dialogue/' .. name .. '.lua'
-  data_path = tdengine.paths.absolute(data_path)
-  local data_file = io.open(data_path, 'w')
-  if data_file then
-	data_file:write('return ')
-	data_file:write(serpent.block(empty, { comment = false }))
-	data_file:close()
-  else
-	print('ded_new(): could not open data file: ' .. data_path)
-  end
-
-  -- Save out the layout data
-  local layout_path = 'src/scripts/layouts/dialogue/' .. name .. '.lua'
-  layout_path = tdengine.paths.absolute(layout_path)
-  local layout_file = io.open(layout_path, 'w')
-  if layout_file then
-	layout_file:write('return ')
-	layout_file:write(serpent.block(empty, { comment = false }))
-	layout_file:close()
-  else
-	print('ded_save(): could not open gui node data: ' .. layout_path)		 
-  end
-
+  self.ded.nodes = {}
+  self:ded_save(name)
   self:ded_load(name)
 end
 

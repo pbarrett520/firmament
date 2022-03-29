@@ -1,4 +1,6 @@
 inspect = require('inspect')
+dbg = require('debugger')
+dbg.auto_where = 3
 
 function tdengine.initialize()
   tdengine.screen('1440')
@@ -25,34 +27,14 @@ function tdengine.load_default_state()
 end
 
 function tdengine.load_dialogue(name)
-  -- Load the dialogue data itself
-  local filepath = 'dialogue/' .. name
-  package.loaded[filepath] = nil
-  
-  local status, dialogue = pcall(require, filepath)
-  if not status then
-	local message = 'tdengine.load_dialogue() :: could not find dialogue. '
-	message = message .. 'requested dialogue was: ' .. name
+  local dialogue = assert(loadfile(tdengine.paths.dialogue(name)))
+  if not dialogue then
+	local message = string.format('could not load dialogue, path = %s', tdengine.paths.dialogue(name))
+	tdengine.log(message)
 	print(message)
 
 	return nil
   end
   
-  return dialogue
-end
-
-function tdengine.handle_error(message)
-  -- Strip the message to just the script filename to make it more readable
-  local parts = split(message, ' ')
-  local path = parts[1]
-  local path_elements = split(path, '/')
-  local filename = path_elements[#path_elements]
-
-  local output = filename
-  for index = 2, #parts do
-	output = output .. ' ' .. parts[index]
-  end
-
-  -- And pass that into C++
-  return output
+  return dialogue()
 end

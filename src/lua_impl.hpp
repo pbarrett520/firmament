@@ -91,14 +91,49 @@ void init_lua() {
 	LoadImguiBindings();
 	register_lua_api();
 
-	// Then, script the base packages you need
+	// Bootstrapping: Get an error handler going, then call a function which will create tables
+	// so our base packages don't explode when we script them
 	lua_manager.script_file(fm_bootstrap);
+	
+	sol::protected_function error_handler = lua_manager.state["tdengine"]["handle_error"];
+	sol::protected_function::set_default_handler(error_handler);
+
+	sol::protected_function bootstrap = lua_manager.state["tdengine"]["bootstrap"];
+	auto result = bootstrap();
+	if (!result.valid()) {
+		sol::error err = result;
+		tdns_log.write(err.what());
+	}
+
+	// Copy all our path constants into Lua
+	lua_manager.state["tdengine"]["path_constants"]["fm_root"] = fm_root;
+	lua_manager.state["tdengine"]["path_constants"]["fm_root2"] = fm_root2;
+	lua_manager.state["tdengine"]["path_constants"]["fm_log"] = fm_log;
+	lua_manager.state["tdengine"]["path_constants"]["fm_source"] = fm_source;
+	lua_manager.state["tdengine"]["path_constants"]["fm_scripts"] = fm_scripts;
+	lua_manager.state["tdengine"]["path_constants"]["fm_core"] = fm_core;
+	lua_manager.state["tdengine"]["path_constants"]["fm_entities"] = fm_entities;
+	lua_manager.state["tdengine"]["path_constants"]["fm_components"] = fm_components;
+	lua_manager.state["tdengine"]["path_constants"]["fm_dialogues"] = fm_dialogues;
+	lua_manager.state["tdengine"]["path_constants"]["fm_dialogue"] = _fm_dialogue;
+	lua_manager.state["tdengine"]["path_constants"]["fm_dlglayouts"] = fm_dlglayouts;
+	lua_manager.state["tdengine"]["path_constants"]["fm_dlglayout"] = _fm_dlglayout;
+	lua_manager.state["tdengine"]["path_constants"]["fm_layouts"] = fm_layouts;
+	lua_manager.state["tdengine"]["path_constants"]["fm_layout"] = _fm_layout;
+	lua_manager.state["tdengine"]["path_constants"]["fm_libs"] = fm_libs;
+	lua_manager.state["tdengine"]["path_constants"]["fm_saves"] = fm_saves;
+	lua_manager.state["tdengine"]["path_constants"]["fm_state"] = fm_state;
+	lua_manager.state["tdengine"]["path_constants"]["fm_bootstrap"] = fm_bootstrap;
+	lua_manager.state["tdengine"]["path_constants"]["fm_assets"] = fm_assets;
+	lua_manager.state["tdengine"]["path_constants"]["fm_fonts"] = fm_fonts;
+	lua_manager.state["tdengine"]["path_constants"]["fm_gm_font_path"] = fm_gm_font_path;
+	lua_manager.state["tdengine"]["path_constants"]["fm_ed_font_path"] = fm_ed_font_path;
+	lua_manager.state["tdengine"]["path_constants"]["fm_atlas_gm"] = fm_atlas_gm;
+	
+	// Then, script the base packages you need
 	lua_manager.script_dir(fm_libs);
 	lua_manager.script_dir(fm_core);
 
-	// @firmament break out error code and load it first
-	sol::protected_function error_handler = lua_manager.state["tdengine"]["handle_error"];
-	sol::protected_function::set_default_handler(error_handler);
 }
 
 // Lua itself has been initialized, and we've loaded in other assets our scripts

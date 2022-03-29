@@ -1,3 +1,0 @@
-tdengine.dialogue_branches = {
-   
-}
