@@ -11,7 +11,7 @@ For non-programmers, this may be more difficult to understand. We use the tool `
 - Reboot, to ensure your path is updated with Git.
 - Make a GitHub account
 - Open a command prompt (e.g. by typing `cmd.exe` into the Windows search panel). Change directories to the place where you'd like to install the game.
-- Run `git checkout https://github.com/spaderthomas/firmament.git`
+- Run `git clone https://github.com/spaderthomas/firmament.git`
 
 Congratulations. You now have the source code. Follow the rest of the guide to build it.
 
