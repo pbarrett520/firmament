@@ -78,6 +78,8 @@ int main() {
 		
 		// Render 
 		render_engine.render(seconds_per_update);
+
+		ImGuiWrapper::EndAndRecover();
 		ImGui::Render();
 		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(g_window);

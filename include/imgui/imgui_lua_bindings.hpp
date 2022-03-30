@@ -574,7 +574,12 @@ namespace ImGuiWrapper {
 
 		strncpy(buffer->data, contents, buffer->size);
 	}
+
+	void EndAndRecover() {
+		ImGui::ErrorCheckEndFrameRecover(nullptr, nullptr);		
+	}
 }
+
 
 void LoadImguiBindings() {
   if (!Lua.raw_state) {
@@ -598,4 +603,6 @@ void LoadImguiBindings() {
   filter_type["Draw"]      = &ImGuiWrapper::TextFilter::Draw;
   filter_type["PassFilter"] = &ImGuiWrapper::TextFilter::PassFilter;
   Lua.state["imgui"]["TextFilter"] = filter_type;
+
+  Lua.state["imgui"]["End"] = &ImGuiWrapper::EndAndRecover;
 }

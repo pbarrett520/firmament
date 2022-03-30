@@ -27,6 +27,7 @@ extern "C" {
 #include "sol/sol.hpp"
 
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw_gl3.hpp"
 
 // STL

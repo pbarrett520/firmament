@@ -1,6 +1,11 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
 
+function crash()
+  	local x = {}
+	x()
+end
+
 function submit_oscillate(text)
   local request = {
 	text = text,
@@ -73,6 +78,7 @@ function Editor:init(params)
 	set_var_id = '##ded:detail:set_var',
 	set_val_id = '##ded:detail:set_val',
 	branch_on_id = '##ded:detail:set_branch_var',
+	next_dialogue_id = '##ded:detail:next_dialogue',
 	branch_val_id = '##ded:detail:set_branch_val',
 	empty_name_id = '##ded:detail:set_empty_name',
   }
@@ -131,14 +137,10 @@ function Editor:update(dt)
   self:handle_input()
 
   imgui.SetNextWindowSize(300, 300)
-  imgui.Begin('engine', true)
 
   self:engine_viewer()
   self:state_viewer()
   self:scene_viewer()
-  
-  imgui.End() -- dashboard
-
   self:dialogue_editor(dt)
 end
 
@@ -161,6 +163,7 @@ function Editor:handle_input()
 end
 
 function Editor:engine_viewer()
+  imgui.Begin('engine', true)
   imgui.Text('frame: ' .. tostring(self.frame))
   imgui.Text('fps: ' .. tostring(self.display_framerate))
 
@@ -171,6 +174,8 @@ function Editor:engine_viewer()
   imgui.extensions.Vec2('cursor', cursor)
 
   imgui.extensions.Table(tdengine.engine_stats.scroll);
+  
+  imgui.End()
 end
 
 function Editor:draw_entity_viewer()
@@ -257,6 +262,8 @@ function Editor:make_dialogue_node(kind)
 	node.internal_name = 'Empty'
   elseif kind == 'Branch' then
 	node.branch_on = 'buns'
+  elseif kind == 'Switch' then
+	node.next_dialogue = 'empty_switch'
   end
   
   return node
@@ -346,6 +353,8 @@ function Editor:ded_short_text(node)
 	 return node.internal_name
   elseif node.kind == 'Branch' then
 	 return node.branch_on
+  elseif node.kind == 'Switch' then
+	 return node.next_dialogue
   else
 	print('Editor:ded_short_text(): missing entry: ' .. node.kind)
   end
@@ -372,6 +381,10 @@ function Editor:ded_select(id, node)
   
   if node.kind == 'Branch' then
 	imgui.InputTextSetContents(self.ded.branch_on_id, node.branch_on)
+  end
+
+  if node.kind == 'Switch' then
+	imgui.InputTextSetContents(self.ded.next_dialogue_id, node.next_dialogue)
   end
   
   if node.kind == 'Set' then
@@ -425,6 +438,8 @@ function Editor:dialogue_editor(dt)
   save = save or imgui.InputText(id)
   if save then
 	self:ded_save(imgui.InputTextContents(id))
+	self.ded.loaded = imgui.InputTextContents(id)
+	imgui.InputTextClear(id)
   end
 
   id = '##ded_load'
@@ -453,6 +468,13 @@ function Editor:dialogue_editor(dt)
 
   id = '##ded_run'
   if imgui.Button('Run', button_size.x, button_size.y) then
+	tdengine.layout('tiny')
+	local controller = tdengine.find_entity('DialogueController')
+	if controller then
+	  tdengine.destroy_entity(controller.id)
+	end
+	self:select_entity(nil)
+	
 	if self.ded.loaded then
 	  local eid = tdengine.create_entity('DialogueController')
 	  local controller = tdengine.find_entity('DialogueController')
@@ -509,6 +531,15 @@ function Editor:dialogue_editor(dt)
 	   end
 	end
 
+	if selected.kind == 'Switch' then
+	   imgui.extensions.VariableName('next_dialogue')
+	   imgui.SameLine()
+
+	   if imgui.InputText(self.ded.next_dialogue_id, 64) then
+		  selected.next_dialogue = imgui.InputTextContents(self.ded.next_dialogue_id)
+	   end
+	end
+		
 	if selected.kind == 'Empty' then
 	  imgui.extensions.VariableName('internal name')
 	  imgui.SameLine()
@@ -857,27 +888,16 @@ function Editor:dialogue_editor(dt)
   if rclick and in_window and not on_node then
 	imgui.OpenPopup('context_menu')
   end
-  
+
   imgui.PushStyleVar_2(imgui.constant.StyleVar.WindowPadding, 8, 8)
   if imgui.BeginPopup('context_menu') then
 	if imgui.TreeNode('Add Node') then
 	  local node = nil
-	  if imgui.MenuItem('Text') then
-		node = self:make_dialogue_node('Text')
+	  for i, kind in pairs(tdengine.node_kinds) do
+		if imgui.MenuItem(kind) then
+		  node = self:make_dialogue_node(kind)
+		end
 	  end
-	  if imgui.MenuItem('Choice') then
-		node = self:make_dialogue_node('Choice')
-	  end
-	  if imgui.MenuItem('Set') then
-		node = self:make_dialogue_node('Set')
-	  end
-	  if imgui.MenuItem('Empty') then
-		node = self:make_dialogue_node('Empty')
-	  end
-	  if imgui.MenuItem('Branch') then
-		node = self:make_dialogue_node('Branch')
-	  end
-
 
 	  if node then
 		self.ded.nodes[node.uuid] = node
