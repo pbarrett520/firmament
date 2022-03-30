@@ -158,10 +158,10 @@ Array<T> arr_slice(T* data, int32 size) {
 }
 
 template<typename T>
-int32 arr_index(Array<T>* array, T* element) {
-	int32 index = element - array.data;
-	assert(index >= 0);
-	assert(index < array.size);
+int32 arr_indexof(Array<T>* array, T* element) {
+	int32 index = element - array->data;
+	fm_assert(index >= 0);
+	fm_assert(index < array->size);
 	return index;
 }
 
@@ -313,7 +313,7 @@ ArrayView<T> arr_view(T (&array)[N]) {
 
 
 template<typename T>
-int32 arr_index(ArrayView<T>* array, T* element) {
+int32 arr_indexof(ArrayView<T>* array, T* element) {
 	int32 index = element - array->data;
 	fm_assert(index >= 0);
 	fm_assert(index < array->size);
@@ -750,7 +750,8 @@ float Sine_Func::eval_at(float point) {
 	return amp * glm::sin(period * point - phase_shift);
 }
 
-size_t hash_label(const char* label) {
+size_t hash_label(const char* label) {
+
 	constexpr size_t prime = 31;
 	
 	size_t result = 0;

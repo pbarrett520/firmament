@@ -71,11 +71,16 @@ void API::screen(const char* dimension) {
 
 void API::submit_choice(sol::table request) {
 	ChoiceBox* cbx = &choice_box;
-	ChoiceInfo* choice = arr_push(&cbx->choices);
+	ChoiceInfo* choice = arr_push(&choice_buffer);
 	
 	std::string text_copy = request["text"];
 	fm_assert(text_copy.size() < MAX_CHOICE_LEN);
 	strncpy(choice->text, text_copy.c_str(), MAX_CHOICE_LEN);
+}
+
+void API::set_hovered_choice(int32 index) {
+	ChoiceBox* cbx = &choice_box;
+	cbx->hovered = index;
 }
 
 void API::clear_choices() {
@@ -112,7 +117,7 @@ void API::submit_text(sol::table request) {
 		point.x += glyph->advance.x;
 
 		if (point.x >= max_x) {
-			arr_push(&lbreaks, arr_index(&text, c));
+			arr_push(&lbreaks, arr_indexof(&text, c));
 			point.x = box->pos.x + box->pad.x;
 			point.y -= font->descender;
 		}
@@ -148,6 +153,14 @@ void API::submit_text(sol::table request) {
 
 	arr_push(&text_buffer, info);
 }
+
+void API::clear_mtb() {
+	arr_clear(&text_buffer);
+	arr_clear(&effect_buffer);
+
+	
+}
+
 
 void API::submit_dbg_geometry(sol::table request) {
 	auto& render_engine = get_render_engine();
@@ -247,7 +260,9 @@ void register_lua_api() {
 	state["tdengine"]["resume_updates"]            = &resume_updates;
 	state["tdengine"]["set_imgui_demo"]            = &set_imgui_demo;
 	state["tdengine"]["submit_text"]               = &API::submit_text;
+	state["tdengine"]["clear_mtb"]                 = &API::clear_mtb;
 	state["tdengine"]["submit_choice"]             = &API::submit_choice;
+	state["tdengine"]["set_hovered_choice"]        = &API::set_hovered_choice;
 	state["tdengine"]["clear_choices"]             = &API::clear_choices;
 	state["tdengine"]["submit_dbg_geometry"]       = &API::submit_dbg_geometry;
 	state["tdengine"]["setopts"]                   = &API::setopts;

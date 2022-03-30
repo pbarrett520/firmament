@@ -27,12 +27,15 @@ function tdengine.load_default_state()
 end
 
 function tdengine.load_dialogue(name)
-  local dialogue = assert(loadfile(tdengine.paths.dialogue(name)))
+  if name == nil then
+	tdengine.log_to('could not load dialogue, name = nil', tdengine.log_flags.console)	
+	return nil
+  end
+  
+  local dialogue = loadfile(tdengine.paths.dialogue(name))
   if not dialogue then
 	local message = string.format('could not load dialogue, path = %s', tdengine.paths.dialogue(name))
-	tdengine.log(message)
-	print(message)
-
+	tdengine.log_to(message, tdengine.log_flags.console)	
 	return nil
   end
   

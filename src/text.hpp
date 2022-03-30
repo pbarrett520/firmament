@@ -34,7 +34,7 @@ struct ChoiceBox {
 	Vector2 pad;
 	Vector4 dbg_color;
 
-	Array<ChoiceInfo> choices;
+	int32 hovered = 0;
 };
 ChoiceBox choice_box;
 void cbx_init(ChoiceBox* cbx);

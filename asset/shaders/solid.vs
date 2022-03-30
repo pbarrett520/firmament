@@ -5,7 +5,7 @@ layout (location = 1) in vec4 color;
 out vec4 fs_color;
 
 void main() {
-	gl_Position = vec4(pos, 1.f, 1.f);
+	gl_Position = vec4(pos, 0.f, 1.f);
 
 	fs_color = color;
 }	

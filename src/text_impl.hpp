@@ -34,20 +34,18 @@ void init_text_boxes() {
 	choice_box.dim = { right - left, top - bottom };
 	choice_box.pad = { .025f, .025f };
 	choice_box.dbg_color = colors::dbg_choicebox;
-
-	arr_init(&choice_box.choices, MAX_CHOICES);
 }
 
 void cbx_init(ChoiceBox* cbx) {
-	arr_init(&cbx->choices, MAX_CHOICES);
+	arr_init(&choice_buffer, MAX_CHOICES);
 }
 
 void cbx_add(ChoiceBox* cbx, ChoiceInfo choice) {
-	arr_push(&cbx->choices, choice);
+	arr_push(&choice_buffer, choice);
 }
 
 void cbx_clear(ChoiceBox* cbx) {
-	arr_clear(&cbx->choices);
+	arr_clear(&choice_buffer);
 };
 
 void choice_ctx_init(ChoiceRenderContext* ctx, FontInfo* font) {

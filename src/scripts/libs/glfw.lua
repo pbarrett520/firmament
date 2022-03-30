@@ -1,5 +1,5 @@
-local GLFW = {}
-GLFW.Keys = {
+local glfw = {}
+glfw.keys = {
   SPACE             = 32,
   APOSTROPHE        = 39, 
   COMMA             = 44, 
@@ -156,4 +156,4 @@ GLFW.Keys = {
   JOYSTICK_LAST         = JOYSTICK_16,
 }
 
-return GLFW
+return glfw

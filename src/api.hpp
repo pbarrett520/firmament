@@ -23,7 +23,9 @@ void        log_to(const char* message, uint8_t flags);
 
 // Rendering
 void        submit_text(sol::table request);
+void        clear_mtb();
 void        submit_choice(sol::table request);
+void        set_hovered_choice(int32 index);
 void        clear_choices();
 void        submit_dbg_geometry(sol::table request);
 

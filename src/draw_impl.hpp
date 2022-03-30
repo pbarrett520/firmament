@@ -104,13 +104,23 @@ void render_cbx() {
 	ChoiceRenderContext context;
 	choice_ctx_init(&context, font_infos[0]);
 	
-	arr_for(cbx->choices, choice) {
+	arr_for(choice_buffer, choice) {
+		int32 index = arr_indexof(&choice_buffer, choice);
+			
 		auto text = arr_view(choice->text);
 		arr_for(text, c) {
 			if (*c == 0) break;
-
 			GlyphInfo* glyph = glyph_infos[*c];
 
+			// If this character is part of the hovered choice, fill in the color buffer's entries for its
+			// vertices with the hovered color
+			if (index == cbx->hovered) {
+				int32 cr_offset = vx_buffer.size;
+				Array<Vector4> cr = arr_slice(&cr_buffer, cr_offset, 6);
+				arr_fill(&cr, colors::red);
+			}
+
+			// Push vertices and texture coordinates to text buffers
 			Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
 			Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
 

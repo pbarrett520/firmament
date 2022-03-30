@@ -1,4 +1,4 @@
-local GLFW = require('glfw')
+local glfw = require('glfw')
 local inspect = require('inspect')
 
 function submit_oscillate(text)
@@ -144,18 +144,18 @@ end
 
 function Editor:handle_input()
   -- If we're in ImGui mode, the input won't be reported to editor channel
-  if self.input:was_pressed(GLFW.Keys.RIGHT_ALT, tdengine.InputChannel.ImGui) then
+  if self.input:was_pressed(glfw.keys.RIGHT_ALT, tdengine.InputChannel.ImGui) then
     tdengine.toggle_console()
   end
 
-  if self.input:was_pressed(GLFW.Keys.RIGHT_ALT) then
+  if self.input:was_pressed(glfw.keys.RIGHT_ALT) then
     tdengine.toggle_console()
   end
 
-  if self.input:chord(GLFW.Keys.ALT, GLFW.Keys.J) then
+  if self.input:chord(glfw.keys.ALT, glfw.keys.J) then
 	 tdengine.previous_layout()
   end
-  if self.input:chord(GLFW.Keys.ALT, GLFW.Keys.L) then
+  if self.input:chord(glfw.keys.ALT, glfw.keys.L) then
 	 tdengine.next_layout()
   end
 end
@@ -419,37 +419,48 @@ function Editor:dialogue_editor(dt)
   end
 
   local id = '##ded_save_as'
-  if imgui.Button('Save As', button_size.x, button_size.y) then
+  local save = false
+  save = save or imgui.Button('Save As', button_size.x, button_size.y)
+  imgui.SameLine()
+  save = save or imgui.InputText(id)
+  if save then
 	self:ded_save(imgui.InputTextContents(id))
   end
-  imgui.SameLine()
-  imgui.InputText(id)
 
   id = '##ded_load'
-  if imgui.Button('Load', button_size.x, button_size.y) then
+  local do_load = imgui.Button('Load', button_size.x, button_size.y)
+  imgui.SameLine()
+  do_load = do_load or imgui.InputText(id)
+  if do_load then
 	-- Because you can still click this and have the grid hidden
 	tdengine.layout('ded') 
 
 	self:ded_load(imgui.InputTextContents(id))
 	imgui.InputTextClear(id)
   end
-  imgui.SameLine()
-  imgui.InputText(id)
 
   id = '##ded_new'
-  if imgui.Button('New', button_size.x, button_size.y) then
+  local do_new = imgui.Button('New', button_size.x, button_size.y)
+  imgui.SameLine()
+  do_new = do_new or imgui.InputText(id)
+  if do_new then
 	-- Because you can still click this and have the grid hidden
 	tdengine.layout('ded') 
 
 	self:ded_new(imgui.InputTextContents(id))
 	imgui.InputTextClear(id)
   end
-  imgui.SameLine()
-  imgui.InputText(id)
 
   id = '##ded_run'
   if imgui.Button('Run', button_size.x, button_size.y) then
-	
+	if self.ded.loaded then
+	  local eid = tdengine.create_entity('DialogueController')
+	  local controller = tdengine.find_entity('DialogueController')
+	  controller:begin(self.ded.loaded)
+	  
+	  tdengine.clear_mtb()
+	  tdengine.clear_choices()
+	end
   end
 
   imgui.Separator()
@@ -898,16 +909,16 @@ function Editor:dialogue_editor(dt)
 
 	 self.ded.scroll_per_second = 1000
 	 local delta = tdengine.vec2(0, 0)
- 	 if self.input:is_down(GLFW.Keys.W) then
+ 	 if self.input:is_down(glfw.keys.W) then
 		delta.y = delta.y + (self.ded.scroll_per_second * dt)
 	 end
- 	 if self.input:is_down(GLFW.Keys.S) then
+ 	 if self.input:is_down(glfw.keys.S) then
 		delta.y = delta.y - (self.ded.scroll_per_second * dt)
 	 end
- 	 if self.input:is_down(GLFW.Keys.A) then
+ 	 if self.input:is_down(glfw.keys.A) then
 		delta.x = delta.x + (self.ded.scroll_per_second * dt)
 	 end
- 	 if self.input:is_down(GLFW.Keys.D) then
+ 	 if self.input:is_down(glfw.keys.D) then
 		delta.x = delta.x - (self.ded.scroll_per_second * dt)
 	 end
 	 

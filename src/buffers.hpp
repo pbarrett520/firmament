@@ -7,6 +7,8 @@ Array<Vector2>        tc_buffer;
 Array<Vector4>        cr_buffer;
 #define TEXT_BUFFER_SIZE 4096
 Array<TextRenderInfo> text_buffer;
+#define CHOICE_BUFFER_SIZE 16
+Array<ChoiceInfo> choice_buffer;
 #define EFFECT_BUFFER_SIZE TEXT_BUFFER_SIZE * 2 // Two effects per text chunk (on average)
 Array<TextEffect>     effect_buffer;
 #define DBG_GEOMETRY_RQ_BUFFER_SIZE 128
@@ -33,6 +35,7 @@ void init_buffers() {
 	arr_init(&tc_buffer,     TC_BUFFER_SIZE);
 	arr_init(&cr_buffer,     COLOR_BUFFER_SIZE);
 	arr_init(&text_buffer,   TEXT_BUFFER_SIZE);
+	arr_init(&choice_buffer, CHOICE_BUFFER_SIZE);
 	arr_init(&effect_buffer, EFFECT_BUFFER_SIZE);
 	arr_init(&dbg_rq_buffer, DBG_GEOMETRY_RQ_BUFFER_SIZE);
 	arr_init(&dbg_vx_buffer, DBG_GEOMETRY_VX_BUFFER_SIZE);
