@@ -20,6 +20,60 @@ RULE #8: embrace the rectangle
 * tags
 * pin
 * log
+** patrick 1
+deep time --
+
+machines themselves are what change, they change the humans or use the humans as
+machines
+
+the machine forms this alien form of sentience
+
+the machine is whodunit
+
+the machine is multiple consciousnesses, self sustaining sections.
+- the machine was originally built to serve material functions.
+- one section is meant to regulate life support -- it begins exploiting people
+  to get the materials it needs
+
+some substance that kept the core going that slowly leaked out and caused the
+machine to go insane
+
+patron machine entities -- people worship what part of the machine they maintain
+
+more to the environment than sterility and stainless walls -- something for the
+player to explore and discover
+
+more conflict! the systems in the machine are getting less efficient -- the
+factions fundamentally disagree with the way to solve the problem
+- a divine entity, tampering with it would be an affront to god
+- a machine, we should try to fix it
+
+machine malfunctions change the ecosystem, if you fix the machine then you
+destroy changes
+
+not a slip of paper -- there are not other manufactured things
+
+a one-man cargo cult character who gives you valuable information
+
+dialogue: how people feel and think (about others, their relationships, the
+setting, or themselves). vignettes: concepts for characters or setting, then
+make the vignettes and dialogue around that (one of the above things). not about
+things, how people feel about things.
+
+a workshop of twisted inventions, tried to fuck with the technology in a way
+that ended horrifically. some kind of substance to his ideology. arbitrary
+matter transmuting? different groups have different things that they've heard
+about him. emphasize: there is a clear material benefit to doing what he is
+doing, but it is dangerous
+
+each faction thinks that the degradation of the machine is the other faction
+fucking with them
+
+cache is a go
+
+if machine is managing resources of humans themselves
+
+do a few draft dialogues of the first or two scene of the game. 
 ** 03/22/2022
 the most important thing is to write the actual mystery. another clue
 from disco elysium: you have several major players in the game
@@ -160,3 +214,4 @@ technically, what do i need for the proof of concept?
 - make choices
 - save and load state
 - load the game with an arbitrary state + dialogue
+
