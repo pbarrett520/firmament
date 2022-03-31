@@ -27,8 +27,8 @@ function tdengine.bootstrap()
   tdengine.paths = {}
   tdengine.path_constants = {}
 
-  tdengine.current_layout = 'default'
-  tdengine.layout_stack = { 'default' }
+  tdengine.current_layout = { name = 'default', selected_tab = 0 }
+  tdengine.layout_stack = { { name = 'default', selected_tab = 0 } }
   tdengine.layout_index = 1
 
   tdengine.console_pipe = ''

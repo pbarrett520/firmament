@@ -1,12 +1,30 @@
 function tdengine.layout(name)
-  tdengine.push_layout(tdengine.current_layout)
+  -- Update stuff in C++
   tdengine.use_layout(name)
-  tdengine.current_layout = name
+  tdengine.thing(tdengine.current_layout.selected_tab)
+
+  -- Update what we're keeping track of in Lua
+  local info = {
+	name = name,
+	selected_tab = imgui.GetSelectedTabId()
+  }
+  tdengine.push_layout(info)
+  tdengine.current_layout = info
 end
 
-function tdengine.push_layout(name)
-  delete(tdengine.layout_stack, name)
-  table.insert(tdengine.layout_stack, name)
+function tdengine.push_layout(layout_info)
+  for i, info in pairs(tdengine.layout_stack) do
+	if info.name == layout_info.name then
+	  tdengine.layout_stack[i] = nil
+	end
+
+	-- Shift everything up
+	if tdengine.layout_stack[i] == nil then
+	  tdengine.layout_stack[i] = tdengine.layout_stack[i + 1]
+	end
+  end
+
+  table.insert(tdengine.layout_stack, layout_info)
 end
 
 function tdengine.next_layout()
@@ -14,8 +32,9 @@ function tdengine.next_layout()
   local index = tdengine.layout_index
   tdengine.layout_index = (index % stack_size) + 1
   
-  local layout = tdengine.layout_stack[tdengine.layout_index]
-  tdengine.use_layout(layout)   
+  local layout_info = tdengine.layout_stack[tdengine.layout_index]
+  tdengine.use_layout(layout_info.name)
+  imgui.MakeTabVisible(layout_info.selected_tab)
 end
 
 
@@ -24,6 +43,7 @@ function tdengine.previous_layout()
   local index = tdengine.layout_index - 2
   tdengine.layout_index = (index % stack_size) + 1
   
-  local layout = tdengine.layout_stack[tdengine.layout_index]
-  tdengine.use_layout(layout)   
+  local layout_info = tdengine.layout_stack[tdengine.layout_index]
+  tdengine.use_layout(layout_info.name)
+  imgui.MakeTabVisible(layout_info.selected_tab)
 end

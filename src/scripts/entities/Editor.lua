@@ -154,11 +154,14 @@ function Editor:handle_input()
     tdengine.toggle_console()
   end
 
-  if self.input:chord(glfw.keys.ALT, glfw.keys.J) then
-	 tdengine.previous_layout()
-  end
-  if self.input:chord(glfw.keys.ALT, glfw.keys.L) then
-	 tdengine.next_layout()
+  local channels = { tdengine.InputChannel.ImGui, tdengine.InputChannel.Editor }
+  for i, channel in pairs(channels) do
+	if self.input:chord(glfw.keys.ALT, glfw.keys.J, channel) then
+	  tdengine.previous_layout()
+	end
+	if self.input:chord(glfw.keys.ALT, glfw.keys.L, channel) then
+	  tdengine.next_layout()
+	end
   end
 end
 

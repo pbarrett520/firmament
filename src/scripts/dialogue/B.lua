@@ -12,7 +12,7 @@ return {
     },
     is_entry_point = true,
     kind = "Text",
-    text = "You are in a different realm than before. You are listening to Fire on the Mountain now. Press the space bar to return to comfort and safety.",
+    text = "You are in the B realm. Press the space bar to return to comfort and safety.",
     uuid = "bda05b50-0418-4ce8-803b-fbb66cc91260",
     who = "unknown"
   }

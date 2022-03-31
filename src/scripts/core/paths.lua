@@ -5,3 +5,7 @@ end
 function tdengine.paths.dialogue_layout(name)
   return string.format(tdengine.path_constants.fm_dlglayout, name)
 end
+
+function tdengine.paths.layout(name)
+  return string.format(tdengine.path_constants.fm_layout, name)
+end

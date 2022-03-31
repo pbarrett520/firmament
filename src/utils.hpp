@@ -628,6 +628,8 @@ bool is_lua(std::string& path) {
 
 // Set this string from a script, and we will pick up a new layout next tick
 char layout_to_load[MAX_PATH_LEN] = {0};
+ImGuiID set_to_selected = 0;
+bool doit = false;
 
 float framerate = 0.f;
 

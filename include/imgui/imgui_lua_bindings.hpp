@@ -578,6 +578,20 @@ namespace ImGuiWrapper {
 	void EndAndRecover() {
 		ImGui::ErrorCheckEndFrameRecover(nullptr, nullptr);		
 	}
+
+	void MakeTabVisible(ImGuiID id) {
+		ImGuiWindow* window = ImGui::FindWindowByID(id);
+		if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
+			return;
+		window->DockNode->TabBar->NextSelectedTabId = window->ID;;
+	}
+
+	ImGuiID GetSelectedTabId() {
+		ImGuiWindow* window = ImGui::FindWindowByName("engine");
+		if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
+			return 0;
+		return window->DockNode->TabBar->SelectedTabId;
+	}
 }
 
 
@@ -598,6 +612,8 @@ void LoadImguiBindings() {
   Lua.state["imgui"]["InputTextClear"] = &ImGuiWrapper::InputTextClear;
   Lua.state["imgui"]["InputTextContents"] = &ImGuiWrapper::InputTextContents;
   Lua.state["imgui"]["InputTextSetContents"] = &ImGuiWrapper::InputTextSetContents;
+  Lua.state["imgui"]["MakeTabVisible"] = &ImGuiWrapper::MakeTabVisible;
+  Lua.state["imgui"]["GetSelectedTabId"] = &ImGuiWrapper::GetSelectedTabId;
 
   sol::usertype<ImGuiWrapper::TextFilter> filter_type = Lua.state.new_usertype<ImGuiWrapper::TextFilter>("TextFilter");
   filter_type["Draw"]      = &ImGuiWrapper::TextFilter::Draw;

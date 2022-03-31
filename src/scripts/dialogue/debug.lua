@@ -16,7 +16,7 @@ return {
     },
     is_entry_point = false,
     kind = "Choice",
-    text = "This is the first choice.",
+    text = "This is the first choice, and it will take you to the A realm.",
     uuid = "954f5b67-773b-470d-9226-66288e370b8c"
   },
   ["17090bdf-8560-4f83-bc8b-bf456699f7d9"] = {
@@ -39,7 +39,7 @@ return {
     },
     is_entry_point = false,
     kind = "Choice",
-    text = "This is the second choice.",
+    text = "This is the second choice, and it will take you to the B realm.",
     uuid = "b94b2256-2f3b-437d-9366-0ac496fa80d3"
   }
 }

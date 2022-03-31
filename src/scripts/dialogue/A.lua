@@ -12,7 +12,7 @@ return {
     },
     is_entry_point = true,
     kind = "Text",
-    text = "You are listening to Scarlet Begonias. Press the space bar to enter a new realm.",
+    text = "You are in the A realm. Press the space bar to enter a new realm.",
     uuid = "b8b192e6-b0d1-4626-9244-1ccf7fe3309b",
     who = "unknown"
   }

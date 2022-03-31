@@ -143,6 +143,8 @@ function DialogueController:enter()
 	  }
 	  tdengine.submit_choice(request)
 	end
+	self.hovered = 1
+	tdengine.set_hovered_choice(self.hovered - 1)
 	return
   end
 
