@@ -237,8 +237,8 @@ function contains(t, k)
   return t[k] ~= nil
 end
 
-function ternary(cond, a, b)
-  if cond then return a else return b end
+function ternary(cond, if_true, if_false)
+  if cond then return if_true else return if_false end
 end
 
 function average(a, b)

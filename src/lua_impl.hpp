@@ -20,14 +20,17 @@ void LuaState::script_file(const char* path) {
 		return pfr;
 	});
 
-	if (!result.valid()) {
+	if (result.valid()) {
+		tdns_log.write(Log_Flags::File, "scripted file: path = %s", path);
+	} else {
 		sol::error error = result;
 		tdns_log.write("failed to script file: path = %s", path);
 		tdns_log.write(error.what());
+		
 	}
 
 	file_watcher.watch(path, [this](const char* path){
-		//tdns_log.write("@reload_script: " + path.path);
+		tdns_log.write("reloaded script: %s", path);
 		this->script_file(path);
 	});
 }

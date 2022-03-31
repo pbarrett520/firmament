@@ -19,6 +19,15 @@ RULE #7: anything is possible
 RULE #8: embrace the rectangle
 * tags
 * pin
+** current task list
+- [ ] traverse set nodes
+- [ ] traverse branch nodes
+- [ ] handle choice nodes
+- [ ] write the fade in effect
+- [ ] fast forward the fade in effect
+- [ ] validate dialogue graphs
+- [ ] edit non-boolean state from the editor
+- [ ] fix editor layout flashing
 * log
 ** patrick 1
 deep time --
