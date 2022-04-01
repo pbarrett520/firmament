@@ -22,7 +22,7 @@ function tdengine.load_default_state()
   -- like in confer paths -- hardcode/detect base path and build from there
   local state = tdengine.fetch_module_data('state/state')
   if not state then tdengine.log('@load_default_state_failure'); return end
-  
+
   tdengine.state = state
 end
 

@@ -1,4 +1,15 @@
 return {
+  ["3fd4b04b-2fc5-433e-bf0d-469c07d4d371"] = {
+    children = {
+      "21020ad1-307b-4707-90aa-6627fceaf382",
+      "242e8ef4-ce81-4487-b5fd-946284d8f1e0"
+    },
+    is_entry_point = false,
+    kind = "Text",
+    text = "Nested branches.",
+    uuid = "3fd4b04b-2fc5-433e-bf0d-469c07d4d371",
+    who = "Nested Branches"
+  },
   ["05a40a8b-06da-47f9-8430-66d4dd118721"] = {
     children = {},
     is_entry_point = false,
@@ -8,14 +19,23 @@ return {
   },
   ["6f03bb85-5c22-4900-9ac8-4bc1fd6bf40c"] = {
     children = {
-      "242e8ef4-ce81-4487-b5fd-946284d8f1e0",
-      "21020ad1-307b-4707-90aa-6627fceaf382"
+      "22f6aa31-4a79-487c-8f6f-03829512c6a7"
     },
     is_entry_point = true,
     kind = "Text",
-    text = "There are choices after this.",
+    text = "This will set engine.set_me",
     uuid = "6f03bb85-5c22-4900-9ac8-4bc1fd6bf40c",
-    who = "unknown"
+    who = "Set State"
+  },
+  ["22f6aa31-4a79-487c-8f6f-03829512c6a7"] = {
+    children = {
+      "bd388301-b223-492a-9f1d-f834a6bdc5e5"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "22f6aa31-4a79-487c-8f6f-03829512c6a7",
+    value = true,
+    variable = "engine.set_me"
   },
   ["242e8ef4-ce81-4487-b5fd-946284d8f1e0"] = {
     branch_on = "engine.branch",
@@ -64,6 +84,14 @@ return {
     kind = "Choice",
     text = "False, True",
     uuid = "a8984811-56d7-4e02-b8c9-004281d6aed4"
+  },
+  ["bd388301-b223-492a-9f1d-f834a6bdc5e5"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "The variable is set",
+    uuid = "bd388301-b223-492a-9f1d-f834a6bdc5e5",
+    who = "unknown"
   },
   ["ffbc5c5a-c228-4e91-85bf-511ad3c1706c"] = {
     branch_on = "engine.branch1",

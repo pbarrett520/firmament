@@ -81,8 +81,8 @@ function DialogueController:advance()
 	self.current = self:find_entry_node()
 	return
   end
-  
-  if self.current.kind == 'Text' then
+
+  function simple_advance(self)
 	if are_choices_next(self.current) then
 	  -- The next nodes are a set of choices. Wrap them in one node to make it easy to handle
 	  local internal = {
@@ -90,13 +90,16 @@ function DialogueController:advance()
 		choices = collect_choices(self.current, self.data)
 	  }
 	  self.current = internal
-	  return
 	else
 	  -- Easy case: We're linearly moving to the singular next node on this path. 
 	  local child_id = self.current.children[1]
 	  self.current = self.data[child_id]
-	  return
 	end
+  end
+  
+  if self.current.kind == 'Text' then
+	simple_advance(self)
+	return
   end
 
   if self.current.kind == 'InternalChoice' then
@@ -113,7 +116,11 @@ function DialogueController:advance()
   end
 
   
-  if self.current.kind == 'Set' then return end
+  if self.current.kind == 'Set' then
+	simple_advance(self)
+	return
+  end
+  
   if self.current.kind == 'Branch' then return end
 end
 
@@ -122,6 +129,7 @@ end
 -- controller will continue to advance through nodes. If a node requires processing to
 -- complete, it should set the state accordingly
 function DialogueController:enter()
+  print(string.format('entering %s', self.current.kind))
   if self.current.kind == 'Text' then
 	self.state = state.processing
 	
@@ -155,7 +163,15 @@ function DialogueController:enter()
   end
 
   
-  if self.current.kind == 'Set' then return end
+  if self.current.kind == 'Set' then
+	local parent = parent(tdengine.state, self.current.variable)
+	local keys = split(self.current.variable, '.')
+	local var_key = keys[#keys]
+	parent[var_key] = self.current.value
+	print(inspect(parent))
+	return
+  end
+  
   if self.current.kind == 'Branch' then return end
 end
 
@@ -217,6 +233,8 @@ function DialogueController:find_entry_node()
    return nil
 end
 
+
+
 function is_conditional(node)
   return node and node.kind == 'Branch'
 end
@@ -227,12 +245,7 @@ function evaluate_branch(node, all_nodes)
 
   -- Traverse the conditional, depending on what kind it is
   if node.kind == 'Branch' then
-	local value = tdengine.state
-	local keys = split(node.branch_on, '.')
-	for i, key in pairs(keys) do
-	  value = value[key]
-	end
-
+	local value = index_string(tdengine.state, node.branch_on)
 	local index = ternary(value, 1, 2)
 	local child = all_nodes[node.children[index]]
 	return evaluate_branch(child, all_nodes)

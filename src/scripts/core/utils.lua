@@ -297,6 +297,27 @@ function split(str, sep)
   return output
 end
 
+function index_string(t, ks)
+  local value = t
+  local keys = split(ks, '.')
+  for i, key in pairs(keys) do
+	value = value[key]
+  end
+
+  return value
+end
+
+function parent(t, ks)
+  local parent = t
+  local keys = split(ks, '.')
+  for i, key in pairs(keys) do
+	if i == #keys then break end
+	parent = parent[key]
+  end
+
+  return parent
+end
+
 function table_address(t)
   if not t then return '0x00000000' end
   return split(tostring(t), ' ')[2]

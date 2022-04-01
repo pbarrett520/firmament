@@ -426,7 +426,7 @@ function Editor:dialogue_editor(dt)
 	end
 
 	if selected.kind == 'Set' then
-	  imgui.extensions.VariableName('state')
+	  imgui.extensions.VariableName('variable')
 	  imgui.SameLine()
 	  if imgui.InputText(self.ded.set_var_id, 64) then
 		selected.variable = imgui.InputTextContents(self.ded.set_var_id)
@@ -888,6 +888,12 @@ end
 
 function Editor:state_viewer()
   imgui.Begin('state')
+
+  -- If the underlying table changes, we're holding a stale reference
+  if self.state_editor.editing ~= tdengine.state then
+	self.state_editor = imgui.extensions.TableEditor(tdengine.state)
+	print('reload state editor')
+  end
   self.state_editor:draw()
   imgui.End('state')
 end
