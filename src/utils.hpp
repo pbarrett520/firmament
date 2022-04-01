@@ -115,7 +115,7 @@ fm_error arr_init(Array<T>* array, int32 capacity, T fill) {
 	array->data = (T*)calloc(capacity, sizeof(T));
 	
 	if (!array->data) return FM_ERR_FAILED_ALLOC;
-	arr_fill(array, T);
+	arr_fill(array, T());
 	
 	return FM_ERR_SUCCESS;
 }
