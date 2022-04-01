@@ -46,13 +46,9 @@ sol::object API::screen_dimensions() {
 }
 
 void API::toggle_console() {
-	if (show_console) doit = true;
 	show_console = !show_console;
 }
 
-void thing(ImGuiID id) {
-	set_to_selected = id;
-}
 void API::use_layout(const char* name) {
 	fm_layout(name, layout_to_load, MAX_PATH_LEN);
 }
@@ -252,7 +248,6 @@ void register_lua_api() {
 	state["tdengine"]["was_chord_pressed"]         = &was_chord_pressed;
 	state["tdengine"]["cursor"]                    = &cursor;
 	state["tdengine"]["save_layout"]               = &save_layout;
-	state["tdengine"]["thing"]                = &thing;
 	state["tdengine"]["use_layout"]                = &use_layout;
 	state["tdengine"]["frame_time"]                = seconds_per_update;
 	state["tdengine"]["screen_dimensions"]         = &screen_dimensions;

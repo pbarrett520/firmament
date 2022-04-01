@@ -72,7 +72,6 @@ int main() {
 		
 		if (show_imgui_demo) ImGui::ShowDemoWindow();
 		if (show_console) console.Draw("firmament");
-		if (doit && set_to_selected > 0) { tdns_log.write("doing it, %u, %b", set_to_selected, true); ImGuiWrapper::MakeTabVisible(set_to_selected); doit = false; }
 
 		// Run scripts
 		Lua.update_entities(seconds_per_update);

@@ -217,13 +217,28 @@ function DialogueController:find_entry_node()
    return nil
 end
 
-function DialogueController:evaluate_branch(node)
+function is_conditional(node)
+  return node and node.kind == 'Branch'
+end
+
+function evaluate_branch(node, all_nodes)
+  -- Base case
+  if not is_conditional(node) then return node end
+
+  -- Traverse the conditional, depending on what kind it is
   if node.kind == 'Branch' then
-	local value = tdengine.state[node.branch_on]
+	local value = tdengine.state
+	local keys = split(node.branch_on, '.')
+	for i, key in pairs(keys) do
+	  value = value[key]
+	end
+
 	local index = ternary(value, 1, 2)
-	return self.data[node.children[index]]
+	local child = all_nodes[node.children[index]]
+	return evaluate_branch(child, all_nodes)
   end
 
+  tdengine.log(string.format('evaluate_branch: tried to recurse on an invalid node kind, node = %s', inspect(node)))
   return nil
 end
 
@@ -271,7 +286,7 @@ function collect_choices(node, all_nodes)
 	elseif child.kind == 'Branch' then
 	  -- More difficult: There is a conditional that may or may not hide a choice node. Evaluate
 	  -- the conditional, and if it returns non-nil we need to keep traversing this path.
-	  local evaluated = self:evaluate_branch(child)
+	  local evaluated = evaluate_branch(child, all_nodes)
 	  table.insert(stack, evaluated)
 	end
   end

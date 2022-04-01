@@ -1,8 +1,15 @@
 return {
+  ["05a40a8b-06da-47f9-8430-66d4dd118721"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Choice",
+    text = "True, True",
+    uuid = "05a40a8b-06da-47f9-8430-66d4dd118721"
+  },
   ["6f03bb85-5c22-4900-9ac8-4bc1fd6bf40c"] = {
     children = {
-      "954f5b67-773b-470d-9226-66288e370b8c",
-      "b94b2256-2f3b-437d-9366-0ac496fa80d3"
+      "242e8ef4-ce81-4487-b5fd-946284d8f1e0",
+      "21020ad1-307b-4707-90aa-6627fceaf382"
     },
     is_entry_point = true,
     kind = "Text",
@@ -10,36 +17,62 @@ return {
     uuid = "6f03bb85-5c22-4900-9ac8-4bc1fd6bf40c",
     who = "unknown"
   },
-  ["954f5b67-773b-470d-9226-66288e370b8c"] = {
+  ["242e8ef4-ce81-4487-b5fd-946284d8f1e0"] = {
+    branch_on = "engine.branch",
     children = {
-      "62708b53-bd5c-4b9a-99ff-389ae8c55c1f"
+      "ffbc5c5a-c228-4e91-85bf-511ad3c1706c",
+      "323a7861-2815-476b-899d-30d4154adc52"
     },
     is_entry_point = false,
+    kind = "Branch",
+    uuid = "242e8ef4-ce81-4487-b5fd-946284d8f1e0"
+  },
+  ["272bb10a-92c9-455e-804b-8f61be3cc8c5"] = {
+    children = {},
+    is_entry_point = false,
     kind = "Choice",
-    text = "This is the first choice, and it will take you to the A realm.",
-    uuid = "954f5b67-773b-470d-9226-66288e370b8c"
+    text = "True, False",
+    uuid = "272bb10a-92c9-455e-804b-8f61be3cc8c5"
   },
-  ["17090bdf-8560-4f83-bc8b-bf456699f7d9"] = {
-    children = {},
-    is_entry_point = false,
-    kind = "Switch",
-    next_dialogue = "B",
-    uuid = "17090bdf-8560-4f83-bc8b-bf456699f7d9"
-  },
-  ["62708b53-bd5c-4b9a-99ff-389ae8c55c1f"] = {
-    children = {},
-    is_entry_point = false,
-    kind = "Switch",
-    next_dialogue = "A",
-    uuid = "62708b53-bd5c-4b9a-99ff-389ae8c55c1f"
-  },
-  ["b94b2256-2f3b-437d-9366-0ac496fa80d3"] = {
+  ["323a7861-2815-476b-899d-30d4154adc52"] = {
+    branch_on = "engine.branch2",
     children = {
-      "17090bdf-8560-4f83-bc8b-bf456699f7d9"
+      "a8984811-56d7-4e02-b8c9-004281d6aed4",
+      "75471b18-eea7-44ec-b42c-424d508ecc56"
     },
     is_entry_point = false,
+    kind = "Branch",
+    uuid = "323a7861-2815-476b-899d-30d4154adc52"
+  },
+  ["21020ad1-307b-4707-90aa-6627fceaf382"] = {
+    children = {},
+    is_entry_point = false,
     kind = "Choice",
-    text = "This is the second choice, and it will take you to the B realm.",
-    uuid = "b94b2256-2f3b-437d-9366-0ac496fa80d3"
+    text = "You always get this choice",
+    uuid = "21020ad1-307b-4707-90aa-6627fceaf382"
+  },
+  ["75471b18-eea7-44ec-b42c-424d508ecc56"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Choice",
+    text = "False, False",
+    uuid = "75471b18-eea7-44ec-b42c-424d508ecc56"
+  },
+  ["a8984811-56d7-4e02-b8c9-004281d6aed4"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Choice",
+    text = "False, True",
+    uuid = "a8984811-56d7-4e02-b8c9-004281d6aed4"
+  },
+  ["ffbc5c5a-c228-4e91-85bf-511ad3c1706c"] = {
+    branch_on = "engine.branch1",
+    children = {
+      "05a40a8b-06da-47f9-8430-66d4dd118721",
+      "272bb10a-92c9-455e-804b-8f61be3cc8c5"
+    },
+    is_entry_point = false,
+    kind = "Branch",
+    uuid = "ffbc5c5a-c228-4e91-85bf-511ad3c1706c"
   }
 }

@@ -1,7 +1,7 @@
 function tdengine.layout(name)
   -- Update stuff in C++
   tdengine.use_layout(name)
-  tdengine.thing(tdengine.current_layout.selected_tab)
+  --tdengine.thing(tdengine.current_layout.selected_tab)
 
   -- Update what we're keeping track of in Lua
   local info = {

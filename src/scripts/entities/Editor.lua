@@ -1,63 +1,8 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
 
-function crash()
-  	local x = {}
-	x()
-end
-
-function submit_oscillate(text)
-  local request = {
-	text = text,
-	effect = {
-	  type = 1,
-	  amplitude = .003,
-	  frequency = 15
-	}
-  }
-  tdengine.submit_text(request)
-end
-
-function submit_rainbow(text)
-  local request = {
-	text = text,
-	effect = {
-	  type = 2,
-	  frequency = 15
-	}
-  }
-  tdengine.submit_text(request)
-end
-
-function submit_without_effect()
-  local request = {
-	text = 'joey, the striker fox'
-  }
-  tdengine.submit_text(request)
-end
-
-function submit_dbg_quad()
-  local request = {
-	type = 1,
-	pos = tdengine.vec2(-.5, .5),
-	color = tdengine.color(0, 0, 1, .5),
-	size = tdengine.vec2(1, 1)
-  }
-  tdengine.submit_dbg_geometry(request)
-end
-
-function submit_dbg_tbox()
-  local request = {
-	type = 2,
-	main = true,
-	choice = true
-  }
-  tdengine.submit_dbg_geometry(request)
-end
-
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
-  local x = 1
   self.options = {
 	show_imgui_demo = false,
   }
@@ -87,12 +32,13 @@ function Editor:init(params)
   self.id_filter = imgui.TextFilter.new()
   self.state_filter = imgui.TextFilter.new()
 
+  self.selected = nil
+  self.entity_editor = nil
+  self.state_editor = imgui.extensions.TableEditor(tdengine.state)
+  
   self.display_framerate = 0
   self.average_framerate = 0
   self.frame = 0
-
-  self.selected = nil
-  self.entity_editor = nil
 
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.Editor)
@@ -101,36 +47,6 @@ function Editor:init(params)
 end
 
 function Editor:update(dt)
-
-  tdengine.do_once(function()
-	  tdengine.submit_choice({ text = 'choice A' })
-	  tdengine.submit_choice({ text = 'choice B' })
-	  
-	  submit_rainbow('joey, the striker fox')
-	  submit_rainbow('i left my home in norfolk, virginia')
-	  submit_oscillate('nicholas')
-	  submit_oscillate('tom')
-	  submit_oscillate('thomas')
-	  submit_oscillate('spencer')
-	  submit_rainbow('mr hands')
-	  submit_rainbow('joey, the striker fox')
-	  submit_rainbow('i left my home in norfolk, virginia')
-	  submit_oscillate('nicholas')
-	  submit_oscillate('tom')
-	  submit_oscillate('thomas')
-	  submit_oscillate('spencer')
-	  submit_rainbow('mr hands')
-	  submit_rainbow('joey, the striker fox')
-	  submit_rainbow('i left my home in norfolk, virginia')
-	  submit_oscillate('nicholas')
-	  submit_oscillate('tom')
-	  submit_oscillate('thomas')
-	  submit_oscillate('spencer')
-	  submit_rainbow('mr hands')
-	  submit_oscillate('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi et diam neque. Morbi condimentum, metus non ultrices facilisis, ex tortor congue nibh, eget blandit neque magna faucibus enim. Proin fermentum mollis ipsum sit amet suscipit. Curabitur sed ante vulputate, vestibulum orci ut, rutrum odio. Aenean pretium tempus nisl quis sagittis. Cras non nulla vestibulum, tincidunt lacus in, molestie lacus. Praesent tincidunt risus eu mauris pharetra, eu mattis libero pharetra. Sed sit amet massa tristique, commodo magna eu, pellentesque leo. Sed mollis, nisi a scelerisque mattis, ex massa sagittis nisi, sed semper risus diam vitae lectus. Pellentesque gravida maximus eros a. ')
-  end)
-
-
   submit_dbg_tbox()
   self:calculate_framerate()
 
@@ -972,39 +888,7 @@ end
 
 function Editor:state_viewer()
   imgui.Begin('state')
-  
-  self.state_filter:Draw('Filter state variables')
-  local variables = {}
-  for name, value in pairs(tdengine.state) do
-	table.insert(variables, name)
-  end
-  table.sort(variables)
-  
-  for index, name in pairs(variables) do
-	if self.state_filter:PassFilter(name) then 
-	  imgui.extensions.VariableName(name)
-	  imgui.SameLine()
-
-	  local value = tdengine.state[name]
-	  if type(value) == 'string' then
-		imgui.Text(value)
-	  elseif type(value) == 'boolean' then
-		local true_color = tdengine.color32(0, 255, 0, 255)
-		local false_color = tdengine.color32(255, 0, 0, 255)
-		local color = ternary(value, true_color, false_color)
-		imgui.PushStyleColor(imgui.constant.Col.Text, color)
-		
-		local label = tostring(tdengine.state[name]) .. '##' .. tostring(index)
-		if imgui.Button(label) then
-		  tdengine.state[name] = not value
-		end
-	  
-		imgui.PopStyleColor()
-	  elseif type(value) == 'number' then
-		imgui.Text(tostring(value))
-	  end
-	end
-  end
+  self.state_editor:draw()
   imgui.End('state')
 end
 
@@ -1038,4 +922,59 @@ end
 function Editor:canvas_screen_to_window_screen(canvas_screen)
   local window_screen = canvas_screen:add(self.ded.window_position)
   return window_screen
+end
+
+
+function crash()
+  	local x = {}
+	x()
+end
+
+function submit_oscillate(text)
+  local request = {
+	text = text,
+	effect = {
+	  type = 1,
+	  amplitude = .003,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_rainbow(text)
+  local request = {
+	text = text,
+	effect = {
+	  type = 2,
+	  frequency = 15
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_without_effect()
+  local request = {
+	text = 'joey, the striker fox'
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_dbg_quad()
+  local request = {
+	type = 1,
+	pos = tdengine.vec2(-.5, .5),
+	color = tdengine.color(0, 0, 1, .5),
+	size = tdengine.vec2(1, 1)
+  }
+  tdengine.submit_dbg_geometry(request)
+end
+
+function submit_dbg_tbox()
+  local request = {
+	type = 2,
+	main = true,
+	choice = true
+  }
+  tdengine.submit_dbg_geometry(request)
 end
