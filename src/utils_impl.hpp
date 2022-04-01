@@ -28,3 +28,83 @@ void load_imgui_layout() {
 
 	memset(layout_to_load, 0, MAX_PATH_LEN);
 }
+
+
+InputTextInfo* intext_add(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(intext_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	InputTextInfo* info = arr_push(&intext_infos);
+	info->hash = hash;
+	return info;
+}
+InputTextInfo* intext_get(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(intext_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	return nullptr;
+}
+void intext_clear(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(intext_infos, info) {
+		if (info->hash == hash) {
+			memset(info->data, 0, INPUT_TEXT_SIZE);
+			return;
+		}
+	}
+}
+
+InputFloatInfo* inflt_add(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inflt_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	InputFloatInfo* info = arr_push(&inflt_infos);
+	info->hash = hash;
+	return info;
+}
+InputFloatInfo* inflt_get(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inflt_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	return nullptr;
+}
+void inflt_clear(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inflt_infos, info) {
+		if (info->hash == hash) {
+			info->data = 0;
+			return;
+		}
+	}
+}
+
+InputBoolInfo* inbool_add(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inbool_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	InputBoolInfo* info = arr_push(&inbool_infos);
+	info->hash = hash;
+	return info;
+}
+InputBoolInfo* inbool_get(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inbool_infos, info) {
+		if (info->hash == hash) return info;
+	}
+	return nullptr;
+}
+void inbool_clear(const char* label) {
+	size_t hash = hash_label(label);
+	arr_for(inbool_infos, info) {
+		if (info->hash == hash) {
+			info->data = 0;
+			return;
+		}
+	}
+}
+

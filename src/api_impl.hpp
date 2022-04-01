@@ -278,4 +278,38 @@ void register_lua_api() {
 	state["tdengine"]["InputChannel"]["Editor"] = INPUT_MASK_EDITOR;
 	state["tdengine"]["InputChannel"]["Game"] = INPUT_MASK_GAME;
 	state["tdengine"]["InputChannel"]["All"] = INPUT_MASK_ALL;
+
+	// ImGui
+	lua_newtable(Lua.raw_state);
+	luaL_setfuncs(Lua.raw_state, imguilib, 0);
+	PushImguiEnums(Lua.raw_state, "constant");
+	lua_setglobal(Lua.raw_state, "imgui");
+
+	//  My ImGui wrappers for things that do not work with the binding generator
+	Lua.state["imgui"]["Text"]                 = &ImGuiWrapper::Text;
+	Lua.state["imgui"]["SetNextWindowSize"]    = &ImGuiWrapper::SetNextWindowSize;
+	Lua.state["imgui"]["IsItemHovered"]        = &ImGuiWrapper::IsItemHovered;
+	Lua.state["imgui"]["InputText"]            = &ImGuiWrapper::InputText;
+	Lua.state["imgui"]["InputTextMultiline"]   = &ImGuiWrapper::InputTextMultiline;
+	Lua.state["imgui"]["InputTextClear"]       = &ImGuiWrapper::InputTextClear;
+	Lua.state["imgui"]["InputTextContents"]    = &ImGuiWrapper::InputTextContents;
+	Lua.state["imgui"]["InputTextSetContents"] = &ImGuiWrapper::InputTextSetContents;
+	Lua.state["imgui"]["InputText2"]           = &ImGuiWrapper::InputText2;
+	Lua.state["imgui"]["InputTextGet"]         = &ImGuiWrapper::InputTextGet;
+	Lua.state["imgui"]["InputTextSet"]         = &ImGuiWrapper::InputTextSet;
+	Lua.state["imgui"]["InputFloat"]           = &ImGuiWrapper::InputFloat;
+	Lua.state["imgui"]["InputFloatGet"]        = &ImGuiWrapper::InputFloatGet;
+	Lua.state["imgui"]["InputFloatSet"]        = &ImGuiWrapper::InputFloatSet;
+	Lua.state["imgui"]["Checkbox"]             = &ImGuiWrapper::Checkbox;
+	Lua.state["imgui"]["CheckboxGet"]          = &ImGuiWrapper::CheckboxGet;
+	Lua.state["imgui"]["CheckboxSet"]          = &ImGuiWrapper::CheckboxSet;
+	Lua.state["imgui"]["MakeTabVisible"]       = &ImGuiWrapper::MakeTabVisible;
+	Lua.state["imgui"]["GetSelectedTabId"]     = &ImGuiWrapper::GetSelectedTabId;
+
+	sol::usertype<ImGuiWrapper::TextFilter> filter_type = Lua.state.new_usertype<ImGuiWrapper::TextFilter>("TextFilter");
+	filter_type["Draw"]      = &ImGuiWrapper::TextFilter::Draw;
+	filter_type["PassFilter"] = &ImGuiWrapper::TextFilter::PassFilter;
+	Lua.state["imgui"]["TextFilter"] = filter_type;
+
+	Lua.state["imgui"]["End"] = &ImGuiWrapper::EndAndRecover;
 }

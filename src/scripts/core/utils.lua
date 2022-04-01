@@ -334,3 +334,7 @@ function table_eq_shallow(t1, t2)
   end
   return true
 end
+
+function hash_table_entry(t, k)
+  return string.format('%s.%s', table_address(t), k)
+end

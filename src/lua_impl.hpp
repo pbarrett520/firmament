@@ -91,7 +91,6 @@ void init_lua() {
 	lua_manager.prepend_to_search_path(fm_saves);
 
 	// Bind all C functions
-	LoadImguiBindings();
 	register_lua_api();
 
 	// Bootstrapping: Get an error handler going, then call a function which will create tables

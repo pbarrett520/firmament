@@ -17,6 +17,7 @@
 #include "text.hpp"
 #include "shader.hpp"
 #include "imgui/imgui_lua_bindings.hpp"
+#include "imgui_ext.hpp"
 #include "api.hpp"
 #include "buffers.hpp"
 

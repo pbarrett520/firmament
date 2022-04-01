@@ -26,6 +26,7 @@ function Editor:init(params)
 	next_dialogue_id = '##ded:detail:next_dialogue',
 	branch_val_id = '##ded:detail:set_branch_val',
 	empty_name_id = '##ded:detail:set_empty_name',
+	selected_editor = nil
   }
 
   self.filter = imgui.TextFilter.new()
@@ -35,7 +36,6 @@ function Editor:init(params)
   self.selected = nil
   self.entity_editor = nil
   self.state_editor = imgui.extensions.TableEditor(tdengine.state)
-  
   self.display_framerate = 0
   self.average_framerate = 0
   self.frame = 0
@@ -44,6 +44,11 @@ function Editor:init(params)
   self.input:set_channel(tdengine.InputChannel.Editor)
   self.input:enable()
 
+  self.imgui_ignore = {
+	state_editor = true,
+	entity_editor = true,
+	imgui_ignore = true
+  }
 end
 
 function Editor:update(dt)
@@ -83,6 +88,7 @@ end
 
 function Editor:engine_viewer()
   imgui.Begin('engine', true)
+  
   imgui.Text('frame: ' .. tostring(self.frame))
   imgui.Text('fps: ' .. tostring(self.display_framerate))
 
@@ -289,6 +295,7 @@ end
 
 function Editor:ded_select(id, node)
   self.ded.selected = id
+  self.ded.selected_editor = imgui.extensions.TableEditor(self.ded.nodes[id])
 
   if node.kind == 'Empty' then
 	imgui.InputTextSetContents(self.ded.empty_name_id, node.internal_name)
@@ -409,63 +416,7 @@ function Editor:dialogue_editor(dt)
   -- Selected node detail view
   local selected = self.ded.nodes[self.ded.selected]
   if selected then
-	imgui.extensions.VariableName('kind')
-	imgui.SameLine()
-	imgui.Text(selected.kind)
-
-	imgui.extensions.VariableName('uuid')
-	imgui.SameLine()
-	imgui.Text(selected.uuid)
-
-	if selected.kind == 'Text' then
-	  imgui.extensions.VariableName('who')
-	  imgui.SameLine()
-	  imgui.InputText(self.ded.text_who_id, 64)
-
-	  selected.who = imgui.InputTextContents(self.ded.text_who_id)
-	end
-
-	if selected.kind == 'Set' then
-	  imgui.extensions.VariableName('variable')
-	  imgui.SameLine()
-	  if imgui.InputText(self.ded.set_var_id, 64) then
-		selected.variable = imgui.InputTextContents(self.ded.set_var_id)
-	  end
-
-	  imgui.extensions.VariableName('value')
-	  imgui.SameLine()
-	  if imgui.InputText(self.ded.set_val_id, 64) then
-		local value = imgui.InputTextContents(self.ded.set_val_id)
-		if value == 'true' then selected.value = true 
-		elseif value == 'false' then selected.value = false end
-	  end
-	end
-
-	if selected.kind == 'Branch' then
-	   imgui.extensions.VariableName('branch on')
-	   imgui.SameLine()
-
-	   if imgui.InputText(self.ded.branch_on_id, 64) then
-		  selected.branch_on = imgui.InputTextContents(self.ded.branch_on_id)
-	   end
-	end
-
-	if selected.kind == 'Switch' then
-	   imgui.extensions.VariableName('next_dialogue')
-	   imgui.SameLine()
-
-	   if imgui.InputText(self.ded.next_dialogue_id, 64) then
-		  selected.next_dialogue = imgui.InputTextContents(self.ded.next_dialogue_id)
-	   end
-	end
-		
-	if selected.kind == 'Empty' then
-	  imgui.extensions.VariableName('internal name')
-	  imgui.SameLine()
-	  imgui.InputText(self.ded.empty_name_id, 64)
-
-	  selected.internal_name = imgui.InputTextContents(self.ded.empty_name_id)
-	end
+	self.ded.selected_editor:draw()
 
 	if selected.kind == 'Text' or selected.kind == 'Choice' then
 	  imgui.extensions.VariableName('text')
@@ -586,7 +537,8 @@ function Editor:dialogue_editor(dt)
 	local old_any_active = imgui.IsAnyItemActive()
 
 	imgui.SetCursorScreenPos(node_contents_cursor:unpack())
-	
+
+	-- Add any custom GUI items for each node kind
 	imgui.BeginGroup()
 	if node.kind == 'Text' then
 	  imgui.Text(node.who)
@@ -647,6 +599,10 @@ function Editor:dialogue_editor(dt)
 		self.ded.disconnecting = id
 	  end
 	  if imgui.MenuItem('Set as entry point') then
+		for i, node in pairs(self.ded.nodes) do
+		  node.is_entry_point = false
+		end
+
 		node.is_entry_point = true
 	  end
 
@@ -791,7 +747,7 @@ function Editor:dialogue_editor(dt)
 	  delete(node.children, self.ded.deleting)
 	end
 	
-	self.ded.selected = ternary(self.ded.selected == self.ded.deleting, nil, self.ded.selected)
+	self:ded_select(ternary(self.ded.selected == self.ded.deleting, nil, self.ded.selected))
 	self.ded.connecting = ternary(self.ded.connecting == self.ded.deleting, nil, self.ded.selected)
 	self.ded.disconnecting = ternary(self.ded.disconnecting == self.ded.deleting, nil, self.ded.selected)
 

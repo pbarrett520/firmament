@@ -1,15 +1,19 @@
 local glfw = require('glfw')
 
--- Adding a new node:
+-- Adding a new node checklist:
 --
--- Editor methods:
--- * Editor::make_dialogue_node()
--- * Editor::ded_short_text()
--- * Editor::ded_select()
--- * Selected node detail view
---   * Add ID for text boxes in detail view
--- * (Maybe) Add custom node drawing
+-- Editor:
+-- [ ] Editor::make_dialogue_node()
+-- [ ] Editor::ded_short_text()
+-- [ ] Editor::ded_select()
+-- [ ] Selected node detail view (search this string in the editor)
+-- [ ] Add any custom GUI items for each node kind (search this string in the editor)
 --
+-- DialogueController:
+-- [ ] Make sure the node has an entry in advance(), enter(), and process() if needed
+-- [ ] Add node to legal_choice_parents if needed
+-- [ ] Handle node kind in evaluate_branch if needed
+-- [ ] Handle node kind in is_conditional if needed
 tdengine.node_kinds = {
   'Text',
   'Choice',
@@ -82,6 +86,7 @@ function DialogueController:advance()
 	return
   end
 
+  -- Pretty much anything that isn't a choice or conditional
   function simple_advance(self)
 	if are_choices_next(self.current) then
 	  -- The next nodes are a set of choices. Wrap them in one node to make it easy to handle
@@ -109,19 +114,20 @@ function DialogueController:advance()
 	return
   end
 
-  
-  if self.current.kind == 'Switch' then
-	tdengine.log(string.format('called advance on a switch node, uuid = %d', node.uuid))
-	return
-  end
-
-  
   if self.current.kind == 'Set' then
 	simple_advance(self)
 	return
   end
+
+  if self.current.kind == 'Switch' then
+	self:begin(self.current.next_dialogue)
+	return
+  end
   
-  if self.current.kind == 'Branch' then return end
+  if self.current.kind == 'Branch' then
+	self.current = evaluate_branch(self.current, self.data)
+	return
+  end
 end
 
 
@@ -129,7 +135,6 @@ end
 -- controller will continue to advance through nodes. If a node requires processing to
 -- complete, it should set the state accordingly
 function DialogueController:enter()
-  print(string.format('entering %s', self.current.kind))
   if self.current.kind == 'Text' then
 	self.state = state.processing
 	
@@ -139,7 +144,6 @@ function DialogueController:enter()
 	tdengine.submit_text(request)
 	return
   end
-
   
   if self.current.kind == 'InternalChoice' then
 	self.state = state.processing
@@ -156,23 +160,14 @@ function DialogueController:enter()
 	return
   end
 
-  
-  if self.current.kind == 'Switch' then
-	self:begin(self.current.next_dialogue)
-	return
-  end
-
-  
   if self.current.kind == 'Set' then
 	local parent = parent(tdengine.state, self.current.variable)
 	local keys = split(self.current.variable, '.')
 	local var_key = keys[#keys]
 	parent[var_key] = self.current.value
-	print(inspect(parent))
 	return
   end
-  
-  if self.current.kind == 'Branch' then return end
+
 end
 
 
@@ -209,7 +204,6 @@ function DialogueController:update(dt)
   if self.state == state.err then
 	return
   elseif self.state == state.advancing then
-	--dbg()
 	-- Advance nodes until you encounter one that requires processing
 	while self.state == state.advancing do
 	  self:advance()
@@ -217,7 +211,7 @@ function DialogueController:update(dt)
 	end
 
   elseif self.state == state.processing then
-	-- Process the current node
+	-- Process the current node. When it's done, it'll set the state to start advancing next frame.
 	self:process()
   end
 end
@@ -233,8 +227,6 @@ function DialogueController:find_entry_node()
    return nil
 end
 
-
-
 function is_conditional(node)
   return node and node.kind == 'Branch'
 end
@@ -246,6 +238,14 @@ function evaluate_branch(node, all_nodes)
   -- Traverse the conditional, depending on what kind it is
   if node.kind == 'Branch' then
 	local value = index_string(tdengine.state, node.branch_on)
+
+	-- Alert by logging + being clever with the nodes that your variable is wrong
+	if value == nil then
+	  local message = string.format('branch node variable does not exist, variable = %s', node.branch_on)
+	  tdengine.log(message)
+	  return make_debug_node(message)
+	end
+	 
 	local index = ternary(value, 1, 2)
 	local child = all_nodes[node.children[index]]
 	return evaluate_branch(child, all_nodes)
@@ -305,4 +305,14 @@ function collect_choices(node, all_nodes)
   end
 
   return choices
+end
+
+-- Sometimes, when we can't find a node, the easiest way to make sure you 100% notice is to replace
+-- the node you expected with a text node that says what went wrong.
+function make_debug_node(message)
+  return {
+	kind = 'Text',
+	text = message,
+	children = {}
+  }
 end

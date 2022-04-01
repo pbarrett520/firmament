@@ -768,7 +768,6 @@ struct InputTextBuffer {
 	int size;
 };
 
-
 std::unordered_map<size_t, InputTextBuffer>& input_text_buffers() {
 	static std::unordered_map<size_t, InputTextBuffer> map;
 	return map;
@@ -803,6 +802,31 @@ void clear_input_text_buffer(const char* label) {
 		memset(buffer->data, 0, strlen(buffer->data));
 	}
 }
+
+#define INPUT_TEXT_SIZE 1024
+struct InputTextInfo {
+	char data [INPUT_TEXT_SIZE] = { 0 };
+	size_t hash;
+};
+InputTextInfo* intext_add(const char* label);
+InputTextInfo* intext_get(const char* label);
+void intext_clear(const char* label);
+
+struct InputFloatInfo {
+	float32 data = 0;
+	size_t hash;
+};
+InputFloatInfo* inflt_add(const char* label);
+InputFloatInfo* inflt_get(const char* label);
+void inflt_clear(const char* label);
+
+struct InputBoolInfo {
+	bool data = 0;
+	size_t hash;
+};
+InputBoolInfo* inbool_add(const char* label);
+InputBoolInfo* inbool_get(const char* label);
+void inbool_clear(const char* label);
 
 void init_imgui();
 void load_imgui_layout();

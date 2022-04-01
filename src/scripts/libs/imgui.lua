@@ -68,84 +68,71 @@ imgui.extensions.TableEditor = function(editing)
 end
 
 imgui.internal.draw_table_editor = function(editor)
-  imgui.extensions.VariableName('type')
-  
-  imgui.PushItemWidth(80)
-  imgui.SameLine()
-  if imgui.BeginCombo(editor.type_id, editor.selected_type) then
-	for index, name in pairs(types) do
-	  if imgui.Selectable(name) then
-		editor.selected_type = name
-	  end
-	end
-	imgui.EndCombo()
-  end
-  imgui.PopItemWidth()
-
-  imgui.SameLine()
-  imgui.extensions.VariableName('key')
-  
-  imgui.PushItemWidth(100)
-  imgui.SameLine()
-  local submit = imgui.InputText(editor.key_id)
-  imgui.PopItemWidth()
-
-  imgui.PushItemWidth(170)
-  if editor.selected_type ~= 'table' then
-	imgui.SameLine()
-	imgui.extensions.VariableName('value')
-  
-	imgui.SameLine()
-	submit = submit or imgui.InputText(editor.value_id)
-  end
-  imgui.PopItemWidth()
-  
-
-  if submit then
-	local key = imgui.InputTextContents(editor.key_id)
-	imgui.InputTextSetContents(editor.key_id, '')
-	key = tonumber(key) or key
-	
-	local value = imgui.InputTextContents(editor.value_id)
-	imgui.InputTextSetContents(editor.value_id, '')
-	
-	if value == 'nil' then
-	  value = nil
-	elseif editor.selected_type == 'number' then
-	  value = tonumber(value)
-	elseif editor.selected_type == 'string' then
-	  value = tostring(value)
-	elseif editor.selected_type == 'bool' then
-	  value = (value == 'true')
-	elseif editor.selected_type == 'table' then
-	  value = {}
-	  editor.children[key] = imgui.extensions.TableEditor(value)
-	end
-
-	editor.editing[key] = value
-	imgui.SetKeyboardFocusHere(-1)
+  -- Very hacky way to line up the inputs: Figure out the largest key, then when drawing a key,
+  -- use the difference in length between current key and largest key as a padding. Does not work
+  -- that well, but kind of works
+  local padding_threshold = 12
+  local padding_target = 0
+  for key, value in pairs(editor.editing) do
+	local key_len = 0
+	if type(key) == 'string' then key_len = #key end
+	if type(key) == 'number' then key_len = #tostring(key) end -- whatever
+	if type(key) == 'boolean' then key_len = #tostring(key) end
+	padding_target = math.max(padding_target, key_len)
   end
 
+  local cursor = imgui.GetCursorPosX()
+  local min_padding = 80
+  local padding = math.max(cursor + padding_target * 10, min_padding)
+  
   for key, value in pairs(editor.editing) do
 	local display = true
 	local ignore = editor.editing.imgui_ignore
 	if type(ignore) == 'table' then
 	  display = not editor.editing.imgui_ignore[key] 
 	end
+	local label = string.format('##%s', hash_table_entry(editor.editing, tostring(key)))
 
+	-- This is a two-way binding. If ImGui says that the input box was edited, we take the value from C and put it into Lua.
+	-- Otherwise, we take the value from Lua and put it into C, in case any value changes in the interpreter. This is slow -- it
+	-- means we copy every string in all tables we're editing into C every frame. I can't think of a better way to do it, because
+	-- there is no mechanism for triggering a callback whenever a string in Lua changes (nor would we want one) short of
+	-- metatable insanity.
 	if display then 
 	  if type(value) == 'string' then
 		imgui.extensions.VariableName(key)
 		imgui.SameLine()
-		imgui.Text(value)
+		imgui.SetCursorPosX(padding)
+		imgui.PushItemWidth(-1)
+		
+		if imgui.InputText2(label) then
+		  editor.editing[key] = imgui.InputTextGet(label)
+		else
+		  imgui.InputTextSet(label, editor.editing[key])
+		end
+		imgui.PopItemWidth()
 	  elseif type(value) == 'number' then
 		imgui.extensions.VariableName(key)
 		imgui.SameLine()
-		imgui.Text(tostring(value))
+		imgui.SetCursorPosX(padding)
+		imgui.PushItemWidth(-1)
+		if imgui.InputFloat(label) then
+		  editor.editing[key] = imgui.InputFloatGet(label)
+		else
+		  imgui.InputFloatSet(label, editor.editing[key])
+		end
+		imgui.PopItemWidth()
 	  elseif type(value) == 'boolean' then
 		imgui.extensions.VariableName(key)
 		imgui.SameLine()
-		imgui.Text(tostring(value))
+		imgui.SetCursorPosX(padding)
+		imgui.PushItemWidth(-1)
+		
+		if imgui.Checkbox(label) then
+		  editor.editing[key] = imgui.CheckboxGet(label)
+		else
+		  imgui.CheckboxSet(label, editor.editing[key])
+		end
 	  elseif type(value) == 'table' then
 		if not editor.children[key] then
 		  editor.children[key] = imgui.extensions.TableEditor(value)
@@ -190,7 +177,7 @@ end
 imgui.extensions.VariableName = function(name)
    local color = tdengine.color32(0, 200, 200, 255)
    imgui.PushStyleColor(imgui.constant.Col.Text, color)
-   imgui.Text(name .. ':')
+   imgui.Text(tostring(name))
    imgui.PopStyleColor()
 end
 

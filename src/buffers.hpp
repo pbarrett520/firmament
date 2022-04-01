@@ -29,6 +29,12 @@ Array<GlyphInfo> glyph_infos;
 Array<Vector2>   vx_data;
 #define TC_INFO_SIZE VX_INFO_SIZE
 Array<Vector2>   tc_data;
+#define IF_INFO_SIZE 1024
+Array<InputFloatInfo> inflt_infos;
+#define IBL_INFO_SIZE 1024
+Array<InputBoolInfo> inbool_infos;
+#define ITXT_INFO_SIZE 1024
+Array<InputTextInfo> intext_infos;
 
 void init_buffers() {
 	arr_init(&vx_buffer,     VERT_BUFFER_SIZE);
@@ -46,5 +52,8 @@ void init_buffers() {
 	arr_init(&glyph_infos,   GLYPH_INFO_SIZE);
 	arr_init(&vx_data,       VX_INFO_SIZE);
 	arr_init(&tc_data,       TC_INFO_SIZE);
+	arr_init(&inflt_infos,   IF_INFO_SIZE);
+	arr_init(&inbool_infos,  IBL_INFO_SIZE);
+	arr_init(&intext_infos,  ITXT_INFO_SIZE);
 }
 

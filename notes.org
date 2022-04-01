@@ -20,16 +20,16 @@ RULE #8: embrace the rectangle
 * tags
 * pin
 ** current task list
-- [ ] handle choice nodes
-- [ ] traverse branch nodes
-- [ ] traverse set nodes
+- [X] handle choice nodes
+- [X] traverse branch nodes
+- [X] traverse set nodes
+- [ ] improved table editor (implement input* cache on backend)
+- [ ] edit non-boolean state from the editor
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
 - [ ] validate dialogue graphs
-- [ ] edit non-boolean state from the editor
 - [ ] fix editor layout flashing
 
-improved table editor (implement input* cache on backend)
 * log
 ** patrick 1
 deep time --
