@@ -12,7 +12,7 @@ return {
       "21020ad1-307b-4707-90aa-6627fceaf382",
       "242e8ef4-ce81-4487-b5fd-946284d8f1e0"
     },
-    is_entry_point = false,
+    is_entry_point = true,
     kind = "Text",
     text = "Nested branches.",
     uuid = "3fd4b04b-2fc5-433e-bf0d-469c07d4d371",
@@ -39,7 +39,7 @@ return {
     children = {
       "22f6aa31-4a79-487c-8f6f-03829512c6a7"
     },
-    is_entry_point = true,
+    is_entry_point = false,
     kind = "Text",
     text = "This will set engine.set_me",
     uuid = "6f03bb85-5c22-4900-9ac8-4bc1fd6bf40c",

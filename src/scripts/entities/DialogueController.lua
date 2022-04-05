@@ -20,6 +20,8 @@ tdengine.node_kinds = {
   'Set',
   'Branch',
   'Switch',
+  'ChoiceRepeat',
+  'Return',
   'Empty'
   -- 'Skill',
   -- 'Roll'
@@ -92,7 +94,7 @@ function DialogueController:advance()
 	  -- The next nodes are a set of choices. Wrap them in one node to make it easy to handle
 	  local internal = {
 		kind = 'InternalChoice',
-		choices = collect_choices(self.current, self.data)
+		prev = self.current
 	  }
 	  self.current = internal
 	else
@@ -103,6 +105,11 @@ function DialogueController:advance()
   end
   
   if self.current.kind == 'Text' then
+	simple_advance(self)
+	return
+  end
+
+  if self.current.kind == 'ChoiceRepeat' then
 	simple_advance(self)
 	return
   end
@@ -128,6 +135,20 @@ function DialogueController:advance()
 	self.current = evaluate_branch(self.current, self.data)
 	return
   end
+
+  if self.current.kind == 'Return' then
+	local rid = self.current.return_to
+	for id, node in pairs(self.data) do
+	  local match = false
+	  match = match or rid == id
+	  match = match or rid == node.internal_id
+	  if match then
+		self.current = node
+		return
+	  end
+	end
+	tdengine.log('no valid node found for return node, node = %s', inspect(self.current))
+  end
 end
 
 
@@ -147,7 +168,9 @@ function DialogueController:enter()
   
   if self.current.kind == 'InternalChoice' then
 	self.state = state.processing
-	
+
+	self.current.choices = collect_choices(self.current.prev, self.data)
+
 	tdengine.clear_choices()
 	for index, choice in pairs(self.current.choices) do
 	  local request = {
@@ -265,7 +288,8 @@ function are_choices_next(node)
   local legal = false
   local legal_choice_parents = {
 	'Text',
-	'Set'
+	'Set',
+	'ChoiceRepeat'
   }
   for index, kind in pairs(legal_choice_parents) do
 	if node.kind == kind then legal = true end

@@ -55,6 +55,7 @@ imgui.extensions.TableEditor = function(editing)
 	clear = function(self) imgui.internal.clear_table_editor(self) end
   }
 
+  if editing == nil then dbg() end
   -- Each child member that is a non-recursive table also gets an editor
   for key, value in pairs(editing) do
 	local recurse = type(value) == 'table'
