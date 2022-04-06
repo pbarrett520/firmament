@@ -19,28 +19,37 @@ RULE #7: anything is possible
 RULE #8: embrace the rectangle
 * tags
 * pin
-** current task list
+* tasks
+** done
 - [X] handle choice nodes
 - [X] traverse branch nodes
 - [X] traverse set nodes
 - [X] improved table editor (implement input* cache on backend)
 - [X] edit non-boolean state from the editor
-- [X] instead of the backward node connections, just have a Return node or
-  something
-- [X] ChoiceRepeat node
+- [X] (4/5) Return node instead of backward connections
+- [X] (4/5) ChoiceRepeat node
+- [X] (4/6) edit engine options from editor  
+- [X] (4/6) show character names in text box 
+** small
+- [ ] better text wrapping
+- [ ] display made choices
+- [ ] multiselect nodes in dialogue editor
+- [ ] fix editor layout flashings
+** big
+- [ ] icon heads to see who is talking
+
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
-- [ ] validate dialogue graphs
-- [ ] fix editor layout flashings
-- [ ] icon heads to see who is talking
-- [ ] better text wrapping
-- [ ] multiselect nodes in dialogue editor
+
+- [ ] multiple text effects
+- [ ] text effects that work on subset of text
+- [ ] update text effect range as string is edited
+
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
 
-quick dogfood notes:
-- display choices you have made
+- [ ] validate dialogue graphs
 * log
 ** patrick 1
 deep time --
