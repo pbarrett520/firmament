@@ -58,7 +58,9 @@ end
 function Editor:update(dt)
   submit_dbg_tbox()
 
+
   
+  tdengine.do_once(function() submit_oscillate('joey, the striker fox') end)
   self:calculate_framerate()
   self:handle_input()
 
@@ -920,6 +922,7 @@ end
 function submit_oscillate(text)
   local request = {
 	text = text,
+	character = tdengine.characters.narrator,
 	effect = {
 	  type = 1,
 	  amplitude = .003,
