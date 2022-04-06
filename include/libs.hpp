@@ -20,6 +20,7 @@
 extern "C" {
   #include "freetype/ft2build.h"
   #include "freetype/freetype.h"
+  #include "freetype/ftsizes.h"
 }
 
 #include "lua/lua.hpp"

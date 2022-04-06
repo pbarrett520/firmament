@@ -15,8 +15,9 @@ void init_fonts() {
 		return;
 	}
 	
-	int32 ft_font_size = fm_gm_font_size << 6; // Scaled to FT's units, where 26.6 units = 1 pixel
-	FT_Set_Char_Size(face, 0, ft_font_size, 96, 96); 
+	int32 ft_font_size = options::game_fontsize << 6; // Scaled to FT's units, where 26.6 units = 1 pixel
+	float32 what = options::game_fontsize / 16.f;
+	FT_Set_Char_Size(face, 0, ft_font_size, 0, 0);
 	
 	int num_glyphs = 128;
 
@@ -25,11 +26,19 @@ void init_fonts() {
 	font.glyphs = arr_view(&glyph_infos, glyph_infos.size, num_glyphs);
 	font.max_advance = {
 		magnitude_gl_from_screen(screen_x_from_px((float32)face->max_advance_width) / 64),
-		magnitude_gl_from_screen(screen_y_from_px((float32)face->max_advance_height / 64)),
+		magnitude_gl_from_screen(screen_y_from_px((float32)face->max_advance_height * what / 64)),
 	};
-	font.ascender = magnitude_gl_from_screen(screen_y_from_px((float32)face->ascender / 64));
-	font.descender = magnitude_gl_from_screen(screen_y_from_px((float32)face->descender / 64));
-	arr_push(&font_infos, font);
+	font.ascender = magnitude_gl_from_screen(screen_y_from_px((float32)face->ascender * what / 64));
+	font.descender = magnitude_gl_from_screen(screen_y_from_px((float32)face->descender * what / 64));
+
+	// Either add this font to the list, or replace it if we're updating an old font at runtime
+	int32 replace = -1;
+	arr_for(font_infos, loaded_font) {
+		if (loaded_font->name == font.name) { replace = arr_indexof(&font_infos, loaded_font); break; }
+	}
+
+	if (replace >= 0) *font_infos[replace] = font;
+	else arr_push(&font_infos, font);
 	
 	// Image buffer 
 	int32 font_height_px = face->size->metrics.height >> 6;
@@ -138,6 +147,7 @@ void init_fonts() {
 	//stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
 
 	auto& render_engine = get_render_engine();
+	glDeleteTextures(1, &render_engine.texture);
 	glGenTextures(1, &render_engine.texture);
 	glBindTexture(GL_TEXTURE_2D, render_engine.texture);
 	glTexImage2D(GL_TEXTURE_2D,0, GL_RED, tex_width, tex_height, 0, GL_RED, GL_UNSIGNED_BYTE, buffer);

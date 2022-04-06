@@ -160,8 +160,10 @@ function DialogueController:enter()
 	self.state = state.processing
 	
 	local request = {
-	  text = self.current.text
+	  text = self.current.text,
+	  character = tdengine.characters[self.current.who]
 	}
+	print(inspect(request))
 	tdengine.submit_text(request)
 	return
   end

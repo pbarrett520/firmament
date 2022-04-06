@@ -91,11 +91,23 @@ void API::submit_text(sol::table request) {
 	auto& render_engine = get_render_engine();
 
 	TextRenderInfo info;
+	std::string speaker_copy = request["character"]["display_name"];
 	std::string text_copy = request["text"];
-	fm_assert(text_copy.size() < MAX_TEXT_LEN);
+	if (text_copy.size() >= MAX_TEXT_LEN - speaker_copy.size()) {
+		tdns_log.write("total text size too long -- ctrl+f MAX_TEXT_LEN, double it, rebuild, text = %s", text_copy.c_str());
+		return;
+	}
+
 	strncpy(info.text, text_copy.c_str(), MAX_TEXT_LEN);
 
+	// Fill out info about the speaker
+	strncpy(info.speaker, speaker_copy.c_str(), MAX_SPEAKER_LEN);
+	info.speaker_len = speaker_copy.size();
+	int32 color = request["character"]["color"];
+	info.speaker_color = decode_color32(color);
+	
 	// Calculate line breaks based on size of text box
+	ArrayView<char> speaker = arr_view(info.speaker, MAX_SPEAKER_LEN);
 	ArrayView<char> text = arr_view(info.text, MAX_TEXT_LEN);
 	FontInfo* font = font_infos[0];
 	MainTextBox* box = &main_box;
@@ -107,9 +119,20 @@ void API::submit_text(sol::table request) {
 	
 	Array<int32> lbreaks;
 	arr_stack(&lbreaks, &info.lbreaks[0], MAX_LINE_BREAKS);
+	arr_push(&lbreaks, 0); // See definition of line breaks in TextRenderInfo to understand why we always have 0
 
-	arr_push(&lbreaks, 0);
-	
+	// Advance the point by whatever the speaker's name is. I like to keep the speaker's name separate to keep
+	// the data structured
+	arr_for(speaker, c) {
+		if (*c == 0) break;
+		
+		GlyphInfo* glyph = font->glyphs[*c];
+		point.x += glyph->advance.x;
+	}
+    point.x += font->glyphs[':']->advance.x;
+    point.x += font->glyphs[' ']->advance.x;
+
+	// Advance point for text, when it spills over move to the next line and mark a line break
 	arr_for(text, c) {
 		if (*c == 0) break;
 
@@ -232,6 +255,13 @@ void API::setopts(sol::table opts) {
 	}
 	if (opts["smooth_scroll"] != sol::lua_nil) {
 		options::smooth_scroll = opts["scroll_lerp"];
+	}
+	if (opts["mtb_speaker_pad"] != sol::lua_nil) {
+		options::mtb_speaker_pad = opts["mtb_speaker_pad"];
+	}
+	if (opts["game_fontsize"] != sol::lua_nil) {
+		options::game_fontsize = opts["game_fontsize"];
+		init_fonts();
 	}
 }
 

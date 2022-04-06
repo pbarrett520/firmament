@@ -19,11 +19,11 @@ Array<Vector2>  dbg_vx_buffer;
 Array<Vector4>  dbg_cr_buffer;
 
 // Infos: chunks of contiguous memory that are initialized and then static
-#define MESH_INFO_SIZE 1024
+#define MESH_INFO_SIZE 65536 // 1024
 Array<Mesh>      mesh_infos;
-#define FONT_INFO_SIZE 256
+#define FONT_INFO_SIZE 16
 Array<FontInfo> font_infos;
-#define GLYPH_INFO_SIZE 256
+#define GLYPH_INFO_SIZE FONT_INFO_SIZE * 128
 Array<GlyphInfo> glyph_infos;
 #define VX_INFO_SIZE 8192
 Array<Vector2>   vx_data;

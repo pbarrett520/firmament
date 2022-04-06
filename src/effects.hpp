@@ -10,6 +10,13 @@ enum class TextEffectType {
 };
 constexpr int32 COUNT_TEXT_EFFECTS = static_cast<int32>(TextEffectType::COUNT);
 
+struct EffectRenderData {
+	float32 dt;
+	Array<Vector2> vx;
+	Array<Vector2> tc;
+	Array<Vector4> clr;
+};
+
 
 // Text effect implementations. Each effect consists of two things:
 // 1. A struct containing the data for the effect, which is unioned into a TextEffect struct
@@ -20,23 +27,23 @@ constexpr int32 COUNT_TEXT_EFFECTS = static_cast<int32>(TextEffectType::COUNT);
 // - A non-owning array which points to the vertices for the characters the effect is intended to modify
 // - A non-owning array which points to the texcoords for the characters the effect is intended to modify
 struct NoneEffect {};
-void DoNoneEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Vector2> tc, Array<Vector4> clr);
+void DoNoneEffect(TextEffect* effect, EffectRenderData* data);
 
 struct OscillateEffect {
 	float32 amplitude;
 	float32 frequency;
 	float32 rnd;
 };
-void DoOscillateEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Vector2> tc, Array<Vector4> clr);
+void DoOscillateEffect(TextEffect* effect, EffectRenderData* data);
 
 struct RainbowEffect {
 	int32 frequency;
 };
-void DoRainbowEffect(TextEffect* effect, float32 dt, Array<Vector2> vx, Array<Vector2> tc, Array<Vector4> clr);
+void DoRainbowEffect(TextEffect* effect, EffectRenderData* data);
 
 
 // All effects. Indexed by effect type to get the correct functor.
-typedef void (*TextEffectF)(TextEffect*, float32, Array<Vector2>, Array<Vector2>, Array<Vector4>);
+typedef void (*TextEffectF)(TextEffect*, EffectRenderData* data);
 TextEffectF effect_f [COUNT_TEXT_EFFECTS] = {
 	&DoNoneEffect,
 	&DoOscillateEffect,

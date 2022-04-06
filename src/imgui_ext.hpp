@@ -29,7 +29,7 @@ namespace ImGuiWrapper {
 
 	// Stateful InputText, because I don't know how else to do this from Lua
 	bool InputText(const char* label) {
-		add_input_text_buffer(label, 255);
+		add_input_text_buffer(label, 1024);
 		InputTextBuffer* buffer = get_input_text_buffer(label);
 		return ImGui::InputText(label, buffer->data, buffer->size, ImGuiInputTextFlags_EnterReturnsTrue);
 	}
@@ -51,7 +51,7 @@ namespace ImGuiWrapper {
 		if (!buffer) {
 			tdns_log.write("@InputTextSetContents_unknown_label");
 			tdns_log.write(label);
-			add_input_text_buffer(label, 255);
+			add_input_text_buffer(label, 1024);
 			buffer = get_input_text_buffer(label);
 		}
 
@@ -83,7 +83,7 @@ namespace ImGuiWrapper {
 	
 	bool InputFloat(const char* label) {
 		auto info = inflt_add(label);
-		return ImGui::InputFloat(label, &info->data);
+		return ImGui::InputFloat(label, &info->data, 0.f, 0.f, "%.3f", ImGuiInputTextFlags_EnterReturnsTrue);
 	}
 	float32 InputFloatGet(const char* label) {
 		auto info = inflt_get(label);

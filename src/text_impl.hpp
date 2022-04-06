@@ -88,8 +88,8 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 	
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
 
-	ctx->ib = info->count_lb - 2;
-	ctx->ilb = info->count_lb - 1;
+	ctx->ib_low = info->count_lb - 2;
+	ctx->ib_hi = info->count_lb - 1;
 
 	auto mtb = &main_box;
 	if (ctx->skipped < mtb->line_scroll) {
@@ -107,22 +107,45 @@ bool text_ctx_full(TextRenderContext* ctx) {
 	return ctx->count_lines_written == ctx->max_lines;
 }
 
+bool text_ctx_islast(TextRenderContext* ctx) {
+	return ctx->ib_low == 0;
+}
+
 ArrayView<char> text_ctx_readline(TextRenderContext* ctx) {
-	int32 this_break = ctx->info->lbreaks[ctx->ib];
-	int32 last_break = ctx->info->lbreaks[ctx->ilb];
+	int32 this_break = ctx->info->lbreaks[ctx->ib_low];
+	int32 last_break = ctx->info->lbreaks[ctx->ib_hi];
 	return arr_view(arr_to_ptr(ctx->info->text) + this_break, last_break - this_break);
 }
 
 void text_ctx_nextline(TextRenderContext* ctx) {
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
 	ctx->point.y += ctx->font->max_advance.y;
-	ctx->ib--;
-	ctx->ilb--;
-	ctx->is_chunk_done = ctx->ib < 0;
+	ctx->ib_low--;
+	ctx->ib_hi--;
+	ctx->is_chunk_done = ctx->ib_low < 0;
 	ctx->count_lines_written++;
 }
 
-void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph) {
+void text_ctx_render(TextRenderContext* ctx, char c) {
+	GlyphInfo* glyph = ctx->font->glyphs[c];
+
+	Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
+	Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
+	ctx->count_vx += glyph->mesh->count;
+
+	Vector2 gl_origin = { -1, 1 };
+	Vector2 offset = {
+		ctx->point.x - gl_origin.x,
+		ctx->point.y - gl_origin.y,
+	};
+	for (int32 i = 0; i < glyph->mesh->count; i++) {
+		vx[i].x += offset.x;
+		vx[i].y += offset.y;
+	}
+}
+
+void text_ctx_advance(TextRenderContext* ctx, char c) {
+	GlyphInfo* glyph = ctx->font->glyphs[c];
 	ctx->point.x += glyph->advance.x;
 }
 

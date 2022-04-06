@@ -123,13 +123,12 @@ fm_error arr_init(Array<T>* array, int32 capacity, T fill) {
 // Use case: You declare some array on the stack. It's empty, and you only want to modify its elements
 // using an Array. Call this to wrap it in an empty Array of the correct capacity.
 template<typename T>
-fm_error arr_stack(Array<T>* array, T* data, int32 capacity) {
-	if (!data) return FM_ERR_NULL_PTR;
+void arr_stack(Array<T>* array, T* data, int32 capacity) {
+	fm_assert(data);
+
 	array->size = 0;
 	array->capacity = capacity;
 	array->data = data;
-	
-	return FM_ERR_SUCCESS;
 }
 
 // Use case: You have some contiguous data filled out somewhere (maybe in another Array, maybe in a C
@@ -163,6 +162,17 @@ int32 arr_indexof(Array<T>* array, T* element) {
 	fm_assert(index >= 0);
 	fm_assert(index < array->size);
 	return index;
+}
+
+template<typename T>
+T* arr_push(Array<T>* array, const T* data, int32 count) {
+	int32 remaining = array->capacity - array->size;
+	if (remaining < count) return nullptr;
+	
+	memcpy(array->data + array->size, data, sizeof(T) * count);
+	T* out = array->data + array->size;
+	array->size += count;
+	return out;
 }
 
 template<typename T>
@@ -252,6 +262,12 @@ template<typename T>
 void arr_fill(Array<T>* array, T element) {
 	memfill(array->data, arr_bytes(array), &element, sizeof(T));
 	array->size = array->capacity; 
+}
+
+template<typename T>
+void arr_fill(Array<T>* array, int32 offset, int32 count, T element) {
+	memfill(array->data + offset, count * sizeof(T), &element, sizeof(T));
+	// You're on your own as far as the size here
 }
 
 #define arr_for(array, it) for (auto (it) = (array).data; (it) != ((array).data + (array).size); (it)++)
@@ -389,8 +405,21 @@ namespace colors {
 	Vector4 red           = { 1.00f, 0.00f, 0.00f, 1.00f };
 	Vector4 dbg_textbox   = { 0.25f, 0.35f, 0.45f, 0.50f };
 	Vector4 dbg_choicebox = { 0.10f, 0.50f, 0.50f, 0.50f };
+
+	constexpr int32 maskr = 0xFF000000;
+	constexpr int32 maskg = 0x00FF0000;
+	constexpr int32 maskb = 0x0000FF00;
+	constexpr int32 maska = 0x000000FF;
 };
 
+Vector4 decode_color32(int32 color) {
+	Vector4 v;
+	v.r = (float32)(color & colors::maskr);
+	v.g = (float32)(color & colors::maskg);
+	v.b = (float32)(color & colors::maskb);
+	v.a = (float32)(color & colors::maska);
+	return v;
+}
 
 GLFWwindow* g_window;
 

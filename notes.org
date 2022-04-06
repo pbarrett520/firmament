@@ -25,18 +25,21 @@ RULE #8: embrace the rectangle
 - [X] traverse set nodes
 - [X] improved table editor (implement input* cache on backend)
 - [X] edit non-boolean state from the editor
+- [X] instead of the backward node connections, just have a Return node or
+  something
+- [X] ChoiceRepeat node
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
 - [ ] validate dialogue graphs
-- [ ] fix editor layout flashing
+- [ ] fix editor layout flashings
+- [ ] icon heads to see who is talking
+- [ ] better text wrapping
+- [ ] multiselect nodes in dialogue editor
+- [ ] modify node _properties_ based on state
+  - for example, prism's name. you don't want to duplicate every node as "one
+    where you know prism's name" and "one where you don't"
 
 quick dogfood notes:
-- typing into the selected view, having to press enter is annoying
-- rename Empty to ChoiceRepeat
-- instead of the backward node connections, just have a Return node or something
-- easy way to set prism's name as known without duplicating nodes
-- multiselect
-- icon heads to see who is talking
 - display choices you have made
 * log
 ** patrick 1
@@ -234,3 +237,4 @@ technically, what do i need for the proof of concept?
 - save and load state
 - load the game with an arbitrary state + dialogue
 
+  

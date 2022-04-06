@@ -89,6 +89,7 @@ void init_lua() {
 	lua_manager.prepend_to_search_path(fm_libs);
 	lua_manager.prepend_to_search_path(fm_core);
 	lua_manager.prepend_to_search_path(fm_saves);
+	lua_manager.prepend_to_search_path(fm_game);
 
 	// Bind all C functions
 	register_lua_api();
@@ -124,7 +125,8 @@ void init_lua() {
 	lua_manager.state["tdengine"]["path_constants"]["fm_layout"] = _fm_layout;
 	lua_manager.state["tdengine"]["path_constants"]["fm_libs"] = fm_libs;
 	lua_manager.state["tdengine"]["path_constants"]["fm_saves"] = fm_saves;
-	lua_manager.state["tdengine"]["path_constants"]["fm_state"] = fm_state;
+	lua_manager.state["tdengine"]["path_constants"]["fm_states"] = fm_states;
+	lua_manager.state["tdengine"]["path_constants"]["fm_state"] = _fm_state;
 	lua_manager.state["tdengine"]["path_constants"]["fm_bootstrap"] = fm_bootstrap;
 	lua_manager.state["tdengine"]["path_constants"]["fm_assets"] = fm_assets;
 	lua_manager.state["tdengine"]["path_constants"]["fm_fonts"] = fm_fonts;
@@ -135,7 +137,6 @@ void init_lua() {
 	// Then, script the base packages you need
 	lua_manager.script_dir(fm_libs);
 	lua_manager.script_dir(fm_core);
-
 }
 
 // Lua itself has been initialized, and we've loaded in other assets our scripts
@@ -146,6 +147,7 @@ void init_scripts() {
 	auto& state = lua_manager.state;
 
 	// Load in game scripts
+	lua_manager.script_dir(fm_game);
 	lua_manager.script_dir(fm_entities);
 	lua_manager.script_dir(fm_components);
 	

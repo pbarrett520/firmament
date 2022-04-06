@@ -51,10 +51,14 @@ function Editor:init(params)
 	entity_editor = true,
 	imgui_ignore = true
   }
+  
+  tdengine.create_entity('OptionUpdater')
 end
 
 function Editor:update(dt)
-  --submit_dbg_tbox()
+  submit_dbg_tbox()
+
+  
   self:calculate_framerate()
   self:handle_input()
 
@@ -846,7 +850,7 @@ function Editor:dialogue_editor(dt)
   imgui.EndChild()
 
   -- @hack: 0 doesn't infer like I'd expect it to
-  imgui.InputTextMultiline(self.ded.input_id, 512, -1, -1)
+  imgui.InputTextMultiline(self.ded.input_id, 1024, -1, -1)
   if self.ded.selected then
 	local selected = self.ded.nodes[self.ded.selected]
 	if selected.kind == 'Text' or selected.kind == 'Choice' then
@@ -928,6 +932,7 @@ end
 function submit_rainbow(text)
   local request = {
 	text = text,
+	character = tdengine.characters.narrator,
 	effect = {
 	  type = 2,
 	  frequency = 15
@@ -941,6 +946,11 @@ function submit_without_effect()
 	text = 'joey, the striker fox'
   }
   tdengine.submit_text(request)
+end
+
+function submit_dbg_text()
+  print(inspect(tdengine.characters.narrator))
+  submit_rainbow('joey, the striker fox')
 end
 
 function submit_dbg_quad()

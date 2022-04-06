@@ -110,7 +110,7 @@ void render_cbx() {
 		auto text = arr_view(choice->text);
 		arr_for(text, c) {
 			if (*c == 0) break;
-			GlyphInfo* glyph = glyph_infos[*c];
+			GlyphInfo* glyph = context.font->glyphs[*c];
 
 			// If this character is part of the hovered choice, fill in the color buffer's entries for its
 			// vertices with the hovered color
@@ -138,6 +138,64 @@ void render_cbx() {
 		}
 
 		choice_ctx_nextline(&context);
+	}
+}
+
+void render_mtb(float32 dt) {
+	if (!text_buffer.size) return;
+	
+	TextRenderContext context;
+	text_ctx_init(&context, font_infos[0]);
+
+	arr_rfor(text_buffer, info) {
+		// Initialize this chunk and bail if there's no more room
+		if (text_ctx_full(&context)) break;
+		text_ctx_chunk(&context, info);
+
+		// Render the text
+		int32 vx_begin = vx_buffer.size;
+		int32 cr_begin = cr_buffer.size;
+		
+		while (!text_ctx_chunkdone(&context)) {
+			if (text_ctx_islast(&context)) {
+				int32 speaker_begin = vx_buffer.size;
+				int32 offset = context.count_vx;
+
+				// Render the speaker
+				ArrayView<char> speaker = arr_view(info->speaker);
+				arr_for(speaker, c) {
+					text_ctx_render(&context, *c);
+					text_ctx_advance(&context, *c);
+				}
+
+				context.point.x += options::mtb_speaker_pad;
+
+				int32 speaker_count_vx = context.count_vx - offset;
+				arr_fill(&cr_buffer, speaker_begin, speaker_count_vx, info->speaker_color);
+			}
+			
+			auto line = text_ctx_readline(&context);
+			arr_for(line, c) {
+				if (*c == 0) break;
+				text_ctx_render(&context,  *c);
+				text_ctx_advance(&context, *c);
+			}
+
+			text_ctx_nextline(&context);
+		}
+		
+		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
+		// those to the text's effects to modify
+		EffectRenderData render_data;
+		render_data.dt  = dt;
+		render_data.vx  = arr_slice(&vx_buffer, vx_begin, context.count_vx);
+		render_data.tc  = arr_slice(&tc_buffer, vx_begin, context.count_vx);
+		render_data.clr = arr_slice(&cr_buffer, vx_begin, context.count_vx);
+		arr_for(info->effects, effect) {
+			auto do_effect = effect_f[(int32)effect->type];
+			do_effect(effect, &render_data);
+			effect->frames_elapsed++;
+		}
 	}
 }
 
@@ -174,63 +232,6 @@ void render_dbg_geometry() {
 	}
 	
 	arr_clear(&dbg_rq_buffer);
-}
-
-void render_mtb(float32 dt) {
-	if (!text_buffer.size) return;
-	
-	TextRenderContext context;
-	text_ctx_init(&context, font_infos[0]);
-
-	arr_rfor(text_buffer, info) {
-		if (text_ctx_full(&context)) break;
-		text_ctx_chunk(&context, info);
-	
-		int32 vx_begin = vx_buffer.size;
-		int32 cr_begin = cr_buffer.size;
-		int32 count_vx = 0;
-		
-		// Algorithm: Iterate through requests in LIFO order, so that the newest requests are rendered
-		// first. Then, iterate over their line breaks, starting from the last line. Iterate the line,
-		// and move to the line above. Move to the next request.
-		while (!text_ctx_chunkdone(&context)) {
-			auto line = text_ctx_readline(&context);
-			
-			arr_for(line, c) {
-				if (*c == 0) break;
-				GlyphInfo* glyph = glyph_infos[*c];
-
-				Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
-				Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
-				count_vx += glyph->mesh->count;
-
-				Vector2 gl_origin = { -1, 1 };
-				Vector2 offset = {
-					context.point.x - gl_origin.x,
-					context.point.y - gl_origin.y,
-				};
-				for (int32 i = 0; i < glyph->mesh->count; i++) {
-					vx[i].x += offset.x;
-					vx[i].y += offset.y;
-				}
-
-				text_ctx_advance(&context, glyph);
-			}
-
-			text_ctx_nextline(&context);
-		}
-		
-		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
-		// those to the text's effects to modify
-		auto vx = arr_slice(&vx_buffer, vx_begin, count_vx);
-		auto tc = arr_slice(&tc_buffer, vx_begin, count_vx);
-		auto cr = arr_slice(&cr_buffer, vx_begin, count_vx);
-		arr_for(info->effects, effect) {
-			auto do_effect = effect_f[(int32)effect->type];
-			do_effect(effect, dt, vx, tc, cr);
-			effect->frames_elapsed++;
-		}
-	}
 }
 
 void send_gpu_commands() {

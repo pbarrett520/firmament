@@ -56,15 +56,21 @@ void choice_ctx_nextline(ChoiceRenderContext* ctx);
 // s[lb[i]], s[lb[i+1]] should be rendered on its own line. In particular, this means that
 // 0 and text.size - 1 are marked as line breaks
 #define MAX_TEXT_LEN 1024
+#define MAX_SPEAKER_LEN 32
 #define MAX_LINE_BREAKS 16
 struct TextRenderInfo {
-	char              text    [MAX_TEXT_LEN]    = { 0 };
-	int32             lbreaks [MAX_LINE_BREAKS] = { 0 };
-	int32             count_lb                  = 0;
-	Array<TextEffect> effects                   = { 0 };
+	char              text      [MAX_TEXT_LEN]    = { 0 };
+	int32             lbreaks   [MAX_LINE_BREAKS] = { 0 };
+	int32             count_lb                    = 0;
+	Array<TextEffect> effects                     = { 0 };
+	char              speaker   [32]              = { 0 };
+	int32             speaker_len                 = 0;
+	Vector4           speaker_color               = { 0 };
 };
 
-// Used for smoothing over advancing the point when rendering characters
+// Algorithm: Iterate through requests in LIFO order, so that the newest requests are rendered
+// first. Then, iterate over their line breaks, starting from the last line. Iterate the line,
+// and move to the line above. Move to the next request.
 struct TextRenderContext {
 	TextRenderInfo* info  = nullptr;
 	FontInfo* font        = nullptr;
@@ -74,16 +80,19 @@ struct TextRenderContext {
 	int32 max_lines           = 0;
 	int32 count_lines_written = 0;
 	bool  is_chunk_done       = false;
-	int32 ib                  = 0;
-	int32 ilb                 = 0;
+	int32 ib_low              = 0;
+	int32 ib_hi               = 0;
+	int32 count_vx            = 0;
 };
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font);
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);
 bool text_ctx_chunkdone(TextRenderContext* ctx);
 bool text_ctx_full(TextRenderContext* ctx);
+bool text_ctx_islast(TextRenderContext* ctx);
 ArrayView<char> text_ctx_readline(TextRenderContext* ctx);
-void  text_ctx_nextline(TextRenderContext* ctx);
-void text_ctx_advance(TextRenderContext* ctx, GlyphInfo* glyph);
+void text_ctx_nextline(TextRenderContext* ctx);
+void text_ctx_render(TextRenderContext* ctx, char c);
+void text_ctx_advance(TextRenderContext* ctx, char c);
 float32 text_ctx_scroll(TextRenderContext* ctx);
 
 void init_text_boxes();
