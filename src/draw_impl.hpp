@@ -153,25 +153,31 @@ void render_mtb(float32 dt) {
 		text_ctx_chunk(&context, info);
 
 		// Render the text
+		EffectRenderData render_data;
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
 		
 		while (!text_ctx_chunkdone(&context)) {
-			if (text_ctx_islast(&context)) {
+			if (text_ctx_islast(&context) ) {
 				int32 speaker_begin = vx_buffer.size;
-				int32 offset = context.count_vx;
+				int32 count_chunk_vx_before = context.count_chunk_vx;
 
 				// Render the speaker
 				ArrayView<char> speaker = arr_view(info->speaker);
 				arr_for(speaker, c) {
+					if (*c == 0) break;
 					text_ctx_render(&context, *c);
 					text_ctx_advance(&context, *c);
 				}
 
 				context.point.x += options::mtb_speaker_pad;
 
-				int32 speaker_count_vx = context.count_vx - offset;
+				int32 speaker_count_vx = context.count_chunk_vx - count_chunk_vx_before;
 				arr_fill(&cr_buffer, speaker_begin, speaker_count_vx, info->speaker_color);
+
+				// Let the effect know where in the buffer the speaker is rendered, so it can skip it
+				render_data.speaker_begin = speaker_begin;
+				render_data.speaker_end = vx_buffer.size - 1;
 			}
 			
 			auto line = text_ctx_readline(&context);
@@ -186,11 +192,10 @@ void render_mtb(float32 dt) {
 		
 		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
 		// those to the text's effects to modify
-		EffectRenderData render_data;
 		render_data.dt  = dt;
-		render_data.vx  = arr_slice(&vx_buffer, vx_begin, context.count_vx);
-		render_data.tc  = arr_slice(&tc_buffer, vx_begin, context.count_vx);
-		render_data.clr = arr_slice(&cr_buffer, vx_begin, context.count_vx);
+		render_data.vx  = arr_slice(&vx_buffer, vx_begin, context.count_chunk_vx);
+		render_data.tc  = arr_slice(&tc_buffer, vx_begin, context.count_chunk_vx);
+		render_data.clr = arr_slice(&cr_buffer, vx_begin, context.count_chunk_vx);
 		arr_for(info->effects, effect) {
 			auto do_effect = effect_f[(int32)effect->type];
 			do_effect(effect, &render_data);

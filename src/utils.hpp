@@ -406,18 +406,18 @@ namespace colors {
 	Vector4 dbg_textbox   = { 0.25f, 0.35f, 0.45f, 0.50f };
 	Vector4 dbg_choicebox = { 0.10f, 0.50f, 0.50f, 0.50f };
 
-	constexpr int32 maskr = 0xFF000000;
-	constexpr int32 maskg = 0x00FF0000;
-	constexpr int32 maskb = 0x0000FF00;
-	constexpr int32 maska = 0x000000FF;
+	constexpr int32 maskr = 0x000000FF;
+	constexpr int32 maskg = 0x0000FF00;
+	constexpr int32 maskb = 0x00FF0000;
+	constexpr int32 maska = 0xFF000000;
 };
 
-Vector4 decode_color32(int32 color) {
+Vector4 decode_color32(sol::table color) {
 	Vector4 v;
-	v.r = (float32)(color & colors::maskr);
-	v.g = (float32)(color & colors::maskg);
-	v.b = (float32)(color & colors::maskb);
-	v.a = (float32)(color & colors::maska);
+	v.r = color["r"];
+	v.g = color["g"];
+	v.b = color["b"];
+	v.a = color["a"];
 	return v;
 }
 

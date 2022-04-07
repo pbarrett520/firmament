@@ -221,8 +221,6 @@ function DialogueController:process()
 
 	return
   end
-
-  tdengine.log(string.format('called process on an incompatible node, node = %s', inspect(self.current)))
 end
 
 function DialogueController:update(dt)

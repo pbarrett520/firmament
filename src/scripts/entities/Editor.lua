@@ -60,7 +60,9 @@ function Editor:update(dt)
 
 
   
-  tdengine.do_once(function() submit_oscillate('joey, the striker fox') end)
+  tdengine.do_once(function() submit_two_effects('joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: ') end)
+
+  
   self:calculate_framerate()
   self:handle_input()
 
@@ -951,9 +953,27 @@ function submit_without_effect()
   tdengine.submit_text(request)
 end
 
+function submit_two_effects(text)
+  local request = {
+	text = text,
+	character = tdengine.characters.narrator,
+	effects = {
+	  {
+		type = 1,
+		amplitude = .003,
+		frequency = 15
+	  },
+	  {
+		type = 2,
+		frequency = 15
+	  }
+	}
+  }
+  tdengine.submit_text(request)
+end
+
 function submit_dbg_text()
-  print(inspect(tdengine.characters.narrator))
-  submit_rainbow('joey, the striker fox')
+  submit_two_effects('joey, the striker fox')
 end
 
 function submit_dbg_quad()

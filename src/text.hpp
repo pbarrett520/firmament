@@ -82,7 +82,7 @@ struct TextRenderContext {
 	bool  is_chunk_done       = false;
 	int32 ib_low              = 0;
 	int32 ib_hi               = 0;
-	int32 count_vx            = 0;
+	int32 count_chunk_vx      = 0;
 };
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font);
 void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);

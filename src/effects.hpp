@@ -15,6 +15,10 @@ struct EffectRenderData {
 	Array<Vector2> vx;
 	Array<Vector2> tc;
 	Array<Vector4> clr;
+
+	// Indices into the vertex buffer
+	int32 speaker_begin;
+	int32 speaker_end;
 };
 
 
@@ -63,3 +67,5 @@ struct TextEffect {
 	int frames_elapsed = 0;
 	EffectData data;
 };
+
+bool is_speaker(EffectRenderData* data, int32 vi);

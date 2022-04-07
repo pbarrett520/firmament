@@ -103,7 +103,7 @@ void API::submit_text(sol::table request) {
 	// Fill out info about the speaker
 	strncpy(info.speaker, speaker_copy.c_str(), MAX_SPEAKER_LEN);
 	info.speaker_len = speaker_copy.size();
-	int32 color = request["character"]["color"];
+	sol::table color = request["character"]["color"];
 	info.speaker_color = decode_color32(color);
 	
 	// Calculate line breaks based on size of text box
@@ -151,28 +151,36 @@ void API::submit_text(sol::table request) {
 	
 	
 	// No effect? Just give it to the renderer
-	if (request["effect"] == sol::lua_nil) {
+	if (request["effects"] == sol::lua_nil) {
 		arr_push(&text_buffer, info);
 		return;
 	};
 
-	// If there is an effect, figure out what type it is and parse it.
-	TextEffect effect;
-	effect.type = static_cast<TextEffectType>(request["effect"]["type"]);
-	if (effect.type == TextEffectType::OSCILLATE) {
-		OscillateEffect* effect_data = &effect.data.oscillate;
-		effect_data->amplitude = request["effect"]["amplitude"];
-		effect_data->frequency = request["effect"]["frequency"];
-		effect_data->rnd = rand_float(3);
-	}
-	else if (effect.type == TextEffectType::RAINBOW) {
-		RainbowEffect* effect_data = &effect.data.rainbow;
-		effect_data->frequency = request["effect"]["frequency"];
-	}
+	// If there are effects, iterate through them and parse params into a struct
+	sol::table effects = request["effects"];
+	int32 count_effects = effects.size();
 
-	// Then, add it to our buffer of effects and give the info the pointer to the stored effect
-	info.effects = arr_slice(&effect_buffer, effect_buffer.size, 1);
-	arr_push(&effect_buffer, effect);
+	// Do this before we actually push effects to the buffer to avoid weird pointer math
+	info.effects = arr_slice(&effect_buffer, effect_buffer.size, count_effects);
+
+	for (int i = 1; i <= count_effects; i++) {
+		sol::table data = effects[i];
+		
+		TextEffect effect;
+		effect.type = static_cast<TextEffectType>(data["type"]);
+
+		// Type specific data
+		if (effect.type == TextEffectType::OSCILLATE) {
+			effect.data.oscillate.amplitude = data["amplitude"];
+			effect.data.oscillate.frequency = data["frequency"];
+			effect.data.oscillate.rnd = rand_float(3);
+		}
+		else if (effect.type == TextEffectType::RAINBOW) {
+			effect.data.rainbow.frequency = data["frequency"];
+		}
+		
+		arr_push(&effect_buffer, effect);
+	}
 
 	arr_push(&text_buffer, info);
 }

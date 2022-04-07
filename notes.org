@@ -35,15 +35,18 @@ RULE #8: embrace the rectangle
 - [ ] display made choices
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
+- [ ] temporary array thing that keeps track of how many bytes is written to an
+  array between the time you instantiate it and a given time
 ** big
+- [ ] multiple text effects
+- [ ] text effects that work on subset of text
+- [ ] update text effect range as string is edited
+  
 - [ ] icon heads to see who is talking
 
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
 
-- [ ] multiple text effects
-- [ ] text effects that work on subset of text
-- [ ] update text effect range as string is edited
 
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
