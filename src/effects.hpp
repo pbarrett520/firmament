@@ -15,10 +15,10 @@ struct EffectRenderData {
 	Array<Vector2> vx;
 	Array<Vector2> tc;
 	Array<Vector4> clr;
-
-	// Indices into the vertex buffer
-	int32 speaker_begin;
-	int32 speaker_end;
+	
+	// Indices into the vertex buffer -- filled out dynamically as we render
+	int32 speaker_begin = 0;
+	int32 speaker_end = 0;
 };
 
 
@@ -65,7 +65,13 @@ union EffectData {
 struct TextEffect {
 	TextEffectType type = TextEffectType::NONE;
 	int frames_elapsed = 0;
+	
+	// Character indices for which this effect is active
+	int32 first = 0;
+	int32 last = 0;
+	
 	EffectData data;
 };
 
 bool is_speaker(EffectRenderData* data, int32 vi);
+bool is_effect_range(TextEffect* effect, int32 vi);

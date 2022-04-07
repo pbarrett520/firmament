@@ -30,15 +30,15 @@ RULE #8: embrace the rectangle
 - [X] (4/5) ChoiceRepeat node
 - [X] (4/6) edit engine options from editor  
 - [X] (4/6) show character names in text box 
+- [X] (4/7) temporary array thing that keeps track of how many bytes is written to an
+  array between the time you instantiate it and a given time
 ** small
 - [ ] better text wrapping
 - [ ] display made choices
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
-- [ ] temporary array thing that keeps track of how many bytes is written to an
-  array between the time you instantiate it and a given time
 ** big
-- [ ] multiple text effects
+- [X] multiple text effects
 - [ ] text effects that work on subset of text
 - [ ] update text effect range as string is edited
   

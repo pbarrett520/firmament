@@ -336,6 +336,29 @@ int32 arr_indexof(ArrayView<T>* array, T* element) {
 	return index;
 }
 
+template<typename T>
+struct ArrayMarker {
+	int32 begin = 0;
+	Array<T>* array  = nullptr;
+};
+
+template<typename T>
+ArrayMarker<T> arr_marker_make(Array<T>* array) {
+	ArrayMarker<T> marker;
+	arr_marker_init(&marker, array);
+	return marker;
+}
+
+template<typename T>
+void arr_marker_init(ArrayMarker<T>* marker, Array<T>* array) {
+	marker->begin = array->size;
+	marker->array = array;
+}
+
+template<typename T>
+int32 arr_marker_count(ArrayMarker<T>* marker) {
+	return marker->array->size - marker->begin;
+}
 
 struct Vector2 {
 	float32 x = 0;

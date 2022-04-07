@@ -91,9 +91,10 @@ void API::submit_text(sol::table request) {
 	auto& render_engine = get_render_engine();
 
 	TextRenderInfo info;
-	std::string speaker_copy = request["character"]["display_name"];
+
+	// Copy the text
 	std::string text_copy = request["text"];
-	if (text_copy.size() >= MAX_TEXT_LEN - speaker_copy.size()) {
+	if (text_copy.size() >= MAX_TEXT_LEN) {
 		tdns_log.write("total text size too long -- ctrl+f MAX_TEXT_LEN, double it, rebuild, text = %s", text_copy.c_str());
 		return;
 	}
@@ -101,10 +102,15 @@ void API::submit_text(sol::table request) {
 	strncpy(info.text, text_copy.c_str(), MAX_TEXT_LEN);
 
 	// Fill out info about the speaker
-	strncpy(info.speaker, speaker_copy.c_str(), MAX_SPEAKER_LEN);
-	info.speaker_len = speaker_copy.size();
-	sol::table color = request["character"]["color"];
-	info.speaker_color = decode_color32(color);
+	std::string speaker_name = request["character"]["display_name"].get_or(fallbacks::text_speaker);
+	strncpy(info.speaker, speaker_name.c_str(), MAX_SPEAKER_LEN);
+	
+	info.speaker_len = speaker_name.size();
+
+	sol::optional<sol::table> speaker_color = request["character"]["color"];
+	info.speaker_color = (speaker_color == sol::nullopt) ?
+		info.speaker_color = fallbacks::text_color : 
+		info.speaker_color = decode_color32(*speaker_color);
 	
 	// Calculate line breaks based on size of text box
 	ArrayView<char> speaker = arr_view(info.speaker, MAX_SPEAKER_LEN);
@@ -168,7 +174,9 @@ void API::submit_text(sol::table request) {
 		
 		TextEffect effect;
 		effect.type = static_cast<TextEffectType>(data["type"]);
-
+		effect.first = data["first"].get_or(0);
+		effect.last   = data["last"].get_or(0);
+		
 		// Type specific data
 		if (effect.type == TextEffectType::OSCILLATE) {
 			effect.data.oscillate.amplitude = data["amplitude"];

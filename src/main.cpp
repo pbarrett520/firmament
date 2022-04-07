@@ -7,6 +7,7 @@
 #include "error.hpp"
 #include "log.hpp"
 #include "utils.hpp"
+#include "fallbacks.hpp"
 #include "input.hpp"
 #include "transform.hpp"
 #include "console.hpp"

@@ -1,3 +1,4 @@
+
 local glfw = require('glfw')
 local inspect = require('inspect')
 
@@ -58,9 +59,7 @@ end
 function Editor:update(dt)
   submit_dbg_tbox()
 
-
-  
-  tdengine.do_once(function() submit_two_effects('joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: joey, the striker fox: ') end)
+  tdengine.do_once(function() submit_dbg_text() end)
 
   
   self:calculate_framerate()
@@ -938,11 +937,16 @@ function submit_rainbow(text)
   local request = {
 	text = text,
 	character = tdengine.characters.narrator,
-	effect = {
-	  type = 2,
-	  frequency = 15
+	effects = {
+	  {
+		type = 2,
+		first = 0,
+		last = 3,
+		frequency = 15
+	  }
 	}
   }
+  print(inspect(request))
   tdengine.submit_text(request)
 end
 
@@ -973,7 +977,7 @@ function submit_two_effects(text)
 end
 
 function submit_dbg_text()
-  submit_two_effects('joey, the striker fox')
+  submit_rainbow('joey, the striker fox')
 end
 
 function submit_dbg_quad()

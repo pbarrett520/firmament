@@ -10,6 +10,7 @@ void DoOscillateEffect(TextEffect* effect, EffectRenderData* data) {
 	arr_for(data->vx, vx) {
 		int32 vi = arr_indexof(&data->vx, vx);
 		if (is_speaker(data, vi)) continue;
+		if (!is_effect_range(effect, vi)) continue;
 
 		int32 ci = vi / 6;
 		vx->y -= sinv;
@@ -27,6 +28,7 @@ void DoRainbowEffect(TextEffect* effect, EffectRenderData* data) {
 	arr_for(data->clr, clr) {
 		int32 vi = arr_indexof(&data->clr, clr);
 		if (is_speaker(data, vi)) continue;
+		if (!is_effect_range(effect, vi)) continue;
 		
 		int32 ci = vi / 6;
 		if      (!(ci % 3)) { clr->r *= sing; clr->g *= sinb; clr->b *= sinr; }
@@ -39,5 +41,15 @@ void DoRainbowEffect(TextEffect* effect, EffectRenderData* data) {
 bool is_speaker(EffectRenderData* data, int32 vi) {
 	bool before = vi < data->speaker_begin;
 	bool after  = vi > data->speaker_end;
+	return !before && !after;
+}
+
+bool is_effect_range(TextEffect* effect, int32 vi) {
+	// Both limits are zero means that it's on all the text
+	if (!effect->first && !effect->last) return true;
+	
+	int32 ci = vi / 6;
+	bool before = ci < effect->first;
+	bool after  = ci > effect->last;
 	return !before && !after;
 }

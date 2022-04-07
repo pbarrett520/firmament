@@ -152,15 +152,15 @@ void render_mtb(float32 dt) {
 		if (text_ctx_full(&context)) break;
 		text_ctx_chunk(&context, info);
 
-		// Render the text
+		// Render the chunk line-by-line
 		EffectRenderData render_data;
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
+		auto vx_marker = arr_marker_make(&vx_buffer);
 		
 		while (!text_ctx_chunkdone(&context)) {
 			if (text_ctx_islast(&context) ) {
-				int32 speaker_begin = vx_buffer.size;
-				int32 count_chunk_vx_before = context.count_chunk_vx;
+				auto marker = arr_marker_make(&vx_buffer);
 
 				// Render the speaker
 				ArrayView<char> speaker = arr_view(info->speaker);
@@ -172,12 +172,13 @@ void render_mtb(float32 dt) {
 
 				context.point.x += options::mtb_speaker_pad;
 
-				int32 speaker_count_vx = context.count_chunk_vx - count_chunk_vx_before;
-				arr_fill(&cr_buffer, speaker_begin, speaker_count_vx, info->speaker_color);
+				int32 speaker_begin = marker.begin;
+				int32 speaker_count = arr_marker_count(&marker);
+				arr_fill(&cr_buffer, speaker_begin, speaker_count, info->speaker_color);
 
-				// Let the effect know where in the buffer the speaker is rendered, so it can skip it
-				render_data.speaker_begin = speaker_begin;
-				render_data.speaker_end = vx_buffer.size - 1;
+				// Effect needs indices of speaker (relative to this chunk of vertices)
+				render_data.speaker_begin = speaker_begin - vx_begin;
+				render_data.speaker_end   = speaker_begin + speaker_count - 1 - vx_begin;
 			}
 			
 			auto line = text_ctx_readline(&context);
@@ -189,13 +190,16 @@ void render_mtb(float32 dt) {
 
 			text_ctx_nextline(&context);
 		}
-		
-		// Get the pointer to the memory blocks we just wrote for this text's GPU data, and pass
+
+			
+		// Get the pointers to the memory blocks we just wrote for this text's GPU data, and pass
 		// those to the text's effects to modify
+		int32 vx_count = arr_marker_count(&vx_marker);
+		
 		render_data.dt  = dt;
-		render_data.vx  = arr_slice(&vx_buffer, vx_begin, context.count_chunk_vx);
-		render_data.tc  = arr_slice(&tc_buffer, vx_begin, context.count_chunk_vx);
-		render_data.clr = arr_slice(&cr_buffer, vx_begin, context.count_chunk_vx);
+		render_data.vx  = arr_slice(&vx_buffer, vx_begin, vx_count);
+		render_data.tc  = arr_slice(&tc_buffer, vx_begin, vx_count);
+		render_data.clr = arr_slice(&cr_buffer, vx_begin, vx_count);
 		arr_for(info->effects, effect) {
 			auto do_effect = effect_f[(int32)effect->type];
 			do_effect(effect, &render_data);

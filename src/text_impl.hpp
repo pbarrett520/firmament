@@ -89,9 +89,6 @@ void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
 	// Reset the point
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
 
-	// Reset number of vertices rendered for this chunk
-	ctx->count_chunk_vx = 0;
-
 	// Start on last line
 	ctx->ib_low = info->count_lb - 2;
 	ctx->ib_hi = info->count_lb - 1;
@@ -139,7 +136,6 @@ void text_ctx_render(TextRenderContext* ctx, char c) {
 
 	Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
 	Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
-	ctx->count_chunk_vx += glyph->mesh->count;
 
 	Vector2 gl_origin = { -1, 1 };
 	Vector2 offset = {
