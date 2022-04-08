@@ -1,6 +1,8 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
 
+local effect_types = { 'oscillate', 'rainbow' }
+
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
   self.options = {
@@ -334,7 +336,14 @@ function Editor:ded_select(id, node)
 	local node = self.ded.nodes[self.ded.selected]
 	node.effects = node.effects or {} -- @hack
 
-	self.ded.effect_editor = imgui.extensions.TableEditor(node.effects, { propagate_field_add = true })
+	local params = {
+	  child_field_add = true,
+	  array_replace_name = function(key, value)
+		local effect_type = value.type
+		return effect_types[effect_type]
+	  end
+	}
+	self.ded.effect_editor = imgui.extensions.TableEditor(node.effects, params)
   end
   
   if node.kind == 'Branch' then
@@ -386,7 +395,7 @@ function Editor:dialogue_editor(dt)
   imgui.Begin('dialogue', true)
 
   -- Draw the sidebar
-  imgui.BeginChild('sidebar', 350, 0)
+  imgui.BeginChild('sidebar', 400, 0)
   
   imgui.Text(self:ded_full_path())
 
@@ -470,7 +479,6 @@ function Editor:dialogue_editor(dt)
 	  imgui.Separator()
 	  imgui.Dummy(0, 10)
 	  
-	  local effect_types = { 'oscillate', 'rainbow' }
 	  imgui.PushItemWidth(250)
 	  if imgui.BeginCombo('##combo', effect_types[self.ded.selected_effect]) then
 		for i, effect_type in pairs(effect_types) do

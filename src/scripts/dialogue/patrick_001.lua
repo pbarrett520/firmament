@@ -17,6 +17,11 @@ return {
       {
         frequency = 15,
         type = 2
+      },
+      {
+        amplitude = 0.0074999998323619366,
+        frequency = 30,
+        type = 1
       }
     },
     is_entry_point = true,

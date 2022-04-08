@@ -53,8 +53,9 @@ imgui.extensions.TableEditor = function(editing, params)
 	editing = editing,
 	children = {},
 	imgui_ignore = {},
-	draw_field_add = false,
-	propagate_field_add = params.propagate_field_add or false,
+	array_replace_name = params.array_replace_name or nil,
+	draw_field_add = params.draw_field_add or false,
+	child_field_add = params.child_field_add or false,
 	draw = function(self) imgui.internal.draw_table_editor(self) end,
 	clear = function(self) imgui.internal.clear_table_editor(self) end
   }
@@ -65,10 +66,8 @@ imgui.extensions.TableEditor = function(editing, params)
 	local recurse = type(value) == 'table'
 	recurse = recurse and not (value == editing)
 	if recurse then
-	  editor.children[key] = imgui.extensions.TableEditor(value)
-	  if editor.propagate_field_add then
-		editor.children[key].draw_field_add = true
-	  end
+	  local params = imgui.internal.propagate_table_editor_params(editor)	  
+	  editor.children[key] = imgui.extensions.TableEditor(value, params)
 	end
   end
 
@@ -89,10 +88,12 @@ imgui.internal.draw_table_field_add = function(editor)
 
   imgui.SameLine()
   imgui.extensions.VariableName('key')
-  
+
+  local enter_on_key = false
+  local enter_on_value = false
   imgui.PushItemWidth(100)
   imgui.SameLine()
-  local enter_on_key = imgui.InputText(editor.key_id)
+  enter_on_key = imgui.InputText(editor.key_id)
   imgui.PopItemWidth()
 
   imgui.PushItemWidth(170)
@@ -101,7 +102,7 @@ imgui.internal.draw_table_field_add = function(editor)
 	imgui.extensions.VariableName('value')
 	
 	imgui.SameLine()
-	local enter_on_value = imgui.InputText(editor.value_id)
+	enter_on_value = imgui.InputText(editor.value_id)
   end
 
   if enter_on_key or enter_on_value then
@@ -121,8 +122,8 @@ imgui.internal.draw_table_field_add = function(editor)
 	elseif editor.selected_type == 'bool' then
 	  value = (value == 'true')
 	elseif editor.selected_type == 'table' then
-	  value = {}
-	  editor.children[key] = imgui.extensions.TableEditor(value)
+	  local params = imgui.internal.propagate_table_editor_params(editor)	  
+	  editor.children[key] = imgui.extensions.TableEditor(value, params)
 	end
 
 	editor.editing[key] = value
@@ -154,6 +155,11 @@ imgui.internal.draw_table_editor = function(editor)
 	local display = not editor.imgui_ignore[key]
 	local label = string.format('##%s', hash_table_entry(editor.editing, tostring(key)))
 
+	local display_key = key
+	if type(key) == 'number' and editor.array_replace_name then
+	  display_key = editor.array_replace_name(key, value)
+	end
+
 	-- This is a two-way binding. If ImGui says that the input box was edited, we take the value from C and put it into Lua.
 	-- Otherwise, we take the value from Lua and put it into C, in case any value changes in the interpreter. This is slow -- it
 	-- means we copy every string in all tables we're editing into C every frame. I can't think of a better way to do it, because
@@ -161,7 +167,7 @@ imgui.internal.draw_table_editor = function(editor)
 	-- metatable insanity.
 	if display then 
 	  if type(value) == 'string' then
-		imgui.extensions.VariableName(key)
+		imgui.extensions.VariableName(display_key)
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -173,7 +179,7 @@ imgui.internal.draw_table_editor = function(editor)
 		end
 		imgui.PopItemWidth()
 	  elseif type(value) == 'number' then
-		imgui.extensions.VariableName(key)
+		imgui.extensions.VariableName(display_key)
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -184,7 +190,7 @@ imgui.internal.draw_table_editor = function(editor)
 		end
 		imgui.PopItemWidth()
 	  elseif type(value) == 'boolean' then
-		imgui.extensions.VariableName(key)
+		imgui.extensions.VariableName(display_key)
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -196,16 +202,26 @@ imgui.internal.draw_table_editor = function(editor)
 		end
 	  elseif type(value) == 'table' then
 		if not editor.children[key] then
-		  editor.children[key] = imgui.extensions.TableEditor(value)
+		  local params = imgui.internal.propagate_table_editor_params(editor)
+		  print(inspect(params))
+		  editor.children[key] = imgui.extensions.TableEditor(value, params)
 		end
 		local child = editor.children[key]
-		if imgui.TreeNode(key) then
+
+		local unique_treenode_id = display_key .. label
+		if imgui.TreeNode(unique_treenode_id) then
 		  child:draw()
 		  imgui.TreePop()
 		end
 	  end
 	end
   end
+end
+
+imgui.internal.propagate_table_editor_params = function(editor)
+  local params = {}
+  params.draw_field_add = editor.child_field_add
+  return params
 end
 
 imgui.internal.clear_table_editor = function(editor)

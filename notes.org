@@ -59,6 +59,11 @@ RULE #8: embrace the rectangle
   - flickering light
   - snaking
   - fade in blackness
+** pie
+a really juiced up effects editor. like, one that will live show you what the
+effect is as you're doing it. would probably need to render the text to a
+texture, unless i could mess with imgui text, would be really lucky if it was
+stored as SOA instead of AOS.
 * inspiration / reference
 fate/stay night ui
 https://youtu.be/gAkUUB4B6po?t=551
@@ -71,19 +76,18 @@ https://youtu.be/2fMwXWSFHA0?list=PLsq7bMZ-qdkb1vfXr5Ty-SYC2LqoAkUt5&t=459
 
 headshot maker
 https://picrew.me/image_maker/94097
->>>>>>> 01c26f933a00968e8fd38253cc11ce02c51cf3e1
 * log
 ** effects in gui
 hacked it together, here's notes:
-- make the pane a bit bigger
-- enter on value does not work
-- if a node has no effects, you have to click off and click on to regenerate the
+- [X] make the pane a bit bigger
+- [X] enter on value does not work
+- [ ] if a node has no effects, you have to click off and click on to regenerate the
   table editor and propagate that draw flag to the children
-- propagating the draw flag is a stupid hack that's just for this, not sure
+- [ ] propagating the draw flag is a stupid hack that's just for this, not sure
   better way to do it but surely there is something
-- print effect type or a name if one is given instead of table index
-- bind effect types between c and lua
-- master list of effect types also
+- [ ] print effect type or a name if one is given instead of table index
+- [ ] bind effect types between c and lua
+- [ ] master list of effect types also
 ** patrick 2
 the food -- the dome is not producing turkey legs, it's producing a hyper
 efficient means of nutrition that biochemically signals that it's food.
