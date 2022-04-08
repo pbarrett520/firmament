@@ -147,40 +147,34 @@ void render_mtb(float32 dt) {
 	TextRenderContext context;
 	text_ctx_init(&context, font_infos[0]);
 
-	arr_rfor(text_buffer, info) {
-		// Initialize this chunk and bail if there's no more room
-		if (text_ctx_full(&context)) break;
-		text_ctx_chunk(&context, info);
-
-		// Render the chunk line-by-line
+	while (!text_ctx_done(&context)) {
+		auto info = text_ctx_chunk(&context);
 		EffectRenderData render_data;
+
+		// Render the speaker
+		auto marker = arr_marker_make(&vx_buffer);
+
+		ArrayView<char> speaker = arr_view(info->speaker);
+		arr_for(speaker, c) {
+			if (*c == 0) break;
+			text_ctx_render(&context, *c);
+			text_ctx_advance(&context, *c);
+		}
+
+		context.point.x += options::mtb_speaker_pad;
+		
+		int32 speaker_begin = marker.begin;
+		int32 speaker_count = arr_marker_count(&marker);
+		arr_fill(&cr_buffer, speaker_begin, speaker_count, info->speaker_color);
+
+		render_data.speaker_len = speaker.size;
+		
+		// Render the chunk line-by-line
 		int32 vx_begin = vx_buffer.size;
 		int32 cr_begin = cr_buffer.size;
 		auto vx_marker = arr_marker_make(&vx_buffer);
 		
 		while (!text_ctx_chunkdone(&context)) {
-			if (text_ctx_islast(&context) ) {
-				auto marker = arr_marker_make(&vx_buffer);
-
-				// Render the speaker
-				ArrayView<char> speaker = arr_view(info->speaker);
-				arr_for(speaker, c) {
-					if (*c == 0) break;
-					text_ctx_render(&context, *c);
-					text_ctx_advance(&context, *c);
-				}
-
-				context.point.x += options::mtb_speaker_pad;
-
-				int32 speaker_begin = marker.begin;
-				int32 speaker_count = arr_marker_count(&marker);
-				arr_fill(&cr_buffer, speaker_begin, speaker_count, info->speaker_color);
-
-				// Effect needs indices of speaker (relative to this chunk of vertices)
-				render_data.speaker_begin = speaker_begin - vx_begin;
-				render_data.speaker_end   = speaker_begin + speaker_count - 1 - vx_begin;
-			}
-			
 			auto line = text_ctx_readline(&context);
 			arr_for(line, c) {
 				if (*c == 0) break;

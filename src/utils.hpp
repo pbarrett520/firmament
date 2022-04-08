@@ -340,6 +340,8 @@ template<typename T>
 struct ArrayMarker {
 	int32 begin = 0;
 	Array<T>* array  = nullptr;
+
+	//int32 operator*() {}
 };
 
 template<typename T>

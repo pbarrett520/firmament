@@ -32,14 +32,15 @@ RULE #8: embrace the rectangle
 - [X] (4/6) show character names in text box 
 - [X] (4/7) temporary array thing that keeps track of how many bytes is written to an
   array between the time you instantiate it and a given time
+- [X] (4/7) multiple text effects
+- [X] (4/7) text effects that work on subset of text
 ** small
 - [ ] better text wrapping
 - [ ] display made choices
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
 ** big
-- [X] multiple text effects
-- [ ] text effects that work on subset of text
+- [ ] effects in GUI
 - [ ] update text effect range as string is edited
   
 - [ ] icon heads to see who is talking
@@ -51,7 +52,13 @@ RULE #8: embrace the rectangle
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
-
+** dogfood
+- [ ] animate patrick's first dialogue
+  - electric caul
+  - warmth and wet, delay between this, melt the characters
+  - flickering light
+  - snaking
+  - fade in blackness
 * inspiration / reference
 fate/stay night ui
 https://youtu.be/gAkUUB4B6po?t=551
@@ -66,6 +73,17 @@ headshot maker
 https://picrew.me/image_maker/94097
 >>>>>>> 01c26f933a00968e8fd38253cc11ce02c51cf3e1
 * log
+** effects in gui
+hacked it together, here's notes:
+- make the pane a bit bigger
+- enter on value does not work
+- if a node has no effects, you have to click off and click on to regenerate the
+  table editor and propagate that draw flag to the children
+- propagating the draw flag is a stupid hack that's just for this, not sure
+  better way to do it but surely there is something
+- print effect type or a name if one is given instead of table index
+- bind effect types between c and lua
+- master list of effect types also
 ** patrick 2
 the food -- the dome is not producing turkey legs, it's producing a hyper
 efficient means of nutrition that biochemically signals that it's food.

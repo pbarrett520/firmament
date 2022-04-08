@@ -59,13 +59,18 @@ void choice_ctx_nextline(ChoiceRenderContext* ctx);
 #define MAX_SPEAKER_LEN 32
 #define MAX_LINE_BREAKS 16
 struct TextRenderInfo {
-	char              text      [MAX_TEXT_LEN]    = { 0 };
-	int32             lbreaks   [MAX_LINE_BREAKS] = { 0 };
+	char              text [MAX_TEXT_LEN]         = { 0 };
+	
+	int32             lbreaks [MAX_LINE_BREAKS]   = { 0 };
 	int32             count_lb                    = 0;
+	
 	Array<TextEffect> effects                     = { 0 };
-	char              speaker   [32]              = { 0 };
+	
+	char              speaker [32]                = { 0 };
 	int32             speaker_len                 = 0;
 	Vector4           speaker_color               = { 0 };
+
+	bool              visible                     = false;
 };
 
 // Algorithm: Iterate through requests in LIFO order, so that the newest requests are rendered
@@ -73,22 +78,22 @@ struct TextRenderInfo {
 // and move to the line above. Move to the next request.
 struct TextRenderContext {
 	TextRenderInfo* info  = nullptr;
-	FontInfo* font        = nullptr;
+	FontInfo* font = nullptr;
 
 	Vector2 point;
-	int32 skipped             = 0;
-	int32 max_lines           = 0;
-	int32 count_lines_written = 0;
-	bool  is_chunk_done       = false;
-	int32 ib_low              = 0;
-	int32 ib_hi               = 0;
-	int32 count_chunk_vx      = 0;
+	int32 max_lines = 0;
+	int32 next_chunk_index = 0;
+	int32 chunks_rendered = 0;
+	int32 chunks_to_render = 0;
+	bool  is_chunk_done = false;
+	bool  do_chunk_separator = false;
+	int32 ib_low = 0;
+	int32 ib_hi = 0;
 };
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font);
-void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* chunk);
+bool text_ctx_done(TextRenderContext* ctx);
+TextRenderInfo* text_ctx_chunk(TextRenderContext* ctx); // @spader
 bool text_ctx_chunkdone(TextRenderContext* ctx);
-bool text_ctx_full(TextRenderContext* ctx);
-bool text_ctx_islast(TextRenderContext* ctx);
 ArrayView<char> text_ctx_readline(TextRenderContext* ctx);
 void text_ctx_nextline(TextRenderContext* ctx);
 void text_ctx_render(TextRenderContext* ctx, char c);

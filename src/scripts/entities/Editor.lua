@@ -1,4 +1,3 @@
-
 local glfw = require('glfw')
 local inspect = require('inspect')
 
@@ -29,7 +28,9 @@ function Editor:init(params)
 	next_dialogue_id = '##ded:detail:next_dialogue',
 	branch_val_id = '##ded:detail:set_branch_val',
 	empty_name_id = '##ded:detail:set_empty_name',
-	selected_editor = nil
+	selected_editor = nil,
+	effect_editor = nil,
+	selected_effect = 1
   }
 
   self.filter = imgui.TextFilter.new()
@@ -59,6 +60,7 @@ end
 function Editor:update(dt)
   submit_dbg_tbox()
 
+  
   tdengine.do_once(function() submit_dbg_text() end)
 
   
@@ -186,6 +188,7 @@ function Editor:make_dialogue_node(kind)
   if kind == 'Text' then
 	node.text = ''
 	node.who = 'unknown'
+	node.effects = {}
   elseif kind == 'Choice' then
 	node.text = ''
   elseif kind == 'Set' then
@@ -315,6 +318,7 @@ function Editor:ded_select(id, node)
 	self.ded.selected_editor = nil
 	return
   end
+
   self.ded.selected_editor = imgui.extensions.TableEditor(self.ded.nodes[id])
 
   if node.kind == 'Empty' then
@@ -323,6 +327,14 @@ function Editor:ded_select(id, node)
 
   if node.kind == 'Text' then
 	imgui.InputTextSetContents(self.ded.text_who_id, node.who)
+	self.ded.selected_editor.imgui_ignore = {
+	  text = true,
+	  effects = true
+	}
+	local node = self.ded.nodes[self.ded.selected]
+	node.effects = node.effects or {} -- @hack
+
+	self.ded.effect_editor = imgui.extensions.TableEditor(node.effects, { propagate_field_add = true })
   end
   
   if node.kind == 'Branch' then
@@ -453,14 +465,44 @@ function Editor:dialogue_editor(dt)
 	  imgui.PushTextWrapPos(0)
 	  imgui.Text(imgui.InputTextContents(self.ded.input_id))
 	  imgui.PopTextWrapPos()
+
+	  imgui.Dummy(0, 10)
+	  imgui.Separator()
+	  imgui.Dummy(0, 10)
+	  
+	  local effect_types = { 'oscillate', 'rainbow' }
+	  imgui.PushItemWidth(250)
+	  if imgui.BeginCombo('##combo', effect_types[self.ded.selected_effect]) then
+		for i, effect_type in pairs(effect_types) do
+		  local selected = i == self.ded.selected_effect
+		  if imgui.Selectable(effect_type, selected) then
+			self.ded.selected_effect = i
+		  end
+
+		  if selected then imgui.SetItemDefaultFocus() end
+		end
+		imgui.EndCombo()
+	  end
+	  imgui.PopItemWidth()
+
+	  imgui.SameLine()
+	  if imgui.Button('Add Effect') then
+		table.insert(selected.effects, { type = self.ded.selected_effect })
+	  end
+
+	  if imgui.TreeNode('effects') then
+		self.ded.effect_editor:draw()
+		imgui.TreePop()
+	  end
 	end
   end
   
+  imgui.Dummy(0, 10)
   imgui.Separator()
+  imgui.Dummy(0, 10)
 
   -- A list of all nodes, just using their short names
   local node_hovered_in_list = nil
-  if imgui.TreeNode('Nodes') then
 	for id, node in pairs(self.ded.nodes) do
 	  local imid = id .. 'list_view'
 	  imgui.PushID(imid)
@@ -489,8 +531,6 @@ function Editor:dialogue_editor(dt)
 
 	  imgui.PopID()
 	end
-	imgui.TreePop()
-  end
   
   imgui.Separator()
     
@@ -586,7 +626,7 @@ function Editor:dialogue_editor(dt)
 	imgui.InvisibleButton('node', gnode.size:unpack())
 
 	-- Figure out whether we're pressed, hovered, or dragged
-	local pressed = imgui.IsItemActive()
+	local pressed = imgui.IsItemClicked()
 	if pressed then
 	  self:ded_select(id, node)
 
@@ -933,26 +973,42 @@ function submit_oscillate(text)
   tdengine.submit_text(request)
 end
 
-function submit_rainbow(text)
+function submit_rainbow(text, first, last)
+  first = first or 0
+  last = last or 3
   local request = {
 	text = text,
 	character = tdengine.characters.narrator,
 	effects = {
 	  {
 		type = 2,
-		first = 0,
-		last = 3,
+		first = first,
+		last = last,
 		frequency = 15
 	  }
 	}
   }
-  print(inspect(request))
   tdengine.submit_text(request)
 end
 
-function submit_without_effect()
+function submit_full_rainbow(text)
   local request = {
-	text = 'joey, the striker fox'
+	text = text,
+	character = tdengine.characters.narrator,
+	effects = {
+	  {
+		type = 2,
+		frequency = 15
+	  }
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_without_effect(text)
+  local request = {
+	text = text,
+	character = tdengine.characters.narrator
   }
   tdengine.submit_text(request)
 end
@@ -976,8 +1032,45 @@ function submit_two_effects(text)
   tdengine.submit_text(request)
 end
 
+function submit_two_effects_no_overlap(text)
+  local request = {
+	text = text,
+	character = tdengine.characters.narrator,
+	effects = {
+	  {
+		type = 1,
+		amplitude = .003,
+		frequency = 15,
+		first = 0,
+		last = 3
+	  },
+	  {
+		type = 2,
+		frequency = 15,
+		first = 4,
+		last = 20
+	  }
+	}
+  }
+  tdengine.submit_text(request)
+end
+
+function submit_multiline_plain()
+  submit_without_effect('joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. ')
+end
+
+function submit_multiline_rainbow()
+  submit_rainbow('joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. joey, the striker fox. ')
+end
+
 function submit_dbg_text()
-  submit_rainbow('joey, the striker fox')
+  --submit_two_effects('joey, the striker fox')
+  --submit_two_effects_no_overlap('joey, the striker fox')
+  --submit_full_rainbow('joey, the striker fox')
+  --submit_rainbow('joey, the striker fox')
+  --submit_without_effect('joey, the striker fox')
+  submit_multiline_plain()
+  --submit_multiline_rainbow()
 end
 
 function submit_dbg_quad()

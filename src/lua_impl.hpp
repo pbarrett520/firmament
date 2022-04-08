@@ -172,12 +172,13 @@ void update_engine_stats_lua() {
 
 	sol::table scroll = Lua.state.create_table();
 	scroll["this_frame"] = input_manager.scroll.y;
-	scroll["last_frame"] = main_box.last_frame_scroll;
-	scroll["frames_still"] = main_box.frames_still;
-	scroll["current_offset"] = main_box.scroll_cur;
-	scroll["target"] = main_box.scroll_tgt;
-	scroll["lerp_acc"] = main_box.lerp_acc;
-	scroll["lerp_target"] = options::scroll_lerp;
+	scroll["line_scroll"] = main_box.line_scroll;
+	//scroll["last_frame"] = main_box.last_frame_scroll;
+	//scroll["frames_still"] = main_box.frames_still;
+	//scroll["current_offset"] = main_box.scroll_cur;
+	//scroll["target"] = main_box.scroll_tgt;
+	//scroll["lerp_acc"] = main_box.lerp_acc;
+	//scroll["lerp_target"] = options::scroll_lerp;
 
 	Lua.state["tdengine"]["engine_stats"]["scroll"] = scroll;
 }

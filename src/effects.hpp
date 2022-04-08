@@ -17,8 +17,7 @@ struct EffectRenderData {
 	Array<Vector4> clr;
 	
 	// Indices into the vertex buffer -- filled out dynamically as we render
-	int32 speaker_begin = 0;
-	int32 speaker_end = 0;
+	int32 speaker_len = 0;
 };
 
 

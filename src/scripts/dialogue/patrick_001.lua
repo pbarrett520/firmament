@@ -13,6 +13,12 @@ return {
     children = {
       "a1fd3588-aee6-4b78-8f06-11d086f11d42"
     },
+    effects = {
+      {
+        frequency = 15,
+        type = 2
+      }
+    },
     is_entry_point = true,
     kind = "Text",
     text = "You awaken in the warm embrace of an electric caul.",
@@ -33,6 +39,7 @@ return {
     children = {
       "fa620c6b-810e-4c9b-a0d0-481855fb7b9c"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "There is not light. There is only warmth and wet.",

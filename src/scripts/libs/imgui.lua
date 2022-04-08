@@ -43,7 +43,8 @@ imgui.extensions.TableMenuItem = function(name, t)
   end
 end
 
-imgui.extensions.TableEditor = function(editing)
+imgui.extensions.TableEditor = function(editing, params)
+  if not params then params = {} end
   local editor = {
     key_id = tdengine.uuid_imgui(),
     value_id = tdengine.uuid_imgui(),
@@ -51,6 +52,9 @@ imgui.extensions.TableEditor = function(editing)
 	selected_type = 'string',
 	editing = editing,
 	children = {},
+	imgui_ignore = {},
+	draw_field_add = false,
+	propagate_field_add = params.propagate_field_add or false,
 	draw = function(self) imgui.internal.draw_table_editor(self) end,
 	clear = function(self) imgui.internal.clear_table_editor(self) end
   }
@@ -59,16 +63,76 @@ imgui.extensions.TableEditor = function(editing)
   -- Each child member that is a non-recursive table also gets an editor
   for key, value in pairs(editing) do
 	local recurse = type(value) == 'table'
-	recurse = recurse and not value == editing
+	recurse = recurse and not (value == editing)
 	if recurse then
 	  editor.children[key] = imgui.extensions.TableEditor(value)
+	  if editor.propagate_field_add then
+		editor.children[key].draw_field_add = true
+	  end
 	end
   end
 
   return editor
 end
 
+imgui.internal.draw_table_field_add = function(editor)
+  imgui.PushItemWidth(80)
+  if imgui.BeginCombo(editor.type_id, editor.selected_type) then
+	for index, name in pairs(types) do
+	  if imgui.Selectable(name) then
+		editor.selected_type = name
+	  end
+	end
+	imgui.EndCombo()
+  end
+  imgui.PopItemWidth()
+
+  imgui.SameLine()
+  imgui.extensions.VariableName('key')
+  
+  imgui.PushItemWidth(100)
+  imgui.SameLine()
+  local enter_on_key = imgui.InputText(editor.key_id)
+  imgui.PopItemWidth()
+
+  imgui.PushItemWidth(170)
+  if editor.selected_type ~= 'table' then
+	imgui.SameLine()
+	imgui.extensions.VariableName('value')
+	
+	imgui.SameLine()
+	local enter_on_value = imgui.InputText(editor.value_id)
+  end
+
+  if enter_on_key or enter_on_value then
+	local key = imgui.InputTextContents(editor.key_id)
+	imgui.InputTextSetContents(editor.key_id, '')
+	key = tonumber(key) or key
+	
+	local value = imgui.InputTextContents(editor.value_id)
+	imgui.InputTextSetContents(editor.value_id, '')
+	
+	if value == 'nil' then
+	  value = nil
+	elseif editor.selected_type == 'number' then
+	  value = tonumber(value)
+	elseif editor.selected_type == 'string' then
+	  value = tostring(value)
+	elseif editor.selected_type == 'bool' then
+	  value = (value == 'true')
+	elseif editor.selected_type == 'table' then
+	  value = {}
+	  editor.children[key] = imgui.extensions.TableEditor(value)
+	end
+
+	editor.editing[key] = value
+	imgui.SetKeyboardFocusHere(-1)
+  end
+  imgui.PopItemWidth()
+end
+
 imgui.internal.draw_table_editor = function(editor)
+  if editor.draw_field_add then imgui.internal.draw_table_field_add(editor) end
   -- Very hacky way to line up the inputs: Figure out the largest key, then when drawing a key,
   -- use the difference in length between current key and largest key as a padding. Does not work
   -- that well, but kind of works
@@ -87,11 +151,7 @@ imgui.internal.draw_table_editor = function(editor)
   local padding = math.max(cursor + padding_target * 10, min_padding)
   
   for key, value in pairs(editor.editing) do
-	local display = true
-	local ignore = editor.editing.imgui_ignore
-	if type(ignore) == 'table' then
-	  display = not editor.editing.imgui_ignore[key] 
-	end
+	local display = not editor.imgui_ignore[key]
 	local label = string.format('##%s', hash_table_entry(editor.editing, tostring(key)))
 
 	-- This is a two-way binding. If ImGui says that the input box was edited, we take the value from C and put it into Lua.

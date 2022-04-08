@@ -66,54 +66,75 @@ void choice_ctx_nextline(ChoiceRenderContext* ctx) {
 	ctx->point.y -= ctx->font->max_advance.y;
 }
 
+void move_point_down(Vector2* point, float distance) {
+	point->y -= distance;
+}
+
+void move_point_up(Vector2* point, float distance) {
+	point->y += distance;
+}
+
 void text_ctx_init(TextRenderContext* ctx, FontInfo* font) {
+	auto mtb = &main_box;
+	
 	ctx->font = font;
 	ctx->point = {
 		main_box.pos.x + main_box.pad.x,
-		main_box.pos.y - main_box.dim.y + main_box.pad.y - font->descender
+		main_box.pos.y
 	};
+	move_point_down(&ctx->point, main_box.dim.y);
+	move_point_up(&ctx->point, main_box.pad.y);
+	move_point_down(&ctx->point, font->descender);
 
 	ctx->max_lines = (int32)floorf((main_box.dim.y - main_box.pad.y) / font->max_advance.y);
 	ctx->max_lines--;
+
+	int32 acc = 0;
+	int32 skipped = 0;
+	arr_for(text_buffer, info) { info->visible = false; }
+	arr_rfor(text_buffer, info) {
+		if (acc >= ctx->max_lines) break;
+		if (skipped++ < mtb->line_scroll) continue;
+		info->visible = true;
+		acc += info->count_lb - 1;
+		ctx->next_chunk_index = arr_indexof(&text_buffer, info);
+		ctx->chunks_to_render++;
+	}
+
+	move_point_up(&ctx->point, ctx->font->max_advance.y * (acc - 1)); // Account for the lines of each chunk
+	move_point_up(&ctx->point, ctx->font->max_advance.y * (ctx->chunks_to_render - 1)); // Account for line breaks between chunks 
 }
 
-void text_ctx_chunk(TextRenderContext* ctx, TextRenderInfo* info) {
+bool text_ctx_done(TextRenderContext* ctx) {
+	return ctx->chunks_rendered == ctx->chunks_to_render;
+}
+
+TextRenderInfo* text_ctx_chunk(TextRenderContext* ctx) {
 	ctx->is_chunk_done = false;
 	
-	// A line of separation between chunks
-	if (ctx->count_lines_written) {
-		ctx->point.y += ctx->font->max_advance.y;
-		ctx->count_lines_written++;
+	// A line of separation between chunks, except the first time this is called
+	if (ctx->do_chunk_separator) {
+		move_point_down(&ctx->point, ctx->font->max_advance.y);
 	}
+	ctx->do_chunk_separator = true;
 
 	// Reset the point
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
 
-	// Start on last line
-	ctx->ib_low = info->count_lb - 2;
-	ctx->ib_hi = info->count_lb - 1;
+	// Start on first line
+	ctx->ib_low = 0;
+	ctx->ib_hi = 1;
 
-	// Check if we should skip this chunk
-	auto mtb = &main_box;
-	if (ctx->skipped < mtb->line_scroll) {
-		ctx->skipped++;
-		ctx->is_chunk_done = true;
-	}
-
-	
+	auto info = text_buffer[ctx->next_chunk_index];
 	ctx->info = info;
+	ctx->next_chunk_index++;
+	ctx->chunks_rendered++;
+
+	return info;
 }
 
 bool text_ctx_chunkdone(TextRenderContext* ctx) {
 	return ctx->is_chunk_done;
-}
-
-bool text_ctx_full(TextRenderContext* ctx) {
-	return ctx->count_lines_written == ctx->max_lines;
-}
-
-bool text_ctx_islast(TextRenderContext* ctx) {
-	return ctx->ib_low == 0;
 }
 
 ArrayView<char> text_ctx_readline(TextRenderContext* ctx) {
@@ -124,11 +145,11 @@ ArrayView<char> text_ctx_readline(TextRenderContext* ctx) {
 
 void text_ctx_nextline(TextRenderContext* ctx) {
 	ctx->point.x = main_box.pos.x + main_box.pad.x;
-	ctx->point.y += ctx->font->max_advance.y;
-	ctx->ib_low--;
-	ctx->ib_hi--;
-	ctx->is_chunk_done = ctx->ib_low < 0;
-	ctx->count_lines_written++;
+	move_point_down(&ctx->point, ctx->font->max_advance.y);
+	ctx->ib_low++;
+	ctx->ib_hi++;
+
+	ctx->is_chunk_done = ctx->ib_hi == ctx->info->count_lb;
 }
 
 void text_ctx_render(TextRenderContext* ctx, char c) {
@@ -157,8 +178,7 @@ float32 text_ctx_scroll(TextRenderContext* ctx) {
 	MainTextBox* mtb = &main_box;
 	
 	if (options::smooth_scroll) { return mtb->scroll_cur; }
-	return mtb->line_scroll * ctx->font->max_advance.y;
-	
+	return mtb->line_scroll * ctx->font->max_advance.y;	
 }
 
 void mtb_update_scroll(MainTextBox* mtb, float dt) {
@@ -166,7 +186,7 @@ void mtb_update_scroll(MainTextBox* mtb, float dt) {
 	
 	auto& input = get_input_manager();
 	
-	if (input.scroll.y > 0) mtb->line_scroll++;
+	if (input.scroll.y > 0) mtb->line_scroll = fox_min(mtb->line_scroll++, text_buffer.size);
 	else if (input.scroll.y < 0) mtb->line_scroll = fox_max(mtb->line_scroll--, 0);
 }
 
