@@ -14,11 +14,7 @@ const char* effect_names [COUNT_TEXT_EFFECTS] = {
 };
 
 // we're binding this to sol, so keep a container around
-std::array<const char*, COUNT_TEXT_EFFECTS> sol_effect_names = {
-	"none",
-	"oscillate",
-	"rainbow"
-};//std::to_array(effect_names);
+std::array<const char*, COUNT_TEXT_EFFECTS> sol_effect_names = std::to_array(effect_names);
 
 struct EffectRenderData {
 	float32 dt;

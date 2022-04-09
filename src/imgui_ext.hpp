@@ -1,4 +1,3 @@
-#if 0
 class TextEditor
 {
 public:
@@ -84,16 +83,8 @@ public:
 		}
 	};
 
-	struct Identifier
-	{
-		Coordinates mLocation;
-		std::string mDeclaration;
-	};
-
 	typedef std::string String;
-	typedef std::unordered_map<std::string, Identifier> Identifiers;
 	typedef std::unordered_set<std::string> Keywords;
-	typedef std::map<int, std::string> ErrorMarkers;
 	typedef std::array<ImU32, (unsigned)PaletteIndex::Max> Palette;
 	typedef uint8_t Char;
 
@@ -102,8 +93,7 @@ public:
 		Char mChar;
 		PaletteIndex mColorIndex = PaletteIndex::Default;
 
-		Glyph(Char aChar, PaletteIndex aColorIndex) : mChar(aChar), mColorIndex(aColorIndex),
-			mComment(false), mMultiLineComment(false), mPreprocessor(false) {}
+		Glyph(Char aChar, PaletteIndex aColorIndex) : mChar(aChar), mColorIndex(aColorIndex) {}
 	};
 
 	typedef std::vector<Glyph> Line;
@@ -114,8 +104,6 @@ public:
 
 	const Palette& GetPalette() const { return mPaletteBase; }
 	void SetPalette(const Palette& aValue);
-
-	void SetErrorMarkers(const ErrorMarkers& aMarkers) { mErrorMarkers = aMarkers; }
 
 	void Render(const char* aTitle, const ImVec2& aSize = ImVec2(), bool aBorder = false);
 	void SetText(const std::string& aText);
@@ -292,7 +280,6 @@ private:
 	RegexList mRegexList;
 
 	bool mCheckComments;
-	ErrorMarkers mErrorMarkers;
 	ImVec2 mCharAdvance;
 	Coordinates mInteractiveStart, mInteractiveEnd;
 	std::string mLineBuffer;
@@ -851,16 +838,6 @@ void TextEditor::RemoveLine(int aStart, int aEnd)
 	fm_assert(aEnd >= aStart);
 	fm_assert(mLines.size() > (size_t)(aEnd - aStart));
 
-	ErrorMarkers etmp;
-	for (auto& i : mErrorMarkers)
-	{
-		ErrorMarkers::value_type e(i.first >= aStart ? i.first - 1 : i.first, i.second);
-		if (e.first >= aStart && e.first <= aEnd)
-			continue;
-		etmp.insert(e);
-	}
-	mErrorMarkers = std::move(etmp);
-
 	mLines.erase(mLines.begin() + aStart, mLines.begin() + aEnd);
 	fm_assert(!mLines.empty());
 
@@ -871,16 +848,6 @@ void TextEditor::RemoveLine(int aIndex)
 {
 	fm_assert(!mReadOnly);
 	fm_assert(mLines.size() > 1);
-
-	ErrorMarkers etmp;
-	for (auto& i : mErrorMarkers)
-	{
-		ErrorMarkers::value_type e(i.first > aIndex ? i.first - 1 : i.first, i.second);
-		if (e.first - 1 == aIndex)
-			continue;
-		etmp.insert(e);
-	}
-	mErrorMarkers = std::move(etmp);
 
 	mLines.erase(mLines.begin() + aIndex);
 	fm_assert(!mLines.empty());
@@ -893,11 +860,6 @@ TextEditor::Line& TextEditor::InsertLine(int aIndex)
 	fm_assert(!mReadOnly);
 
 	auto& result = *mLines.insert(mLines.begin() + aIndex, Line());
-
-	ErrorMarkers etmp;
-	for (auto& i : mErrorMarkers)
-		etmp.insert(ErrorMarkers::value_type(i.first >= aIndex ? i.first + 1 : i.first, i.second));
-	mErrorMarkers = std::move(etmp);
 
 	return result;
 }
@@ -926,20 +888,7 @@ std::string TextEditor::GetWordAt(const Coordinates & aCoords) const
 
 ImU32 TextEditor::GetGlyphColor(const Glyph & aGlyph) const
 {
-	if (aGlyph.mComment)
-		return mPalette[(int)PaletteIndex::Comment];
-	if (aGlyph.mMultiLineComment)
-		return mPalette[(int)PaletteIndex::MultiLineComment];
 	auto const color = mPalette[(int)aGlyph.mColorIndex];
-	if (aGlyph.mPreprocessor)
-	{
-		const auto ppcolor = mPalette[(int)PaletteIndex::Preprocessor];
-		const int c0 = ((ppcolor & 0xff) + (color & 0xff)) / 2;
-		const int c1 = (((ppcolor >> 8) & 0xff) + ((color >> 8) & 0xff)) / 2;
-		const int c2 = (((ppcolor >> 16) & 0xff) + ((color >> 16) & 0xff)) / 2;
-		const int c3 = (((ppcolor >> 24) & 0xff) + ((color >> 24) & 0xff)) / 2;
-		return ImU32(c0 | (c1 << 8) | (c2 << 16) | (c3 << 24));
-	}
 	return color;
 }
 
@@ -1175,27 +1124,6 @@ void TextEditor::Render()
 
 			// Draw breakpoints
 			auto start = ImVec2(lineStartScreenPos.x + scrollX, lineStartScreenPos.y);
-
-			// Draw error markers
-			auto errorIt = mErrorMarkers.find(lineNo + 1);
-			if (errorIt != mErrorMarkers.end())
-			{
-				auto end = ImVec2(lineStartScreenPos.x + contentSize.x + 2.0f * scrollX, lineStartScreenPos.y + mCharAdvance.y);
-				drawList->AddRectFilled(start, end, mPalette[(int)PaletteIndex::ErrorMarker]);
-
-				if (ImGui::IsMouseHoveringRect(lineStartScreenPos, end))
-				{
-					ImGui::BeginTooltip();
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 0.2f, 0.2f, 1.0f));
-					ImGui::Text("Error at line %d:", errorIt->first);
-					ImGui::PopStyleColor();
-					ImGui::Separator();
-					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.2f, 1.0f));
-					ImGui::Text("%s", errorIt->second.c_str());
-					ImGui::PopStyleColor();
-					ImGui::EndTooltip();
-				}
-			}
 
 			// Draw line number (right aligned)
 			snprintf(buf, 16, "%d  ", lineNo + 1);
@@ -2047,11 +1975,6 @@ void TextEditor::Backspace()
 			auto prevSize = GetLineMaxColumn(mState.mCursorPosition.mLine - 1);
 			prevLine.insert(prevLine.end(), line.begin(), line.end());
 
-			ErrorMarkers etmp;
-			for (auto& i : mErrorMarkers)
-				etmp.insert(ErrorMarkers::value_type(i.first - 1 == mState.mCursorPosition.mLine ? i.first - 1 : i.first, i.second));
-			mErrorMarkers = std::move(etmp);
-
 			RemoveLine(mState.mCursorPosition.mLine);
 			--mState.mCursorPosition.mLine;
 			mState.mCursorPosition.mColumn = prevSize;
@@ -2383,223 +2306,6 @@ void TextEditor::UndoRecord::Redo(TextEditor * aEditor)
 	aEditor->EnsureCursorVisible();
 }
 
-static bool TokenizeCStyleString(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
-{
-	const char * p = in_begin;
-
-	if (*p == '"')
-	{
-		p++;
-
-		while (p < in_end)
-		{
-			// handle end of string
-			if (*p == '"')
-			{
-				out_begin = in_begin;
-				out_end = p + 1;
-				return true;
-			}
-
-			// handle escape character for "
-			if (*p == '\\' && p + 1 < in_end && p[1] == '"')
-				p++;
-
-			p++;
-		}
-	}
-
-	return false;
-}
-
-static bool TokenizeCStyleCharacterLiteral(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
-{
-	const char * p = in_begin;
-
-	if (*p == '\'')
-	{
-		p++;
-
-		// handle escape characters
-		if (p < in_end && *p == '\\')
-			p++;
-
-		if (p < in_end)
-			p++;
-
-		// handle end of character literal
-		if (p < in_end && *p == '\'')
-		{
-			out_begin = in_begin;
-			out_end = p + 1;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-static bool TokenizeCStyleIdentifier(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
-{
-	const char * p = in_begin;
-
-	if ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') || *p == '_')
-	{
-		p++;
-
-		while ((p < in_end) && ((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') || (*p >= '0' && *p <= '9') || *p == '_'))
-			p++;
-
-		out_begin = in_begin;
-		out_end = p;
-		return true;
-	}
-
-	return false;
-}
-
-static bool TokenizeCStyleNumber(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
-{
-	const char * p = in_begin;
-
-	const bool startsWithNumber = *p >= '0' && *p <= '9';
-
-	if (*p != '+' && *p != '-' && !startsWithNumber)
-		return false;
-
-	p++;
-
-	bool hasNumber = startsWithNumber;
-
-	while (p < in_end && (*p >= '0' && *p <= '9'))
-	{
-		hasNumber = true;
-
-		p++;
-	}
-
-	if (hasNumber == false)
-		return false;
-
-	bool isFloat = false;
-	bool isHex = false;
-	bool isBinary = false;
-
-	if (p < in_end)
-	{
-		if (*p == '.')
-		{
-			isFloat = true;
-
-			p++;
-
-			while (p < in_end && (*p >= '0' && *p <= '9'))
-				p++;
-		}
-		else if (*p == 'x' || *p == 'X')
-		{
-			// hex formatted integer of the type 0xef80
-
-			isHex = true;
-
-			p++;
-
-			while (p < in_end && ((*p >= '0' && *p <= '9') || (*p >= 'a' && *p <= 'f') || (*p >= 'A' && *p <= 'F')))
-				p++;
-		}
-		else if (*p == 'b' || *p == 'B')
-		{
-			// binary formatted integer of the type 0b01011101
-
-			isBinary = true;
-
-			p++;
-
-			while (p < in_end && (*p >= '0' && *p <= '1'))
-				p++;
-		}
-	}
-
-	if (isHex == false && isBinary == false)
-	{
-		// floating point exponent
-		if (p < in_end && (*p == 'e' || *p == 'E'))
-		{
-			isFloat = true;
-
-			p++;
-
-			if (p < in_end && (*p == '+' || *p == '-'))
-				p++;
-
-			bool hasDigits = false;
-
-			while (p < in_end && (*p >= '0' && *p <= '9'))
-			{
-				hasDigits = true;
-
-				p++;
-			}
-
-			if (hasDigits == false)
-				return false;
-		}
-
-		// single precision floating point type
-		if (p < in_end && *p == 'f')
-			p++;
-	}
-
-	if (isFloat == false)
-	{
-		// integer size type
-		while (p < in_end && (*p == 'u' || *p == 'U' || *p == 'l' || *p == 'L'))
-			p++;
-	}
-
-	out_begin = in_begin;
-	out_end = p;
-	return true;
-}
-
-static bool TokenizeCStylePunctuation(const char * in_begin, const char * in_end, const char *& out_begin, const char *& out_end)
-{
-	(void)in_end;
-
-	switch (*in_begin)
-	{
-	case '[':
-	case ']':
-	case '{':
-	case '}':
-	case '!':
-	case '%':
-	case '^':
-	case '&':
-	case '*':
-	case '(':
-	case ')':
-	case '-':
-	case '+':
-	case '=':
-	case '~':
-	case '|':
-	case '<':
-	case '>':
-	case '?':
-	case ':':
-	case '/':
-	case ';':
-	case ',':
-	case '.':
-		out_begin = in_begin;
-		out_end = in_begin + 1;
-		return true;
-	}
-
-	return false;
-}
-#endif
 namespace ImGuiWrapper {
 	void SetNextWindowSize(float x, float y) {
 		ImGui::SetNextWindowSize(ImVec2(x, y), ImGuiCond_FirstUseEver);

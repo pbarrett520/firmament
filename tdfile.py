@@ -22,7 +22,7 @@ build_options = {
     ],
     'debug': True,
     'cpp': True,
-    'cpp_standard': '17',
+    'cpp_standard': '20',
     'Windows': {
         'system_libs': [
             'user32.lib',
@@ -120,7 +120,7 @@ class Builder(tdbuild.base_builder):
         cwd = os.path.normpath(os.getcwd())
         cwd = os.path.join(cwd, '')
         cwd = cwd.replace('\\', '/')
-        cwd = cwd.strip('/')
+        cwd = cwd.removesuffix('/')
         tdbuild.print_info('creating src/machine_conf.hpp')
         tdbuild.print_info(f'project root is {cwd}')
         
