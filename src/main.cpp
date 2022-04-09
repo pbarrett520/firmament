@@ -34,8 +34,8 @@
 #include "transform_impl.hpp"
 #include "utils_impl.hpp"
 
-std::string editor_buffer;
-TextEditor editor;
+//std::string editor_buffer;
+//TextEditor editor;
 
 int main() {
 	auto& input_manager  = get_input_manager();
@@ -78,7 +78,7 @@ int main() {
 		if (options::show_imgui_demo) ImGui::ShowDemoWindow();
 		if (show_console) console.Draw("firmament");
 
-		editor.Render("TextEditor");
+		//editor.Render("TextEditor");
 			
 		// Run scripts
 		Lua.update_entities(seconds_per_update);

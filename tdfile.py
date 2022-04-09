@@ -22,7 +22,7 @@ build_options = {
     ],
     'debug': True,
     'cpp': True,
-    'cpp_standard': '20',
+    'cpp_standard': '17',
     'Windows': {
         'system_libs': [
             'user32.lib',
