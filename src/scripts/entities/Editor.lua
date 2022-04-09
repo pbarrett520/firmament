@@ -1,8 +1,6 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
 
-local effect_types = { 'oscillate', 'rainbow' }
-
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
   self.options = {
@@ -340,7 +338,7 @@ function Editor:ded_select(id, node)
 	  child_field_add = true,
 	  array_replace_name = function(key, value)
 		local effect_type = value.type
-		return effect_types[effect_type]
+		return tdengine.effect_names[effect_type]
 	  end
 	}
 	self.ded.effect_editor = imgui.extensions.TableEditor(node.effects, params)
@@ -480,8 +478,8 @@ function Editor:dialogue_editor(dt)
 	  imgui.Dummy(0, 10)
 	  
 	  imgui.PushItemWidth(250)
-	  if imgui.BeginCombo('##combo', effect_types[self.ded.selected_effect]) then
-		for i, effect_type in pairs(effect_types) do
+	  if imgui.BeginCombo('##combo', tdengine.effect_names[self.ded.selected_effect]) then
+		for i, effect_type in pairs(tdengine.effect_names) do
 		  local selected = i == self.ded.selected_effect
 		  if imgui.Selectable(effect_type, selected) then
 			self.ded.selected_effect = i
@@ -973,7 +971,7 @@ function submit_oscillate(text)
 	text = text,
 	character = tdengine.characters.narrator,
 	effect = {
-	  type = 1,
+	  type = tdengine.effects.oscillate,
 	  amplitude = .003,
 	  frequency = 15
 	}
@@ -989,7 +987,7 @@ function submit_rainbow(text, first, last)
 	character = tdengine.characters.narrator,
 	effects = {
 	  {
-		type = 2,
+		type = tdengine.effects.rainbow,
 		first = first,
 		last = last,
 		frequency = 15
@@ -1005,7 +1003,7 @@ function submit_full_rainbow(text)
 	character = tdengine.characters.narrator,
 	effects = {
 	  {
-		type = 2,
+		type = tdengine.effects.rainbow,
 		frequency = 15
 	  }
 	}
@@ -1046,14 +1044,14 @@ function submit_two_effects_no_overlap(text)
 	character = tdengine.characters.narrator,
 	effects = {
 	  {
-		type = 1,
+		type = tdengine.effects.oscillate,
 		amplitude = .003,
 		frequency = 15,
 		first = 0,
 		last = 3
 	  },
 	  {
-		type = 2,
+		type = tdengine.effects.rainbow,
 		frequency = 15,
 		first = 4,
 		last = 20

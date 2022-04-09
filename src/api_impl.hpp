@@ -325,6 +325,18 @@ void register_lua_api() {
 	state["tdengine"]["InputChannel"]["Game"] = INPUT_MASK_GAME;
 	state["tdengine"]["InputChannel"]["All"] = INPUT_MASK_ALL;
 
+	state["tdengine"]["effects"] = state.create_table();
+	state["tdengine"]["effects"]["none"] = TextEffectType::NONE;
+	state["tdengine"]["effects"]["oscillate"] = TextEffectType::OSCILLATE;
+	state["tdengine"]["effects"]["rainbow"] = TextEffectType::RAINBOW;
+
+	state["tdengine"]["effect_names"] = state.create_table();
+	auto effects = arr_view(effect_names);
+	arr_for(effects, effect) {
+		int32 i = arr_indexof(&effects, effect);
+		state["tdengine"]["effect_names"][i] = effect_names[i];
+	}
+
 	// ImGui
 	lua_newtable(Lua.raw_state);
 	luaL_setfuncs(Lua.raw_state, imguilib, 0);

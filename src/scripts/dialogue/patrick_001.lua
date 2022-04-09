@@ -15,12 +15,16 @@ return {
     },
     effects = {
       {
+        first = 0,
         frequency = 15,
+        last = 0,
         type = 2
       },
       {
         amplitude = 0.0074999998323619366,
+        first = 4,
         frequency = 30,
+        last = 9,
         type = 1
       }
     },

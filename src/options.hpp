@@ -1,4 +1,4 @@
-#define _fm_gm_font "inconsolata"
+#define _fm_gm_font "apple_kid"
 const char* fm_gm_font = _fm_gm_font;
 
 #define _fm_ed_font "inconsolata"

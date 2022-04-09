@@ -1,7 +1,4 @@
-//
-// Text effects
-//
-struct TextEffect;
+// Text effects -- use one based indexing here because we mostly access these in Lua
 enum class TextEffectType {
 	NONE      = 0,
 	OSCILLATE = 1,
@@ -9,6 +6,15 @@ enum class TextEffectType {
 	COUNT     = RAINBOW + 1,
 };
 constexpr int32 COUNT_TEXT_EFFECTS = static_cast<int32>(TextEffectType::COUNT);
+
+const char* effect_names [COUNT_TEXT_EFFECTS] = {
+	"none",
+	"oscillate",
+	"rainbow",
+};
+
+// we're binding this to sol, so keep a container around
+std::array<const char*, COUNT_TEXT_EFFECTS> sol_effect_names = std::to_array(effect_names);
 
 struct EffectRenderData {
 	float32 dt;
@@ -29,9 +35,11 @@ struct EffectRenderData {
 // - dt
 // - A non-owning array which points to the vertices for the characters the effect is intended to modify
 // - A non-owning array which points to the texcoords for the characters the effect is intended to modify
+struct TextEffect;
 struct NoneEffect {};
 void DoNoneEffect(TextEffect* effect, EffectRenderData* data);
 
+// Oscillate
 struct OscillateEffect {
 	float32 amplitude;
 	float32 frequency;
@@ -39,6 +47,7 @@ struct OscillateEffect {
 };
 void DoOscillateEffect(TextEffect* effect, EffectRenderData* data);
 
+// Rainbow
 struct RainbowEffect {
 	int32 frequency;
 };
