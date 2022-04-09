@@ -6,7 +6,8 @@ function OptionUpdater:init(params)
 	smooth_scroll   = false,
 	mtb_speaker_pad = 0.01,
 	game_fontsize   = 32,
-	editor_fontsize = 16
+	editor_fontsize = 16,
+	show_imgui_demo = false,
   }
 
   self.last_frame = table.shallow_copy(self.default_options)

@@ -34,6 +34,9 @@
 #include "transform_impl.hpp"
 #include "utils_impl.hpp"
 
+std::string editor_buffer;
+TextEditor editor;
+
 int main() {
 	auto& input_manager  = get_input_manager();
 	auto& shader_manager = get_shader_manager();
@@ -72,9 +75,11 @@ int main() {
 		// After this, all ImGui calls are live. Anything before this is ignored.
 		ImGui_ImplGlfwGL3_NewFrame();
 		
-		if (show_imgui_demo) ImGui::ShowDemoWindow();
+		if (options::show_imgui_demo) ImGui::ShowDemoWindow();
 		if (show_console) console.Draw("firmament");
 
+		editor.Render("TextEditor");
+			
 		// Run scripts
 		Lua.update_entities(seconds_per_update);
 		

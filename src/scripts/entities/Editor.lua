@@ -899,7 +899,7 @@ function Editor:dialogue_editor(dt)
   imgui.EndChild()
 
   -- @hack: 0 doesn't infer like I'd expect it to
-  imgui.InputTextMultiline(self.ded.input_id, 1024, -1, -1)
+  imgui.InputTextMultiline(self.ded.input_id, 1024, 400, -1)
   if self.ded.selected then
 	local selected = self.ded.nodes[self.ded.selected]
 	if selected.kind == 'Text' or selected.kind == 'Choice' then

@@ -27,22 +27,30 @@ extern "C" {
 
 #include "sol/sol.hpp"
 
+#define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw_gl3.hpp"
 
 // STL
+#include <algorithm>
+#include <array>
+#include <chrono>
+#include <map>
+#include <memory>
+#include <regex>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <unordered_set>
+#include <unordered_map>
+#include <vector>
 #include <iostream>
 #include <fstream>
-#include <vector>
 #include <unordered_map>
 #include <map>
 #include <queue>
 #include <string>
 #include <sstream>
-#include <algorithm>
 #include <cmath>
 #include <typeindex>
 #include <optional>
@@ -51,3 +59,4 @@ extern "C" {
 #include <typeinfo>
 #include <filesystem>
 using namespace std::filesystem;
+

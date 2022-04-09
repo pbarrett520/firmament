@@ -34,7 +34,14 @@ RULE #8: embrace the rectangle
   array between the time you instantiate it and a given time
 - [X] (4/7) multiple text effects
 - [X] (4/7) text effects that work on subset of text
-- [X] (4/8) effects in GUI
+- [-] (4/8) effects in GUI
+  - [X] make the pane a bit bigger
+  - [X] enter on value does not work
+  - [X] if a node has no effects, you have to click off and click on to regenerate the
+	table editor and propagate that draw flag to the children
+  - [X] print effect type or a name if one is given instead of table index
+  - [X] bind effect types between c and lua
+  - [X] master list of effect types also
 ** small
 - [ ] better text wrapping
 - [ ] display made choices
@@ -81,19 +88,7 @@ majikoi and grisaia
 * log
 ** effects in gui
 hacked it together, here's notes:
-- [X] make the pane a bit bigger
-- [X] enter on value does not work
-- [X] if a node has no effects, you have to click off and click on to regenerate the
-  table editor and propagate that draw flag to the children
-- [ ] propagating the draw flag is a stupid hack that's just for this, not sure
-  better way to do it but surely there is something
-  - NOTE: a better way to do this is probably appending imgui metadata onto
-    tables -- this is kind of ugly, because you probably don't want to save
-    these out. but it's the only way to get something like
-    [field_add][none][field_add]
-- [X] print effect type or a name if one is given instead of table index
-- [ ] bind effect types between c and lua
-- [ ] master list of effect types also
+
 ** patrick 2
 the food -- the dome is not producing turkey legs, it's producing a hyper
 efficient means of nutrition that biochemically signals that it's food.

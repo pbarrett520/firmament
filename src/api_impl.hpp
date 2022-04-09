@@ -279,6 +279,10 @@ void API::setopts(sol::table opts) {
 		options::game_fontsize = opts["game_fontsize"];
 		init_fonts();
 	}
+	if (opts["show_imgui_demo"] != sol::lua_nil) {
+		options::show_imgui_demo = opts["show_imgui_demo"];
+	}
+
 }
 
 void register_lua_api() {

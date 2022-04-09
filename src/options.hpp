@@ -13,12 +13,13 @@ bool send_kill_signal = false;
 bool step_mode = false;
 
 namespace options {
-	float32 scroll_speed    = 0.050f;
-	float32 scroll_lerp     = 0.500f;
-	bool    smooth_scroll   = false;
-	float32 mtb_speaker_pad = 0.010f;
+	float32 scroll_speed      = 0.050f;
+	float32 scroll_lerp       = 0.500f;
+	bool    smooth_scroll     = false;
+	float32 mtb_speaker_pad   = 0.010f;
 	int32   game_fontsize     = 32;
 	int32   editor_fontsize   = 16;
+	bool    show_imgui_demo   = false;
 };
 
 
