@@ -30,7 +30,8 @@ struct InputManager {
 	bool chord(GLFW_KEY_TYPE mod_key, GLFW_KEY_TYPE cmd_key, int channel = INPUT_MASK_ALL);
 	void begin_frame();
 	void end_frame();	
-	void fill_shift_map();};
+	void fill_shift_map();
+};
 
 InputManager& get_input_manager();
 int init_glfw();

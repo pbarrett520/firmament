@@ -367,6 +367,9 @@ void register_lua_api() {
 	Lua.state["imgui"]["CheckboxSet"]          = &ImGuiWrapper::CheckboxSet;
 	Lua.state["imgui"]["MakeTabVisible"]       = &ImGuiWrapper::MakeTabVisible;
 	Lua.state["imgui"]["GetSelectedTabId"]     = &ImGuiWrapper::GetSelectedTabId;
+	Lua.state["imgui"]["IsWindowFocused"]      = &ImGuiWrapper::IsWindowFocused;
+	Lua.state["imgui"]["GetInputQueue"]        = &ImGuiWrapper::GetInputQueue;
+	Lua.state["imgui"]["AddRectFilled"]        = &ImGuiWrapper::AddRectFilled;
 
 	sol::usertype<ImGuiWrapper::TextFilter> filter_type = Lua.state.new_usertype<ImGuiWrapper::TextFilter>("TextFilter");
 	filter_type["Draw"]      = &ImGuiWrapper::TextFilter::Draw;

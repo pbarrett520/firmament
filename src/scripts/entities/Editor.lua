@@ -28,6 +28,7 @@ function Editor:init(params)
 	next_dialogue_id = '##ded:detail:next_dialogue',
 	branch_val_id = '##ded:detail:set_branch_val',
 	empty_name_id = '##ded:detail:set_empty_name',
+	editor_text = 'lorem ipsum dolor sit am',
 	selected_editor = nil,
 	effect_editor = nil,
 	selected_effect = 1
@@ -55,14 +56,13 @@ function Editor:init(params)
   }
   
   tdengine.create_entity('OptionUpdater')
+  tdengine.create_entity('TextEditor')
 end
 
 function Editor:update(dt)
   submit_dbg_tbox()
-
   
-  tdengine.do_once(function() submit_dbg_text() end)
-
+  --tdengine.do_once(function() submit_dbg_text() end)
   
   self:calculate_framerate()
   self:handle_input()

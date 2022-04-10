@@ -34,7 +34,7 @@ RULE #8: embrace the rectangle
   array between the time you instantiate it and a given time
 - [X] (4/7) multiple text effects
 - [X] (4/7) text effects that work on subset of text
-- [-] (4/8) effects in GUI
+- [X] (4/8) effects in GUI
   - [X] make the pane a bit bigger
   - [X] enter on value does not work
   - [X] if a node has no effects, you have to click off and click on to regenerate the
@@ -48,6 +48,7 @@ RULE #8: embrace the rectangle
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
 ** big
+- [ ] proper text editor with word wrapping for nodes
 - [ ] update text effect range as string is edited
   
 - [ ] icon heads to see who is talking
@@ -85,9 +86,189 @@ headshot maker
 https://picrew.me/image_maker/94097
 
 majikoi and grisaia
+* ideas
+one of the endings: you don't solve anything and everyone dies
+
+the only reason this colony exists is to serve as a form of genetic preservation
+for the seed people, such that they may return at some point and claim
+cultivated flesh with static genetics to be recombined into themselves
+* groups
+** engineers
+** 
 * log
-** effects in gui
-hacked it together, here's notes:
+** 04/09/2022
+the engineer thread.
+
+you must gain the trust of the engineer family, led by ma bell and
+alexander. once you have gained their trust, they tell you about the changes to
+the dome's hardware and firmware. alexander is like the boss. he's not a fabled
+figure per se, but he's someone who you hear people talk about a lot for the
+first part of the game, someone with much power, or much personality, and he's
+hyped a lot in your head. the first part is getting to alexander.
+
+you need a low level contact in the engineesr
+
+there is some kind of disturbance between clans, a public disturbance, where you
+can meet people from a couple sides. keep it simple: a food dispute. these
+disputes never happen, but the recent dome degradations have changed
+things. food comes out less often, or more often but in a barely held together
+slurry instead of neat balls, or in a less edible form, or in varying
+quality. the group that has maintained this subsystem and rations food is being
+blamed, and is becoming defensive.
+
+some of the engineers are smuggling out food -- or, maybe it's not just them and
+this thread, maybe this is the first key event of the game. you know that in two
+days, there's going to be a raid for food. you hear different pieces of it from
+every faction. you don't know exactly how it's going to happen, exactly what
+each faction is going to do, but you know SOMETHING is going to happen on that
+day. when the day comes, it's the air filter incident -- a near-extinction event
+caused by what appears to be lack of maintenance but is in fact dome sentience.
+
+the period before the raid is kind of an act 1.5. it's post CROW -- you've
+established the basic setting -- but not entirely. you're meeting different
+characters from these factions, fleshing out alliances and ideologies.
+
+so what is the engineers' part in this raid?
+
+food, yes, but there is some key piece of engineering in this part of the
+dome. maybe this is where the Core is. the engineers, through meticulous
+observation, have noticed some mapping between hardware change and change in
+reality. they have noticed that on days of search, when the page tables were
+being "randomly" modified, certain subsystems were affected, and then those
+subsystems fell into a stable state once the correct page had been found.
+their table is incomplete, of course. what they need are a set of master
+records, handkept records by this monastic third group. this is a set of
+records, the details of which are specified in the Manual, that is a sort of
+checks and balances from the dome designers to reconcile human experience and
+the machinery in the Dome. checks and balances. self consistency. the third
+group has restrictions on their lives, again monastically, to prevent the
+tainting of the records. to keep their focus sharply on these records if you
+will.
+
+these are the records that will fill in their missing data. these are physical
+records of observation of the most critical parts of the Dome -- they tie
+everything together. i suppose next is what exactly the engineers know, and what
+they need to know from the monastic records to draw a conclusion
+
+ok, maybe this is not records -- maybe it also is -- but here is another idea:
+this is a quasi-sacred place, the monastery, which stores data from the seed
+people.
+
+they might find the binary search algorithm.
+they might find historical copies of sectors that don't match the manual
+
+maybe easier to start the other way? what do they have
+
+well, the first thing is that they see the hunting pattern. another thing to
+note here is that there are a lot of sectors that are functionally unknown. some
+sectors map onto reality explicitly in the manual, but many do not. so when they
+observe sectors being hunted, they can't just say -- oh, this is the water
+purifying sector, let's check out what's going on there. there is a process of
+deduction, many sectors may be hunted at the same time, observations are
+imperfect information. so the crux of the information gathering in this step is
+to follow several of these threads, figure out what the reality changes are
+through lots of questioning and cross referencing.
+
+the first one is confirmation: the bit changing pattern that you see is in fact
+a known search algorithm. someone is searching for something.
+
+the engineers' limitation is that they cannot commune with the machine. they
+exist purely in the physical world. they can observe physical differences in the
+machine, and then the resulting effects in reality, but they do not have access
+to anything less grounded than this.
+
+- water
+- food
+- waste management
+- biometrics
+- chemical / hormonal management -- allsgood
+- subjective reports, audiovisual hallucination, paranoia, irrational anger,
+  violent lust
+
+FOOD
+easy one to start with is food. so for the engineers, food is a part of the
+raid, but it's more of a public facing reason than the true cause. food quality
+has gone down to the point of being nearly inedible. food used to come in neat,
+self-contained gelatinous spheres which chemically signalled their edibility and
+nutrition. they tasted simple, but good, and came in a few varieties to prevent
+pallettes from becoming totally stale.
+
+the problem: the thick sacs that encase the gelatinous inside have begun to
+degrade. and the taste of the gelatin inside is unimaginably bad. it's a highly
+nutritionally dense goo -- probably the size of a tennis ball, and has all
+calories and nutritents for the day. to get something so dense, the seed people
+had to invent new chemical structures. our tongues were not attuned to these
+structures. the point is -- they taste BAD. and now, for everyone outside the
+monastery, the only option is to eat this stuff straight.
+
+this in and of itself may be tolerable for some time, but the second problem:
+quantity. the dome is producing less, and much of what is produced is lost due
+to the nutritious inner not being built to be exposed to air for long periods of
+time.
+
+plot thread: discovering the engineers' stores of food, from when they first
+noticed these changes about a year ago
+
+
+AIR COMPOSITION
+part of the manual involves making sure that air is being filtered and
+recombined as it should be. in the manual, air is divided into component parts
+-- not named by name as we would know them, oxygen, nitrogen, but by simple
+sequential categories, A, B, C. there are slight variations in these ratios, but
+they should maintain within a certain tolerance.
+
+this one is going to be something less concrete, or rather a thread that sticks
+in the background until you find something that matches up with it. the gist is
+that the ratios of chemicals in the air are used as a form of crowd control, to
+induce happiness, or enthusiasm, gumption, restfulness. however, the machine's
+blind experimentation with these have disrupted the precise ecosystem of emotion
+that the seed people laid out. this is another reason why tensions are so high.
+
+one subplot with this may involve finding the correct bit pattern for some key
+sectors involving air composition, and even down to finding how to manipulate
+the ratios for specific sectors in specific ways. and then making decisions on
+who to pacify, who to enrage
+
+
+SUBJECTIVE REPORTS
+beyond air composition, people also have some sort of chip in their head. or
+maybe a special attenuation to magnetic frequencies. something to which the dome
+can send commands? is this removing too much agency from these people? maybe
+instead of commands, their minds operate on a certain frequency (really
+venturing out into handwavey scifi here), and when the dome degenerates it
+begins to generate noise on those same channels.
+
+maybe this ties into a phsyical resource, like food, or air. like an ergot
+madness thing.
+
+there is a hospital of some sort, unaffiliated with the engineers, from which
+you may gain information about the number of people coming in with madness, or
+illness.
+
+--
+
+a break from your regularly scheduled programming: i need to produce dialogue
+graphs. that is what will move the game forward. this worldbuilding and planning
+is necessary, but ultimately i need to make a thing which can be played and
+iterated upon.
+
+can i write these threads standalone? here is what is stopping me from doing so:
+- what are the places i can be? the people you can talk to are in locations, and
+  when you're not talking to people, you are moving between places. what are
+  these places? where are people? i need to sketch out how the dome is laid out
+- it's hard to jump in the middle when what you have access to and how people
+  respond is so heavily influenced by what happens before. how do i write graphs
+  that can stand alone and still be incorporated?
+
+idea: you just write these scenarios very simply, with minimal branching. then,
+as you write more of these simple scenarios, they generate states which make the
+other scenarios more complex. in scenario 2, you find some information that
+would open another branch in scenario 1 -- add it.
+
+a good way to flesh out the dome's layout: write, in prose, the scene of
+awakening. use some gimmick to where the PC doesn't talk much, maybe cryogenic
+fatigue or something, and he is just led around to observe and have things
+explained. he is passed off to people from the engineers and 
 
 ** patrick 2
 the food -- the dome is not producing turkey legs, it's producing a hyper
