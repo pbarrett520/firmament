@@ -3,6 +3,7 @@ return {
     children = {
       "a967e29c-eee1-4fa2-a15a-c8761dfd26f9"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "That's a silly question! We're in Mother. Mother made the People to keep her happy. And in return, she gives us food and toys from her slots. Only...she hasn't been very happy lately.",
@@ -12,6 +13,22 @@ return {
   ["0b3f8de0-c172-403a-8bd4-3d3506e667be"] = {
     children = {
       "721b5ea3-3caa-4668-ad05-9d3633e6b762"
+    },
+    effects = {
+      {
+        amplitude = 0.029999999999999999,
+        first = 5,
+        frequency = 15,
+        last = "8",
+        type = 1
+      },
+      {
+        amplitude = 0.029999999999999999,
+        first = 20,
+        frequency = 15,
+        last = 30,
+        type = 2
+      }
     },
     is_entry_point = true,
     kind = "Text",

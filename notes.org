@@ -43,19 +43,24 @@ RULE #8: embrace the rectangle
   - [X] bind effect types between c and lua
   - [X] master list of effect types also
 ** small
-- [ ] better text wrapping
+- [ ] machine-specific layout files, ignored by git, checked before
+  the layouts that are checked in
 - [ ] display made choices
+- [ ] better text wrapping
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
 ** big
 - [ ] proper text editor with word wrapping for nodes
+  - bind between editor contents and nodes that matter (both ways)
+  - paste
+  - highlight, delete highlighted
+  - ctrl + backspace
 - [ ] update text effect range as string is edited
   
 - [ ] icon heads to see who is talking
 
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
-
 
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
@@ -67,6 +72,9 @@ RULE #8: embrace the rectangle
   - flickering light
   - snaking
   - fade in blackness
+- [ ] need to specify effect ranges from editor, not typing in indices
+- [ ] delete effects
+- [ ] delete fields from effects
 ** pie
 a really juiced up effects editor. like, one that will live show you what the
 effect is as you're doing it. would probably need to render the text to a

@@ -152,6 +152,7 @@ return {
     children = {
       "198b0689-75b6-493f-aff5-51da627d1996"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "I'm afraid not.",
@@ -162,6 +163,7 @@ return {
     children = {
       "b5f7853a-e654-4b43-be97-7acc452e065e"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "The first kind is nearly human. Enough of their essence remains that they resemble their person in the physical realm. Most inhabitants of Limbo that you meet are of this variety.",
@@ -222,6 +224,7 @@ return {
     children = {
       "a5bf9e19-c000-43fa-9220-bc72d02f925b"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "Uhm...",
@@ -282,6 +285,7 @@ return {
     children = {
       "514b6111-5324-4bb2-a415-71b4a5be4844"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "Yes, yes, I know, an old man muttering to himself. I'll get to it. In this world, there are two kinds of souls.",
@@ -311,6 +315,7 @@ return {
     children = {
       "92195201-0a36-47b6-b4e3-6f20ddd95235"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "The second kind, however, are feral animals. They are tiny, fractured pieces of souls that lack enough substance to form a personality.",
@@ -378,6 +383,12 @@ return {
   ["f973b4d9-1d7d-496c-a7da-3eec043d80fc"] = {
     children = {
       "54230d88-ba6b-488a-b677-e3496dd8590c"
+    },
+    effects = {
+      {
+        frequency = 15,
+        type = 2
+      }
     },
     is_entry_point = true,
     kind = "Text",

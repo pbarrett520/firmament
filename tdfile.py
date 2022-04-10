@@ -99,6 +99,8 @@ build_options = {
             'stdc++fs',
         ],
         'extras': [
+            '-Wno-deprecated-enum-enum-conversion',
+            '-Wno-volatile',
             '-pthread',
             '-fmax-errors=10',
         ],

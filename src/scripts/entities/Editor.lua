@@ -28,7 +28,6 @@ function Editor:init(params)
 	next_dialogue_id = '##ded:detail:next_dialogue',
 	branch_val_id = '##ded:detail:set_branch_val',
 	empty_name_id = '##ded:detail:set_empty_name',
-	editor_text = 'lorem ipsum dolor sit am',
 	selected_editor = nil,
 	effect_editor = nil,
 	selected_effect = 1
@@ -556,7 +555,7 @@ function Editor:dialogue_editor(dt)
   
   local flags = bitwise(tdengine.op_or, imgui.constant.WindowFlags.NoScrollbar, imgui.constant.WindowFlags.NoMove)
   
-  imgui.BeginChild('scrolling_region', 0, -200, true, flags)
+  imgui.BeginChild('scrolling_region', 0, 0, true, flags)
   self.ded.window_position = tdengine.vec2(imgui.GetCursorScreenPos())
 
   -- Draw the grid
@@ -898,16 +897,12 @@ function Editor:dialogue_editor(dt)
 
   imgui.EndChild()
 
-  -- @hack: 0 doesn't infer like I'd expect it to
-  imgui.InputTextMultiline(self.ded.input_id, 1024, 400, -1)
-  if self.ded.selected then
-	local selected = self.ded.nodes[self.ded.selected]
-	if selected.kind == 'Text' or selected.kind == 'Choice' then
-	  selected.text = imgui.InputTextContents(self.ded.input_id)
-	end
+  -- bind selected node's text to what's in the editor
+  local text_editor = tdengine.find_entity('TextEditor')
+  if self.selected then
+	local node = self.ded.nodes[self.selected]
   end
-
-
+  
   imgui.PopStyleVar()   -- FramePadding
   imgui.PopStyleVar()   -- WindowPadding
   imgui.PopStyleColor() -- ChildBg
