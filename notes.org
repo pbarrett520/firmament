@@ -51,7 +51,8 @@ RULE #8: embrace the rectangle
 - [ ] fix editor layout flashings
 ** big
 - [ ] proper text editor with word wrapping for nodes
-  - bind between editor contents and nodes that matter (both ways)
+  - [X] bind between editor contents and nodes that matter (both ways)
+  - [X] arrow key movement
   - paste
   - highlight, delete highlighted
   - ctrl + backspace

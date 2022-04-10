@@ -5,7 +5,6 @@ function TextEditor:init(params)
   self.text = params.text or ''
   self.point = 0
   self.line_breaks = {}
-  self.advance = tdengine.vec2(imgui.CalcTextSize('#'), imgui.GetTextLineHeightWithSpacing() * .96)
   
   self.frame = 0
   self.blink_speed = 20
@@ -69,6 +68,12 @@ function TextEditor:update(dt)
 	imgui.Text(self.text:sub(low, high))
   end
   imgui.End()
+end
+
+function TextEditor:set_text(text)
+  self.text = text
+  self.point = 1
+  self.line_breaks = {}
 end
 
 function TextEditor:update_blink()

@@ -368,7 +368,7 @@ function Editor:ded_select(id, node)
   end
 
   local text_editor = tdengine.find_entity('TextEditor')
-  text_editor.text = node.text
+  text_editor:set_text(node.text)
 
 end
 
