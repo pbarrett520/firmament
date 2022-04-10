@@ -76,11 +76,7 @@ end
 
 function Editor:handle_input()
   -- If we're in ImGui mode, the input won't be reported to editor channel
-  if self.input:was_pressed(glfw.keys.RIGHT_ALT, tdengine.InputChannel.ImGui) then
-    tdengine.toggle_console()
-  end
-
-  if self.input:was_pressed(glfw.keys.RIGHT_ALT) then
+  if self.input:was_pressed(glfw.keys.RIGHT_ALT, tdengine.InputChannel.All) then
     tdengine.toggle_console()
   end
 
@@ -370,6 +366,10 @@ function Editor:ded_select(id, node)
   else
 	imgui.InputTextSetContents(self.ded.input_id, '')
   end
+
+  local text_editor = tdengine.find_entity('TextEditor')
+  text_editor.text = node.text
+
 end
 
 function Editor:input_slot(id)
@@ -465,13 +465,6 @@ function Editor:dialogue_editor(dt)
 	self.ded.selected_editor:draw()
 
 	if selected.kind == 'Text' or selected.kind == 'Choice' then
-	  imgui.extensions.VariableName('text')
-	  imgui.SameLine()
-
-	  imgui.PushTextWrapPos(0)
-	  imgui.Text(imgui.InputTextContents(self.ded.input_id))
-	  imgui.PopTextWrapPos()
-
 	  imgui.Dummy(0, 10)
 	  imgui.Separator()
 	  imgui.Dummy(0, 10)
@@ -499,6 +492,15 @@ function Editor:dialogue_editor(dt)
 		self.ded.effect_editor:draw()
 		imgui.TreePop()
 	  end
+	end
+  end
+
+  
+  -- bind selected node's text to what's in the editor
+  if selected then
+	if selected.kind == 'Text' or selected.kind == 'Choice' then
+	  local text_editor = tdengine.find_entity('TextEditor')
+	  selected.text = text_editor.text
 	end
   end
   
@@ -896,12 +898,6 @@ function Editor:dialogue_editor(dt)
   end
 
   imgui.EndChild()
-
-  -- bind selected node's text to what's in the editor
-  local text_editor = tdengine.find_entity('TextEditor')
-  if self.selected then
-	local node = self.ded.nodes[self.selected]
-  end
   
   imgui.PopStyleVar()   -- FramePadding
   imgui.PopStyleVar()   -- WindowPadding

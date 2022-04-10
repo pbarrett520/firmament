@@ -46,6 +46,7 @@ end
 imgui.extensions.TableEditor = function(editing, params)
   if not params then params = {} end
   local editor = {
+	is_table_editor = true,
     key_id = tdengine.uuid_imgui(),
     value_id = tdengine.uuid_imgui(),
     type_id = tdengine.uuid_imgui(),
@@ -65,6 +66,7 @@ imgui.extensions.TableEditor = function(editing, params)
   for key, value in pairs(editing) do
 	local recurse = type(value) == 'table'
 	recurse = recurse and not (value == editing)
+	recurse = recurse and not editing.is_table_editor
 	if recurse then
 	  local params = imgui.internal.propagate_table_editor_params(editor)	  
 	  editor.children[key] = imgui.extensions.TableEditor(value, params)
@@ -203,7 +205,6 @@ imgui.internal.draw_table_editor = function(editor)
 	  elseif type(value) == 'table' then
 		if not editor.children[key] then
 		  local params = imgui.internal.propagate_table_editor_params(editor)
-		  print(inspect(params))
 		  editor.children[key] = imgui.extensions.TableEditor(value, params)
 		end
 		local child = editor.children[key]

@@ -5,6 +5,7 @@ function TextEditor:init(params)
   self.text = params.text or ''
   self.point = 0
   self.line_breaks = {}
+  self.advance = tdengine.vec2(imgui.CalcTextSize('#'), imgui.GetTextLineHeightWithSpacing() * .96)
   
   self.frame = 0
   self.blink_speed = 20
@@ -16,17 +17,16 @@ function TextEditor:init(params)
 	
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.ImGui)
-  self.input:enable()
 end
 
 function TextEditor:update(dt)
+  self.advance = tdengine.vec2(imgui.CalcTextSize('#'), imgui.GetTextLineHeightWithSpacing())
   self.frame = self.frame + 1
-  self:update_blink()
   
-  --self.text = ''; self.point = 0
-  self.input:set_channel(tdengine.InputChannel.ImGui)
   imgui.Begin('Text Editor', true)
-
+  self:update_blink()
+  if not self.text then imgui.End(); return end
+  
   -- Handle characters, backspaces, key commands, whatever
   if imgui.IsWindowFocused() then
 	local queue = imgui.GetInputQueue()
@@ -34,9 +34,14 @@ function TextEditor:update(dt)
 	  self:handle_char(queue:at(i))
 	end
 
-	self:do_check_repeat(dt, glfw.keys.BACKSPACE, self.handle_backspace, self)
-	self:do_check_repeat(dt, glfw.keys.LEFT, self.handle_left_arrow, self)
-	self:do_check_repeat(dt, glfw.keys.RIGHT, self.handle_right_arrow, self)
+	self:handle_check_repeat(dt, glfw.keys.BACKSPACE, self.handle_backspace, self)
+	self:handle_check_repeat(dt, glfw.keys.LEFT, self.handle_left_arrow, self)
+	self:handle_check_repeat(dt, glfw.keys.RIGHT, self.handle_right_arrow, self)
+	self:handle_check_repeat(dt, glfw.keys.DOWN, self.handle_down_arrow, self)
+
+	if imgui.IsMouseClicked(0) then
+	  self.point = self:mouse_to_point()
+	end
   end
 
   -- Calculate line breaks
@@ -44,12 +49,11 @@ function TextEditor:update(dt)
   local i = 0
   local point = 0
   local max_length, max_height = imgui.GetWindowContentRegionMax()
-  local advance = tdengine.vec2(imgui.CalcTextSize('#'), imgui.GetTextLineHeightWithSpacing())
   for j = 1, #self.text do
-	point = point + advance.x
+	point = point + self.advance.x
 
-	local cstart = point + advance.x
-	local cend = point + (advance.x * 2)
+	local cstart = point + self.advance.x
+	local cend = point + (self.advance.x * 2)
 	if (cend > max_length) then
 	  table.insert(self.line_breaks, j)
 	  point = 0
@@ -57,13 +61,6 @@ function TextEditor:update(dt)
   end
   table.insert(self.line_breaks, #self.text + 1)
 
-  if self.blink then	
-	local tl = self:point_to_screen()
-	local dim = tdengine.vec2(advance.x, advance.y)
-	local color = imgui.ColorConvertFloat4ToU32(1, 0, 0, .3)
-	imgui.AddRectFilled(tl.x, tl.y, tl.x + dim.x, tl.y + dim.y, color)
-  end
-  
   -- Draw the text
   for i = 1, (#self.line_breaks - 1) do
 	local low = self.line_breaks[i]
@@ -79,19 +76,44 @@ function TextEditor:update_blink()
 	self.blink = not self.blink
 	self.blink_acc = 0
   end
+
+  if self.blink then
+	local tl = self:point_to_screen()
+	local dim = tdengine.vec2(self.advance.x, self.advance.y)
+	local color = imgui.ColorConvertFloat4ToU32(0, 1, 0, 1)
+	imgui.AddRectFilled(tl.x, tl.y, tl.x + dim.x, tl.y + dim.y, color)
+  end
+end
+
+function TextEditor:handle_check_repeat(dt, key, f, ...)
+  -- Always do it on the first press
+  if self.input:was_pressed(key) then
+	self.repeat_time[key] = self.repeat_delay
+	f(...)
+	return
+  end
+
+  -- Otherwise, check if we've hit the repeat threshold
+  if self.input:is_down(key) then
+	self.repeat_time[key] = self.repeat_time[key] - dt
+	if self.repeat_time[key] <= 0 then f(...) end
+  end
 end
 
 function TextEditor:handle_backspace()
-  if self.point == 0 then return end
-  
-  local before = self.text:sub(1, self.point - 1)
+  -- If the point is N, then we will delete character N - 1
+  if self.point == 1 then return end
+
+  -- Minus two because (A) we want the character before point and (B) sub is inclusive
+  -- For example: point = 4 -> we want to delete character 3 -> substring [1, 2]
+  local before = self.text:sub(1, self.point - 2)
   if self.point == #self.text then
 	self.text = before
 	self:prev_character()
 	return
   end
 	
-  local after = self.text:sub(self.point + 1, #self.text)
+  local after = self.text:sub(self.point, #self.text)
   self.text = before .. after
   self:prev_character()
 end
@@ -104,48 +126,106 @@ function TextEditor:handle_right_arrow()
   self:next_character()
 end
 
+function TextEditor:handle_down_arrow()
+  local line, offset = self:point_to_line_index()
+  if line == #self.line_breaks - 1 then self.point = #self.text; return end
+
+  local next_line_start = self.line_breaks[line + 1]
+  print(line, offset, next_line_start)
+  self.point = next_line_start + offset
+end
+
 function TextEditor:handle_char(c)
-  print(c)
-  self.text = self.text:sub(1, self.point) .. c .. self.text:sub(self.point + 1, #self.text)
+  -- The point defines where the next character will go. For example, if the point is at 1, then
+  -- the next character inserted will be at index 1.
+  self.text = self.text:sub(1, self.point - 1) .. c .. self.text:sub(self.point, #self.text)
   self:next_character()
 end
 
 function TextEditor:next_character()
-  self.point = math.min(self.point + 1, #self.text)
+  self.point = math.min(self.point + 1, #self.text + 1)
 end
 
 function TextEditor:prev_character()
-  self.point = math.max(self.point - 1, 0)
+  self.point = math.max(self.point - 1, 1)
 end
 
 function TextEditor:point_to_screen()
-  local point = self.point
   local screen = tdengine.vec2(imgui.GetCursorScreenPos())
-  local advance = tdengine.vec2(imgui.CalcTextSize(' '), imgui.GetTextLineHeightWithSpacing())
+  
+  if self.point == #self.text + 1 then
+	local count_lines = #self.line_breaks - 2
+	screen.y = screen.y + (self.advance.y * count_lines)
+	local last_line_text_size = self:line_text_size(#self.line_breaks - 1)
+	screen.x = screen.x + last_line_text_size
+	return screen
+  end
+  
+  local total = self.point
   for i = 1, #self.line_breaks - 1 do
 	local line_size = self.line_breaks[i + 1] - self.line_breaks[i]
-	if point > line_size then
-	  point = point - line_size
-	  screen.y = screen.y + advance.y
+	if total > line_size then -- 
+	  -- Case 1: The total is not on this line. Just advance downward, removing however many characters this line has 
+	  total = total - line_size
+	  screen.y = screen.y + self.advance.y
+	elseif total == line_size then
+	  -- Case 2: Same as above, but must return. Special case needed to avoid overflowing line break array
+	  screen.x = screen.x + imgui.CalcTextSize(self.text:sub(self.line_breaks[i], self.line_breaks[i] + total - 2))
+	  return screen
 	else
-	  screen.x = screen.x + (point * advance.x * .96)
+	  -- Case 2: It's on this line. Calculate the X offset of the substring the point bounds.
+	  -- Subtract 2 here because both the line break and total are counts, not indices. For example, if 
+	  screen.x = screen.x + imgui.CalcTextSize(self.text:sub(self.line_breaks[i], self.line_breaks[i] + total - 2))
+	  --screen.x = screen.x + (point * self.advance.x)
 	  return screen
 	end
   end
 end
 
-function TextEditor:do_check_repeat(dt, key, f, ...)
-  -- Always do it on the first press
-  if self.input:was_pressed(key) then
-	self.repeat_time[key] = self.repeat_delay
-	print(inspect(...))
-	f(...)
-	return
+function TextEditor:mouse_to_point()
+  local screen = tdengine.vec2(imgui.GetCursorScreenPos())
+  local mouse = tdengine.vec2(imgui.GetMousePos())
+  local window_coordinates = mouse:subtract(screen)
+  if window_coordinates.y < 0 then return self.point end
+
+  -- Determine which
+  local line, offset = self:point_to_line_index()
+  local i = 1
+  local point = 0
+  while true do
+	if window_coordinates.y < self.advance.y then break end
+	if i == #self.line_breaks then break end
+	
+	local line_size = self.line_breaks[i + 1] - self.line_breaks[i]
+	point = point + line_size
+	window_coordinates.y = window_coordinates.y -  self.advance.y
+	i = i + 1
   end
 
-  -- Otherwise, check if we've hit the repeat threshold
-  if self.input:is_down(key) then
-	self.repeat_time[key] = self.repeat_time[key] - dt
-	if self.repeat_time[key] <= 0 then f(...) end
+  -- Then, it's just how far the point is into the last line
+  point = point + math.ceil(window_coordinates.x / self.advance.x)
+  return math.min(point, #self.text)
+end
+
+function TextEditor:point_to_line_index()
+  local point = self.point
+  for i = 1, #self.line_breaks - 1 do
+	local line_size = self.line_breaks[i + 1] - self.line_breaks[i]
+	if point < line_size then return i, point end
+	point = point - line_size
   end
+end
+
+function TextEditor:get_line(i)
+  return self.text:sub(self.line_breaks[i], self.line_breaks[i + 1])
+end
+
+function TextEditor:line_text_size(i)
+  local line_begin = self.line_breaks[i]
+  local line_end = self.line_breaks[i + 1] - 1
+  return imgui.CalcTextSize(self.text:sub(line_begin, line_end))
+end
+
+function TextEditor:line_size(i)
+  return self.line_breaks[i + 1] - self.line_breaks[i]
 end
