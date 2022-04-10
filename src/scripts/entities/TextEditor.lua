@@ -38,6 +38,7 @@ function TextEditor:update(dt)
 	self:handle_check_repeat(dt, glfw.keys.LEFT, self.handle_left_arrow, self)
 	self:handle_check_repeat(dt, glfw.keys.RIGHT, self.handle_right_arrow, self)
 	self:handle_check_repeat(dt, glfw.keys.DOWN, self.handle_down_arrow, self)
+	self:handle_check_repeat(dt, glfw.keys.UP, self.handle_up_arrow, self)
 
 	if imgui.IsMouseClicked(0) then
 	  self.point = self:mouse_to_point()
@@ -127,12 +128,22 @@ function TextEditor:handle_right_arrow()
 end
 
 function TextEditor:handle_down_arrow()
-  local line, offset = self:point_to_line_index()
-  if line == #self.line_breaks - 1 then self.point = #self.text; return end
+  local line, index = self:point_to_line_index()
+  if line == #self.line_breaks - 1 then
+	self.point = #self.text + 1
+	return
+  end
 
   local next_line_start = self.line_breaks[line + 1]
-  print(line, offset, next_line_start)
-  self.point = next_line_start + offset
+  self.point = math.min(#self.text + 1, next_line_start + index - 1)
+end
+
+function TextEditor:handle_up_arrow()
+  local line, index = self:point_to_line_index()
+  if line == 1 then self.point = 1; return end
+
+  local prev_line_start = self.line_breaks[line - 1]
+  self.point = math.max(1, prev_line_start + index - 1)
 end
 
 function TextEditor:handle_char(c)
@@ -208,10 +219,16 @@ function TextEditor:mouse_to_point()
 end
 
 function TextEditor:point_to_line_index()
+  if self.point == #self.text + 1 then
+	local i = #self.line_breaks - 1
+	local last_line_size = self:line_size(i)
+	return i, last_line_size + 1
+  end
+  
   local point = self.point
   for i = 1, #self.line_breaks - 1 do
 	local line_size = self.line_breaks[i + 1] - self.line_breaks[i]
-	if point < line_size then return i, point end
+	if point <= line_size then return i, point end
 	point = point - line_size
   end
 end
