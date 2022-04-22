@@ -101,10 +101,153 @@ one of the endings: you don't solve anything and everyone dies
 the only reason this colony exists is to serve as a form of genetic preservation
 for the seed people, such that they may return at some point and claim
 cultivated flesh with static genetics to be recombined into themselves
-* groups
-** engineers
-** 
+
+this idea of what the universe is: static or dynamic. some groups, some engineer
+types, view 
 * log
+** 04/21/2022
+- role of the ascetics
+- ideas about my group
+  - how ma bell may relate to that, or to knowing about that
+  - alexander and his crechemates personal investigations, what they want from
+    the raid
+  - more plot points
+- aequimancer plot points
+
+
+pods are just ways to maintain reproductive logistics. plus unions.
+
+what the fuck is a dentist?
+
+how they deal with water.
+
+aequimancers use a codex instead of the manual -- it's like a software
+manual. they have forbidden knowledge of how to manipulate materials. they
+prefer to exploit the world. they do not understand chemistry, they just
+understand equivalences. alchemy not chemistry.
+
+engineers are catholics. equimancers are eastern religions. what is the nature
+of reality.
+
+there is an economy between the aequimancers and the engineers -- they trade
+staticism (maintenance vs goods).
+
+most of them find ways to take residual energies out of the ambient environment
+-- maybe their voice to augment a technology to provide literal energy, maybe
+some ritual self-harm (cutting off tips of fingers) to add to things. this goes
+too far, ritual sacrifice.
+
+rainmaking -- they have people who promise that they can coerce the dome to do
+certain things, they cannot, just washouts from the equimancers
+
+the movie brazil (terrorist hvac)
+dirk gently
+
+motivation for the PC: elder scrolls style getting swept up in a political
+conflict? simple necessity driving you to fix the root cause (there is no food,
+my friends don't have food, i have to fix this).
+
+enmgies = coexistants
+equi = control
+ascetics = synthesis
+
+interact with an ascetic. someone who was raised there but washed out, or
+antagonistic
+
+ascetics have already merged with the dome
+
+equimancer plot beat: main character finds a guy who is doing meditations who
+must do a coming of age ritual. he has failed it several times. he must produce
+something of value. he has come to a place of much entropy, like being in the
+wild until he can provide something. he brings you back to the coven as his
+thing to pass the ritual. the coven call bullshit. they will accept you into
+their community, but you have to help him. you explore the environment with him,
+and you have to help him collect stuff to make his masterpiece. during this
+exploration, you find something very novel.
+
+they barter their stuff for food and basic resources, when there is no food
+their value collapses.
+
+what do they want in the raid?
+- a holy grail?
+- a cache of new raw material
+- a new section of the codex
+- historical artifacts -- shed more light into the origins of humanity
+
+there is no other life in the dome, no mildew, no gut bacteria.
+
+they think of medicine mechanically, like a flowchart, like a machine. they are
+therefore superficially familiar with human anatomy. 
+** 04/20/2022
+the engineer thread (again).
+
+the ascetics are holed up in their den learning to form a psychic commune with
+the dome -- they've figured out how to take certain goods from the aequine
+faction and distill it into a crude peyotl which they use to achieve a greater
+attenuation with the dome when they make an analog connection to it
+
+ma bell has some (perhaps tangential) association to this group, this aim, but
+not the full impact of it. maybe all she knows about are primitive rituals,
+rituals that don't actually allow commune with the machine but were a
+precursor. she spent some time with them.
+
+first major point of the engineer thread: alexander and his crechemates'
+personal investigations into changes that have been happening at the dome. lots
+of little clues and small threads you can find hanging around. if you put it
+together before the raid, alexander lets you in on what he really wants from the
+raid: a canonical, disconnected copy of the Manual from the ascetics.
+
+second plot point is getting close to ma bell. she knows a lot, but it's hard to
+squeeze it all out of her. someone who knows as much as she does has to be slow
+in trusting. she doesn't have any plans, like joining the ascetics in communion,
+but knows enough things to help you form an idea of what they are doing. what
+she knows:
+** 04/18/2022
+   the first ten are where the different pods live. lower numbers are
+better. they're more insulated. consider the lower numbers as closer
+to the core of the section, the mother base.
+
+each pod is set up like a large communal house. there is a common area
+that is led into by seeral hallways. the ceilings are tall, maybe
+twelve feet, but lower in the tunnels to seven or eight feet. the
+common room has several tunnels that lead to dead ends. these are like
+cul-de-sacs where crechemates have rooms. the youngest of a creche
+share a room or a set of rooms. the matriarch, and whichever mates are
+part of her inner circle, have another, large set of rooms at the end
+of a cul-de-sac. 
+
+this innermost room is partly an office, partly a badroom. it is
+almost a lair. this is where the business of the pod gets done. not
+all pods are laid out so roomily. the less presitigious the pod, the
+more rooms must be shared, the less space for the head of the pod to
+conduct business. the lowliest pods are just one or two rooms. 
+
+the outermost part of this section is like a docking bay. there is a
+main tunnel that connects this section to the sections that
+produce. there is a patchwork feeling here. the citizens have
+repurposed many of the things the dome produces in order to do some
+primitive industrializing. different kinds of boxes, wheels, ramps,
+rudimentary items have been assembled into tools that allow them to
+move goods back and forth. there are small, busy, loud shops where
+specialty foods are sold, trinkets and knick knacks are traded. a
+bazaar. 
+
+the loading dock brushes against some of the poorer, outer pods. they
+form a U shape. filling in the U is a labrynthine tangle of tunnels
+and control rooms that run some critical functions of the dome. air
+purification, material decomposition, switching and networking, almost
+devops in nature. the glue.
+
+the core of the ascetics does things like: integrity checks,
+recordkeeping, canonical copy of the manual, and food production as a
+safeguard to their group. 
+
+the equivalents do transmutation. they are the hub for
+production. coveralls, capacitors and resistors, tools, dome plates,
+they make it all here and ship it (albeit not over a long distance) to
+the others. 
+
+so the layout of the dome is like a three-way venn diagram. 
 ** 04/09/2022
 the engineer thread.
 
@@ -496,3 +639,4 @@ technically, what do i need for the proof of concept?
 - load the game with an arbitrary state + dialogue
 
   
+4

@@ -2408,10 +2408,14 @@ namespace ImGuiWrapper {
 	}
 
 	void MakeTabVisible(ImGuiID id) {
-		ImGuiWindow* window = ImGui::FindWindowByID(id);
+		ImGuiWindow* window = ImGui::FindWindowByName("engine");
 		if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
 			return;
-		window->DockNode->TabBar->NextSelectedTabId = window->ID;;
+		window->DockNode->LastFocusedNodeId = id;
+		window->DockNode->SelectedTabId = id;
+		window->DockNode->TabBar->SelectedTabId = id;
+		window->DockNode->TabBar->VisibleTabId = id;
+		window->DockNode->TabBar->NextSelectedTabId = id;
 	}
 
 	ImGuiID GetSelectedTabId() {
@@ -2419,6 +2423,12 @@ namespace ImGuiWrapper {
 		if (window == NULL || window->DockNode == NULL || window->DockNode->TabBar == NULL)
 			return 0;
 		return window->DockNode->TabBar->SelectedTabId;
+	}
+
+
+	ImGuiID GetTabId(const char* name) {
+		ImGuiWindow* window = ImGui::FindWindowByName("engine");
+		return window->GetID(name);
 	}
 
 	bool IsWindowFocused() {

@@ -58,6 +58,7 @@ function Editor:init(params)
   tdengine.create_entity('TextEditor')
 end
 
+need_update_selected_tab = false
 function Editor:update(dt)
   submit_dbg_tbox()
   
@@ -68,10 +69,32 @@ function Editor:update(dt)
 
   imgui.SetNextWindowSize(300, 300)
 
+  local layouts = tdengine.scandir(tdengine.path_constants.fm_layouts)
+  if imgui.BeginMainMenuBar() then
+	
+	if imgui.BeginMenu('Layouts') then
+	  for i, layout in pairs(layouts) do
+		if imgui.MenuItem(tdengine.strip_extension(layout)) then
+		  tdengine.layout(tdengine.strip_extension(layout))
+		end
+	  end
+	  
+	  imgui.EndMenu()
+	end
+	
+	imgui.EndMainMenuBar()
+  end
+
   self:engine_viewer()
   self:state_viewer()
   self:scene_viewer()
   self:dialogue_editor(dt)
+
+  if need_update_selected_tab then
+	print(last_selected_tab)
+	imgui.MakeTabVisible(last_selected_tab)
+	need_update_selected_tab = false
+  end
 end
 
 function Editor:handle_input()

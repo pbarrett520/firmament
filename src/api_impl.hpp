@@ -367,6 +367,7 @@ void register_lua_api() {
 	Lua.state["imgui"]["CheckboxSet"]          = &ImGuiWrapper::CheckboxSet;
 	Lua.state["imgui"]["MakeTabVisible"]       = &ImGuiWrapper::MakeTabVisible;
 	Lua.state["imgui"]["GetSelectedTabId"]     = &ImGuiWrapper::GetSelectedTabId;
+	Lua.state["imgui"]["GetTabId"]             = &ImGuiWrapper::GetTabId;
 	Lua.state["imgui"]["IsWindowFocused"]      = &ImGuiWrapper::IsWindowFocused;
 	Lua.state["imgui"]["GetInputQueue"]        = &ImGuiWrapper::GetInputQueue;
 	Lua.state["imgui"]["AddRectFilled"]        = &ImGuiWrapper::AddRectFilled;

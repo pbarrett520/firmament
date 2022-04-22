@@ -1,12 +1,10 @@
 function tdengine.layout(name)
   -- Update stuff in C++
   tdengine.use_layout(name)
-  --tdengine.thing(tdengine.current_layout.selected_tab)
 
   -- Update what we're keeping track of in Lua
   local info = {
 	name = name,
-	selected_tab = imgui.GetSelectedTabId()
   }
   tdengine.push_layout(info)
   tdengine.current_layout = info
@@ -34,7 +32,6 @@ function tdengine.next_layout()
   
   local layout_info = tdengine.layout_stack[tdengine.layout_index]
   tdengine.use_layout(layout_info.name)
-  imgui.MakeTabVisible(layout_info.selected_tab)
 end
 
 
@@ -45,5 +42,4 @@ function tdengine.previous_layout()
   
   local layout_info = tdengine.layout_stack[tdengine.layout_index]
   tdengine.use_layout(layout_info.name)
-  imgui.MakeTabVisible(layout_info.selected_tab)
 end

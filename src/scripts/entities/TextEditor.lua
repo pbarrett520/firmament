@@ -2,7 +2,7 @@ local glfw = require('glfw')
 local TextEditor = tdengine.entity('TextEditor')
 function TextEditor:init(params)
   params = params or {}
-  self.text = params.text or ''
+  self.text = params.text or nil
   self.point = 0
   self.line_breaks = {}
   
@@ -23,8 +23,8 @@ function TextEditor:update(dt)
   self.frame = self.frame + 1
   
   imgui.Begin('Text Editor', true)
-  self:update_blink()
   if not self.text then imgui.End(); return end
+  self:update_blink()
   
   -- Handle characters, backspaces, key commands, whatever
   if imgui.IsWindowFocused() then

@@ -1,1 +1,0 @@
-teleport('janitor_closet')
