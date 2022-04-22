@@ -24,7 +24,6 @@ function TextEditor:update(dt)
   
   imgui.Begin('Text Editor', true)
   if not self.text then imgui.End(); return end
-  self:update_blink()
   
   -- Handle characters, backspaces, key commands, whatever
   if imgui.IsWindowFocused() then
@@ -61,12 +60,17 @@ function TextEditor:update(dt)
   end
   table.insert(self.line_breaks, #self.text + 1)
 
+  -- Draw the cursor (before the text -- just so we can easily get the beginning of the text area w/ ImGui cursor
+  self:update_blink()
+
   -- Draw the text
   for i = 1, (#self.line_breaks - 1) do
 	local low = self.line_breaks[i]
 	local high = self.line_breaks[i + 1] - 1
 	imgui.Text(self.text:sub(low, high))
   end
+
+
   imgui.End()
 end
 
@@ -196,6 +200,9 @@ function TextEditor:point_to_screen()
 	  return screen
 	end
   end
+
+  local results = 'total = %d, screen = (%f, %f), lbs = %d, point = %d, text = %s'
+  print(string.format(results, total, screen.x, screen.y, #self.line_breaks, self.point, self.text))
 end
 
 function TextEditor:mouse_to_point()

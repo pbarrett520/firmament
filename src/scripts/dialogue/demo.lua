@@ -275,6 +275,7 @@ return {
     children = {
       "dfd3efeb-5636-4266-9db1-67a12139c23d"
     },
+    effects = {},
     is_entry_point = false,
     kind = "Text",
     text = "They usually arise when a soul stays in Limbo for too long. Souls in Limbo are broken, and their fractures may deepen until the soul wholesale shatters. Each of these pieces is a fragment of that soul's pain. A fragment of what caused them to break.",

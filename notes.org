@@ -50,7 +50,11 @@ RULE #8: embrace the rectangle
 - [ ] multiselect nodes in dialogue editor
 - [ ] fix editor layout flashings
 ** big
-- [ ] proper text editor with word wrapping for nodes
+- [ ] non-developer friendly GUI
+  - load / save / run dialogues
+  - add fields to state
+  - make lack of entry point very clear
+- [X] proper text editor with word wrapping for nodes
   - [X] bind between editor contents and nodes that matter (both ways)
   - [X] arrow key movement
   - paste
