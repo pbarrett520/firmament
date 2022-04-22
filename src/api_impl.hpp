@@ -62,6 +62,11 @@ void API::save_layout(const char* name) {
 	tdns_log.write(Log_Flags::File, "saved imgui layout: path = %s", path);
 }
 
+void API::save_layout_by_path(const char* path) {
+	ImGui::SaveIniSettingsToDisk(path);
+	tdns_log.write(Log_Flags::File, "saved imgui layout: path = %s", path);
+}
+
 void API::screen(const char* dimension) {
 	if (!strcmp(dimension, "640")) use_640_360();
 	else if (!strcmp(dimension, "720")) use_720p();
@@ -298,6 +303,7 @@ void register_lua_api() {
 	state["tdengine"]["was_chord_pressed"]         = &was_chord_pressed;
 	state["tdengine"]["cursor"]                    = &cursor;
 	state["tdengine"]["save_layout"]               = &save_layout;
+	state["tdengine"]["save_layout_by_path"]       = &save_layout_by_path;
 	state["tdengine"]["use_layout"]                = &use_layout;
 	state["tdengine"]["frame_time"]                = seconds_per_update;
 	state["tdengine"]["screen_dimensions"]         = &screen_dimensions;
@@ -348,34 +354,39 @@ void register_lua_api() {
 	lua_setglobal(Lua.raw_state, "imgui");
 
 	//  My ImGui wrappers for things that do not work with the binding generator
-	Lua.state["imgui"]["Text"]                 = &ImGuiWrapper::Text;
-	Lua.state["imgui"]["SetNextWindowSize"]    = &ImGuiWrapper::SetNextWindowSize;
-	Lua.state["imgui"]["IsItemHovered"]        = &ImGuiWrapper::IsItemHovered;
-	Lua.state["imgui"]["InputText"]            = &ImGuiWrapper::InputText;
-	Lua.state["imgui"]["InputTextMultiline"]   = &ImGuiWrapper::InputTextMultiline;
-	Lua.state["imgui"]["InputTextClear"]       = &ImGuiWrapper::InputTextClear;
-	Lua.state["imgui"]["InputTextContents"]    = &ImGuiWrapper::InputTextContents;
-	Lua.state["imgui"]["InputTextSetContents"] = &ImGuiWrapper::InputTextSetContents;
-	Lua.state["imgui"]["InputText2"]           = &ImGuiWrapper::InputText2;
-	Lua.state["imgui"]["InputTextGet"]         = &ImGuiWrapper::InputTextGet;
-	Lua.state["imgui"]["InputTextSet"]         = &ImGuiWrapper::InputTextSet;
-	Lua.state["imgui"]["InputFloat"]           = &ImGuiWrapper::InputFloat;
-	Lua.state["imgui"]["InputFloatGet"]        = &ImGuiWrapper::InputFloatGet;
-	Lua.state["imgui"]["InputFloatSet"]        = &ImGuiWrapper::InputFloatSet;
-	Lua.state["imgui"]["Checkbox"]             = &ImGuiWrapper::Checkbox;
-	Lua.state["imgui"]["CheckboxGet"]          = &ImGuiWrapper::CheckboxGet;
-	Lua.state["imgui"]["CheckboxSet"]          = &ImGuiWrapper::CheckboxSet;
-	Lua.state["imgui"]["MakeTabVisible"]       = &ImGuiWrapper::MakeTabVisible;
-	Lua.state["imgui"]["GetSelectedTabId"]     = &ImGuiWrapper::GetSelectedTabId;
-	Lua.state["imgui"]["GetTabId"]             = &ImGuiWrapper::GetTabId;
-	Lua.state["imgui"]["IsWindowFocused"]      = &ImGuiWrapper::IsWindowFocused;
-	Lua.state["imgui"]["GetInputQueue"]        = &ImGuiWrapper::GetInputQueue;
-	Lua.state["imgui"]["AddRectFilled"]        = &ImGuiWrapper::AddRectFilled;
+	Lua.state["imgui"]["Text"]                 = &ImGuiExt::Text;
+	Lua.state["imgui"]["SetNextWindowSize"]    = &ImGuiExt::SetNextWindowSize;
+	Lua.state["imgui"]["IsItemHovered"]        = &ImGuiExt::IsItemHovered;
+	Lua.state["imgui"]["InputText"]            = &ImGuiExt::InputText;
+	Lua.state["imgui"]["InputTextMultiline"]   = &ImGuiExt::InputTextMultiline;
+	Lua.state["imgui"]["InputTextClear"]       = &ImGuiExt::InputTextClear;
+	Lua.state["imgui"]["InputTextContents"]    = &ImGuiExt::InputTextContents;
+	Lua.state["imgui"]["InputTextSetContents"] = &ImGuiExt::InputTextSetContents;
+	Lua.state["imgui"]["InputText2"]           = &ImGuiExt::InputText2;
+	Lua.state["imgui"]["InputTextGet"]         = &ImGuiExt::InputTextGet;
+	Lua.state["imgui"]["InputTextSet"]         = &ImGuiExt::InputTextSet;
+	Lua.state["imgui"]["InputFloat"]           = &ImGuiExt::InputFloat;
+	Lua.state["imgui"]["InputFloatGet"]        = &ImGuiExt::InputFloatGet;
+	Lua.state["imgui"]["InputFloatSet"]        = &ImGuiExt::InputFloatSet;
+	Lua.state["imgui"]["Checkbox"]             = &ImGuiExt::Checkbox;
+	Lua.state["imgui"]["CheckboxGet"]          = &ImGuiExt::CheckboxGet;
+	Lua.state["imgui"]["CheckboxSet"]          = &ImGuiExt::CheckboxSet;
+	Lua.state["imgui"]["MakeTabVisible"]       = &ImGuiExt::MakeTabVisible;
+	Lua.state["imgui"]["GetSelectedTabId"]     = &ImGuiExt::GetSelectedTabId;
+	Lua.state["imgui"]["GetTabId"]             = &ImGuiExt::GetTabId;
+	Lua.state["imgui"]["IsWindowFocused"]      = &ImGuiExt::IsWindowFocused;
+	Lua.state["imgui"]["GetInputQueue"]        = &ImGuiExt::GetInputQueue;
+	Lua.state["imgui"]["AddRectFilled"]        = &ImGuiExt::AddRectFilled;
+	Lua.state["imgui"]["OpenFileBrowser"]      = &ImGuiExt::OpenFileBrowser;
+	Lua.state["imgui"]["CloseFileBrowser"]     = &ImGuiExt::CloseFileBrowser;
+	Lua.state["imgui"]["IsFileSelected"]       = &ImGuiExt::IsFileSelected;
+	Lua.state["imgui"]["GetSelectedFile"]      = &ImGuiExt::GetSelectedFile;
+	Lua.state["imgui"]["SetFileBrowserPwd"]    = &ImGuiExt::SetFileBrowserPwd;
 
-	sol::usertype<ImGuiWrapper::TextFilter> filter_type = Lua.state.new_usertype<ImGuiWrapper::TextFilter>("TextFilter");
-	filter_type["Draw"]      = &ImGuiWrapper::TextFilter::Draw;
-	filter_type["PassFilter"] = &ImGuiWrapper::TextFilter::PassFilter;
+	sol::usertype<ImGuiExt::TextFilter> filter_type = Lua.state.new_usertype<ImGuiExt::TextFilter>("TextFilter");
+	filter_type["Draw"]      = &ImGuiExt::TextFilter::Draw;
+	filter_type["PassFilter"] = &ImGuiExt::TextFilter::PassFilter;
 	Lua.state["imgui"]["TextFilter"] = filter_type;
 
-	Lua.state["imgui"]["End"] = &ImGuiWrapper::EndAndRecover;
+	Lua.state["imgui"]["End"] = &ImGuiExt::EndAndRecover;
 }

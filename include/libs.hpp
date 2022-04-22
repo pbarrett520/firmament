@@ -31,6 +31,7 @@ extern "C" {
 #include "imgui/imgui.h"
 #include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_glfw_gl3.hpp"
+#include "imgui/imfilebrowser.h"
 
 // STL
 #include <algorithm>

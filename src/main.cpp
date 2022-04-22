@@ -74,6 +74,7 @@ int main() {
 		
 		if (options::show_imgui_demo) ImGui::ShowDemoWindow();
 		if (show_console) console.Draw("firmament");
+		ImGuiExt::UpdateFileBrowser();
 			
 		// Run scripts
 		Lua.update_entities(seconds_per_update);
@@ -82,7 +83,7 @@ int main() {
 		// Render 
 		render_engine.render(seconds_per_update);
 
-		ImGuiWrapper::EndAndRecover();
+		ImGuiExt::EndAndRecover();
 		ImGui::Render();
 		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
 		glfwSwapBuffers(g_window);

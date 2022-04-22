@@ -44,6 +44,11 @@ function Editor:init(params)
   self.average_framerate = 0
   self.frame = 0
 
+  self.do_layout_save = false
+  self.ids = {
+	save_layout = '##menu:save_layout'
+  }
+
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.Editor)
   self.input:enable()
@@ -58,7 +63,6 @@ function Editor:init(params)
   tdengine.create_entity('TextEditor')
 end
 
-need_update_selected_tab = false
 function Editor:update(dt)
   submit_dbg_tbox()
   
@@ -69,22 +73,55 @@ function Editor:update(dt)
 
   imgui.SetNextWindowSize(300, 300)
 
+  local show_save_layout_modal = false
   local layouts = tdengine.scandir(tdengine.path_constants.fm_layouts)
   if imgui.BeginMainMenuBar() then
 	
 	if imgui.BeginMenu('Layouts') then
-	  for i, layout in pairs(layouts) do
-		if imgui.MenuItem(tdengine.strip_extension(layout)) then
-		  tdengine.layout(tdengine.strip_extension(layout))
-		end
-	  end
 	  
+	  if imgui.BeginMenu('Load') then
+		for i, layout in pairs(layouts) do
+		  if imgui.MenuItem(tdengine.strip_extension(layout)) then
+			tdengine.layout(tdengine.strip_extension(layout))
+		  end
+		end
+		imgui.EndMenu()
+	  end
+
+	  if imgui.MenuItem('Save As') then
+		--imgui.OpenFileBrowser()
+		show_save_layout_modal = true
+	  end
+
 	  imgui.EndMenu()
 	end
 	
 	imgui.EndMainMenuBar()
   end
 
+  if show_save_layout_modal then
+	imgui.OpenPopup('Save Layout')
+  end
+  if imgui.BeginPopupModal('Save Layout') then
+	imgui.Text('Name')
+	imgui.SameLine()
+	imgui.InputText2(self.ids.save_layout)
+
+	if imgui.Button('Save') then
+	  tdengine.save_layout(imgui.InputTextGet(self.ids.save_layout))
+	  imgui.InputTextSet(self.ids.save_layout, '')
+	  imgui.CloseCurrentPopup()
+	end
+	imgui.SameLine()
+
+	if imgui.Button('Cancel') then
+	  imgui.InputTextSet(self.ids.save_layout, '')
+	  imgui.CloseCurrentPopup()
+	end
+	imgui.EndPopup()
+  end
+  
+  
   self:engine_viewer()
   self:state_viewer()
   self:scene_viewer()

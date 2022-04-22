@@ -11,6 +11,7 @@ bool        was_chord_pressed(key_t mod, key_t cmd, int mask = INPUT_MASK_NONE);
 void        toggle_console();
 void        use_layout(const char* name);
 void        save_layout(const char* name);
+void        save_layout_by_path(const char* name);
 void        screen(const char* dimension);
 void        use_step_mode();
 void        pause_updates();

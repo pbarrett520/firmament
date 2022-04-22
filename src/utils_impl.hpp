@@ -19,7 +19,7 @@ void load_imgui_layout() {
 	if (!strlen(layout_to_load)) return;
 
 	ImGui::LoadIniSettingsFromDisk(layout_to_load);
-	if (last_selected_tab > 0) ImGuiWrapper::MakeTabVisible(last_selected_tab);
+	if (last_selected_tab > 0) ImGuiExt::MakeTabVisible(last_selected_tab);
 														  
 	tdns_log.write(Log_Flags::File,
 				   "load imgui layout: path = %s, id = %u",
