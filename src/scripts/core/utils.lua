@@ -25,6 +25,10 @@ function tdengine.platform()
   end
 end
 
+function tdengine.extract_filename(path)
+  return path:match("([^/\\]+)$")
+end
+
 function tdengine.is_extension(path, extension)
   local ext_len = string.len(extension)
   local path_len = string.len(path)
@@ -33,6 +37,7 @@ function tdengine.is_extension(path, extension)
   local last = string.sub(path, path_len - ext_len + 1, path_len)
   return last == extension
 end
+
 
 function tdengine.has_extension(path)
   return string.find(path, '%.')

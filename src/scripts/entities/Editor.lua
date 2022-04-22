@@ -59,6 +59,7 @@ function Editor:init(params)
 	imgui_ignore = true
   }
   
+  tdengine.create_entity('MainMenu')
   tdengine.create_entity('OptionUpdater')
   tdengine.create_entity('DialogueEditor')
 end
@@ -73,53 +74,7 @@ function Editor:update(dt)
 
   imgui.SetNextWindowSize(300, 300)
 
-  local show_save_layout_modal = false
-  local layouts = tdengine.scandir(tdengine.path_constants.fm_layouts)
-  if imgui.BeginMainMenuBar() then
-	
-	if imgui.BeginMenu('Layouts') then
-	  
-	  if imgui.BeginMenu('Load') then
-		for i, layout in pairs(layouts) do
-		  if imgui.MenuItem(tdengine.strip_extension(layout)) then
-			tdengine.layout(tdengine.strip_extension(layout))
-		  end
-		end
-		imgui.EndMenu()
-	  end
-
-	  if imgui.MenuItem('Save As') then
-		--imgui.OpenFileBrowser()
-		show_save_layout_modal = true
-	  end
-
-	  imgui.EndMenu()
-	end
-	
-	imgui.EndMainMenuBar()
-  end
-
-  if show_save_layout_modal then
-	imgui.OpenPopup('Save Layout')
-  end
-  if imgui.BeginPopupModal('Save Layout') then
-	imgui.Text('Name')
-	imgui.SameLine()
-	imgui.InputText2(self.ids.save_layout)
-
-	if imgui.Button('Save') then
-	  tdengine.save_layout(imgui.InputTextGet(self.ids.save_layout))
-	  imgui.InputTextSet(self.ids.save_layout, '')
-	  imgui.CloseCurrentPopup()
-	end
-	imgui.SameLine()
-
-	if imgui.Button('Cancel') then
-	  imgui.InputTextSet(self.ids.save_layout, '')
-	  imgui.CloseCurrentPopup()
-	end
-	imgui.EndPopup()
-  end
+  -- Handle stuff from the main menu bar
   
   
   self:engine_viewer()

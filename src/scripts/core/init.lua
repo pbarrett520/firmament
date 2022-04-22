@@ -26,15 +26,21 @@ function tdengine.load_default_state()
   tdengine.state = state
 end
 
-function tdengine.load_dialogue(name)
-  if name == nil then
+function tdengine.load_dialogue(name_or_path)
+  if name_or_path == nil then
 	tdengine.log_to('could not load dialogue, name = nil', tdengine.log_flags.console)	
 	return nil
   end
+
+  local dialogue = nil
+  if string.find(name_or_path, '/') or string.find(name_or_path, '\\') then
+	dialogue = loadfile(name_or_path)
+  else
+	dialogue = loadfile(tdengine.paths.dialogue(name_or_path))
+  end
   
-  local dialogue = loadfile(tdengine.paths.dialogue(name))
   if not dialogue then
-	local message = string.format('could not load dialogue, path = %s', tdengine.paths.dialogue(name))
+	local message = string.format('could not load dialogue, path = %s', tdengine.paths.dialogue(name_or_path))
 	tdengine.log_to(message, tdengine.log_flags.console)	
 	return nil
   end

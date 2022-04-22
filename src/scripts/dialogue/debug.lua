@@ -12,6 +12,7 @@ return {
       "21020ad1-307b-4707-90aa-6627fceaf382",
       "242e8ef4-ce81-4487-b5fd-946284d8f1e0"
     },
+    effects = {},
     is_entry_point = true,
     kind = "Text",
     text = "Nested branches.",
