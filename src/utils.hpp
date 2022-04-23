@@ -139,6 +139,13 @@ void arr_stack(Array<T>* array, T* data, int32 capacity) {
 	array->data = data;
 }
 
+template<typename T, int32 N>
+void arr_stack(Array<T>* array, T (&c_array)[N]) {
+	array->size = 0;
+	array->capacity = N;
+	array->data = c_array;
+}
+
 // Use case: You have some contiguous data filled out somewhere (maybe in another Array, maybe in a C
 // array). You want to RW a subarray using Array functions. Call this to wrap the subarray. 
 template<typename T>

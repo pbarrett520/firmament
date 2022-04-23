@@ -241,6 +241,21 @@ void send_gpu_commands() {
 	auto& render_engine = get_render_engine();
 	auto& shaders = get_shader_manager();
 	Shader* shader;
+	GlBufferContext context;
+
+	// Debug geometry
+	shader = shaders.get("solid");
+	shader->begin();
+
+	glBindBuffer(GL_ARRAY_BUFFER, render_engine.dbg_buffer);
+	glBindVertexArray(render_engine.dbg_vao);
+
+	glctx_sub_data(&context, &dbg_vx_buffer);
+	glctx_sub_data(&context, &dbg_cr_buffer);
+	
+	shader->check();
+	glDrawArrays(GL_TRIANGLES, 0, dbg_vx_buffer.size);
+	shader->end();
 
 	// Text
 	shader = shaders.get("text");
@@ -254,7 +269,7 @@ void send_gpu_commands() {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, render_engine.texture);
 
-	GlBufferContext context;
+	glctx_reset(&context);
 	glctx_sub_data(&context, &vx_buffer);
 	glctx_sub_data(&context, &tc_buffer);
 	glctx_sub_data(&context, &cr_buffer);
@@ -263,20 +278,5 @@ void send_gpu_commands() {
 	glDrawArrays(GL_TRIANGLES, 0, vx_buffer.size);
 	shader->end();
 
-	// Debug geometry
-	shader = shaders.get("solid");
-	shader->begin();
-
-
-	glBindBuffer(GL_ARRAY_BUFFER, render_engine.dbg_buffer);
-	glBindVertexArray(render_engine.dbg_vao);
-
-	memset(&context, 0, sizeof(GlBufferContext));
-	glctx_sub_data(&context, &dbg_vx_buffer);
-	glctx_sub_data(&context, &dbg_cr_buffer);
-	
-	shader->check();
-	glDrawArrays(GL_TRIANGLES, 0, dbg_vx_buffer.size);
-	shader->end();
 
 }

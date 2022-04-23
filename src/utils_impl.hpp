@@ -107,4 +107,3 @@ void inbool_clear(const char* label) {
 		}
 	}
 }
-

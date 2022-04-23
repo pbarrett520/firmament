@@ -54,7 +54,10 @@ void glctx_sub_data(GlBufferContext* ctx, Array<Vector4>* arr) {
 					arr->data);
 	ctx->offset += arr_bytes(arr);
 };
-
+void glctx_reset(GlBufferContext* ctx) {
+	ctx->offset = 0;
+}
+	
 struct RenderEngine {
 	uint32 buffer;
 	uint32 vao;

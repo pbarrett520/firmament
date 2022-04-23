@@ -81,6 +81,23 @@ void API::submit_choice(sol::table request) {
 	std::string text_copy = request["text"];
 	fm_assert(text_copy.size() < MAX_CHOICE_LEN);
 	strncpy(choice->text, text_copy.c_str(), MAX_CHOICE_LEN);
+
+	// Figure out line breaks
+	auto text = arr_view(choice->text);
+	Array<int32> line_breaks;
+	arr_stack(&line_breaks, choice->line_breaks);
+	
+	LineBreakContext context;
+	context.position  = choice_box.pos;
+	context.dimension = choice_box.dim;
+	context.padding   = choice_box.pad;
+	context.line_breaks = &line_breaks;
+
+	lbctx_init(&context);
+	lbctx_advance(&context, text);
+	lbctx_finish(&context);
+	
+	choice->count_line_breaks = line_breaks.size;
 }
 
 void API::set_hovered_choice(int32 index) {
@@ -120,46 +137,22 @@ void API::submit_text(sol::table request) {
 	// Calculate line breaks based on size of text box
 	ArrayView<char> speaker = arr_view(info.speaker, MAX_SPEAKER_LEN);
 	ArrayView<char> text = arr_view(info.text, MAX_TEXT_LEN);
-	FontInfo* font = font_infos[0];
-	MainTextBox* box = &main_box;
-	Vector2 point = {
-		box->pos.x + box->pad.x,
-		box->pos.y - box->dim.y + box->pad.y - font->descender
-	};
-	float32 max_x =  box->pos.x + box->dim.x - box->pad.x;
+	Array<int32> line_breaks;
+	arr_stack(&line_breaks, &info.lbreaks[0], MAX_LINE_BREAKS);
+
+	LineBreakContext context;
+	context.position  = main_box.pos;
+	context.dimension = main_box.dim;
+	context.padding   = main_box.pad;
+	context.line_breaks = &line_breaks;
+
+	lbctx_init(&context);
+	lbctx_advance(&context, speaker);
+	lbctx_advance_no_break(&context, ": ", 2);
+	lbctx_advance(&context, text);
+	lbctx_finish(&context);
 	
-	Array<int32> lbreaks;
-	arr_stack(&lbreaks, &info.lbreaks[0], MAX_LINE_BREAKS);
-	arr_push(&lbreaks, 0); // See definition of line breaks in TextRenderInfo to understand why we always have 0
-
-	// Advance the point by whatever the speaker's name is. I like to keep the speaker's name separate to keep
-	// the data structured
-	arr_for(speaker, c) {
-		if (*c == 0) break;
-		
-		GlyphInfo* glyph = font->glyphs[*c];
-		point.x += glyph->advance.x;
-	}
-    point.x += font->glyphs[':']->advance.x;
-    point.x += font->glyphs[' ']->advance.x;
-
-	// Advance point for text, when it spills over move to the next line and mark a line break
-	arr_for(text, c) {
-		if (*c == 0) break;
-
-		GlyphInfo* glyph = font->glyphs[*c];
-		point.x += glyph->advance.x;
-
-		if (point.x >= max_x) {
-			arr_push(&lbreaks, arr_indexof(&text, c));
-			point.x = box->pos.x + box->pad.x;
-			point.y -= font->descender;
-		}
-	}
-
-	arr_push(&lbreaks, text.size);
-	info.count_lb = lbreaks.size;
-	
+	info.count_lb = line_breaks.size;
 	
 	// No effect? Just give it to the renderer
 	if (request["effects"] == sol::lua_nil) {

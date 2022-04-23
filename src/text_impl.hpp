@@ -223,3 +223,37 @@ void mtb_update_scroll_smooth(MainTextBox* mtb, float dt) {
 
 	mtb->last_frame_scroll = input.scroll.y;
 }
+
+void lbctx_init(LineBreakContext* context) {
+	arr_push(context->line_breaks, 0);
+	context->point     = context->position.x + context->padding.x;
+	context->point_max = context->position.x + context->dimension.x - context->padding.x;
+}
+
+void lbctx_advance_no_break(LineBreakContext* context, const char* text, int32 len) {
+	FontInfo* font = font_infos[0];
+	for (int32 i = 0; i < len; i++) {
+		GlyphInfo* glyph = font->glyphs[text[i]];
+		context->point += glyph->advance.x;
+	}
+}
+
+void lbctx_advance(LineBreakContext* context, ArrayView<char> text) {
+	context->last_text = text;
+	FontInfo* font = font_infos[0];
+	
+	arr_for(text, c) {
+		if (*c == 0) break;
+		GlyphInfo* glyph = font->glyphs[*c];
+	
+		context->point += glyph->advance.x;
+		if (context->point >= context->point_max) {
+			arr_push(context->line_breaks, arr_indexof(&text, c));
+			context->point = context->position.x + context->padding.x;
+		}
+	}
+}
+
+void lbctx_finish(LineBreakContext* context) {
+	arr_push(context->line_breaks, context->last_text.size);
+}
