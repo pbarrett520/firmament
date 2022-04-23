@@ -38,6 +38,7 @@ extern "C" {
 #include <array>
 #include <chrono>
 #include <map>
+#include <math.h>
 #include <memory>
 #include <regex>
 #include <stdlib.h>
@@ -59,5 +60,7 @@ extern "C" {
 #include <limits>
 #include <typeinfo>
 #include <filesystem>
+#include <numeric>
+#include <random>
 using namespace std::filesystem;
 

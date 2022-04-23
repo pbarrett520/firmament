@@ -64,6 +64,14 @@ float32 fm_lerp(float32 a, float32 b, float32 t) {
 	return (a * (1 - t)) + (b * t);
 }
 
+int32 fm_floor(float32 f) {
+	return static_cast<int32>(floor(f));
+}
+
+int32 fm_ceil(float32 f) {
+	return static_cast<int32>(ceil(f));
+}
+
 float32 clamp(float32 val, float32 low, float32 hi) {
 	return fox_max(fox_min(val, hi), low);
 }
@@ -392,6 +400,13 @@ struct Vector4 {
 	};
 };
 
+Vector2 vec_sub(Vector2* a, Vector2* b) {
+	return { a->x - b->x, a->y - b->y };
+}
+
+float32 vec_dot(Vector2* a, Vector2* b) {
+	return (a->x * b->x + a->y * b->y);
+}
 // STL extensions 
 std::vector<std::string> split(const std::string &str, char delim) {
 	std::stringstream stream(str);

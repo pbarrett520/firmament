@@ -29,6 +29,26 @@ return {
       y = 52
     }
   },
+  ["8324ad4d-e061-4ae7-9f17-716b972b7f56"] = {
+    position = {
+      x = 621,
+      y = 437
+    },
+    size = {
+      x = 138,
+      y = 52
+    }
+  },
+  ["497781df-e718-4f90-b7a4-15f0d6e5fe12"] = {
+    position = {
+      x = 437,
+      y = 436
+    },
+    size = {
+      x = 138,
+      y = 52
+    }
+  },
   ["a1fd3588-aee6-4b78-8f06-11d086f11d42"] = {
     position = {
       x = 483,
@@ -53,6 +73,16 @@ return {
     position = {
       x = 931,
       y = 437
+    },
+    size = {
+      x = 138,
+      y = 52
+    }
+  },
+  ["cd49fa8e-a491-4eba-aef9-a6b88a33cb33"] = {
+    position = {
+      x = 826,
+      y = 438
     },
     size = {
       x = 138,

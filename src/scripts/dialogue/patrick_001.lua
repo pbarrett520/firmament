@@ -1,17 +1,7 @@
 return {
-  ["11a9899c-cf5e-48f3-ac91-b768a1723ce6"] = {
-    children = {
-      "1026bca8-b947-4692-a1bb-82fdc3515bd5"
-    },
-    is_entry_point = false,
-    kind = "Text",
-    text = "You vaguely remember that you were a man. You remember you had a life once. You remember the mistake and how you were punished for that mistake. No matter now.",
-    uuid = "11a9899c-cf5e-48f3-ac91-b768a1723ce6",
-    who = "unknown"
-  },
   ["11aa766b-7d9f-4fc5-8072-252ea87ce57b"] = {
     children = {
-      "a1fd3588-aee6-4b78-8f06-11d086f11d42"
+      "497781df-e718-4f90-b7a4-15f0d6e5fe12"
     },
     effects = {
       {
@@ -30,30 +20,31 @@ return {
     },
     is_entry_point = true,
     kind = "Text",
-    text = "You awaken in the warm embrace of an electric caul.",
+    text = "You awaken in the warm embrace of an electric caul. There is not light, only warmth and wet. You feel the snarls of not-flesh which snake around your body. They lift you up and up through a never-ending blackness. ",
     uuid = "11aa766b-7d9f-4fc5-8072-252ea87ce57b",
-    who = "unknown"
+    who = "mind"
   },
-  ["1026bca8-b947-4692-a1bb-82fdc3515bd5"] = {
+  ["8324ad4d-e061-4ae7-9f17-716b972b7f56"] = {
     children = {
-      "b1bced17-71db-43db-96b2-fd42ed8d56d8"
-    },
-    is_entry_point = false,
-    kind = "Text",
-    text = "All that you know now is the Slot. You must find the Slot.",
-    uuid = "1026bca8-b947-4692-a1bb-82fdc3515bd5",
-    who = "unknown"
-  },
-  ["a1fd3588-aee6-4b78-8f06-11d086f11d42"] = {
-    children = {
-      "fa620c6b-810e-4c9b-a0d0-481855fb7b9c"
+      "cd49fa8e-a491-4eba-aef9-a6b88a33cb33"
     },
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "There is not light. There is only warmth and wet.",
-    uuid = "a1fd3588-aee6-4b78-8f06-11d086f11d42",
-    who = "unknown"
+    text = "The light burns your eyes, so you squint them shut. Through your haze of vision, you make out something. A creature? Perhaps. It looks like no living creature you have seen before. It is more fog than man, and you begin to wonder unto what hell you have been born.",
+    uuid = "8324ad4d-e061-4ae7-9f17-716b972b7f56",
+    who = "mind"
+  },
+  ["497781df-e718-4f90-b7a4-15f0d6e5fe12"] = {
+    children = {
+      "8324ad4d-e061-4ae7-9f17-716b972b7f56"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "You feel other things bump against you as you rise. You do not know what they are. Light appears in front of you and the ground disgorges you. You lie there, sputtering and flailing -- newborn again.",
+    uuid = "497781df-e718-4f90-b7a4-15f0d6e5fe12",
+    who = "mind"
   },
   ["b1bced17-71db-43db-96b2-fd42ed8d56d8"] = {
     children = {},
@@ -62,24 +53,13 @@ return {
     next_dialogue = "patrick_002",
     uuid = "b1bced17-71db-43db-96b2-fd42ed8d56d8"
   },
-  ["caf484fa-fadd-4405-b415-1fc8fd1e9280"] = {
-    children = {
-      "11a9899c-cf5e-48f3-ac91-b768a1723ce6"
-    },
+  ["cd49fa8e-a491-4eba-aef9-a6b88a33cb33"] = {
+    children = {},
+    effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "You feel other things bump against you as you rise. You do not know what they are. Light appears in front of you, and the ground disgorges you. You lie there, sputtering and newborn again. The light burns your eyes. You squint them shut.",
-    uuid = "caf484fa-fadd-4405-b415-1fc8fd1e9280",
-    who = "unknown"
-  },
-  ["fa620c6b-810e-4c9b-a0d0-481855fb7b9c"] = {
-    children = {
-      "caf484fa-fadd-4405-b415-1fc8fd1e9280"
-    },
-    is_entry_point = false,
-    kind = "Text",
-    text = "You feel the snarls of not-flesh which snake around your body. They lift you up and up through a never-ending blackness.",
-    uuid = "fa620c6b-810e-4c9b-a0d0-481855fb7b9c",
-    who = "unknown"
+    text = "...he...llo...? ....me kn....when yo....an hear me...",
+    uuid = "cd49fa8e-a491-4eba-aef9-a6b88a33cb33",
+    who = "unknown_waker"
   }
 }

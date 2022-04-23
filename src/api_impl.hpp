@@ -191,6 +191,8 @@ void API::submit_text(sol::table request) {
 		else if (effect.type == TextEffectType::RAINBOW) {
 			effect.data.rainbow.frequency = data["frequency"];
 		}
+		else if (effect.type == TextEffectType::HAZY_WAKE) {
+		}
 		
 		arr_push(&effect_buffer, effect);
 	}

@@ -144,7 +144,23 @@ void init_fonts() {
 		memcpy(btm, tmp, tex_width);
 	}
 
-	//stbi_write_png(fm_atlas_gm, tex_width, tex_height, 1, buffer, tex_width);
+	PerlinNoise generator(237);
+	int width = 600;
+	int height = 450;
+	char* perlin = (char*)calloc(width * height, sizeof(char));
+	float32 input [2];
+	for (int32 i = 0; i < width; i++) {
+		for (int32 j = 0; j < height; j++) {
+			float32 x = (float32)i / width;
+			float32 y = (float32)j / height;
+			float noise = generator.noise(10 * x, 10 * y, 0.8);
+
+			uint8_t pixel = 255 * noise;
+			int k = (width * j) + i;
+			perlin[k] = pixel;
+		}
+	}
+	stbi_write_png("C:/Users/spader/source/firmament/build/perlin.png", width, height, 1, perlin, width);
 
 	auto& render_engine = get_render_engine();
 	glDeleteTextures(1, &render_engine.texture);
