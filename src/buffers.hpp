@@ -8,7 +8,7 @@ Array<Vector4>        cr_buffer;
 #define TEXT_BUFFER_SIZE 4096
 Array<TextRenderInfo> text_buffer;
 #define CHOICE_BUFFER_SIZE 16
-Array<ChoiceInfo> choice_buffer;
+Array<TextRenderInfo> choice_buffer;
 #define EFFECT_BUFFER_SIZE TEXT_BUFFER_SIZE * 2 // Two effects per text chunk (on average)
 Array<TextEffect>     effect_buffer;
 #define DBG_GEOMETRY_RQ_BUFFER_SIZE 128

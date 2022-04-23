@@ -4,35 +4,6 @@
 #define MAX_SPEAKER_LEN 32
 #define MAX_LINE_BREAKS 16
 
-struct ChoiceInfo {
-	char text [MAX_CHOICE_LEN];
-	int32 line_breaks [MAX_LINE_BREAKS];
-	int32 count_line_breaks;
-};
-
-struct ChoiceBox {
-	Mesh* mesh;
-	Vector2 pos;
-	Vector2 dim;
-	Vector2 pad;
-	Vector4 dbg_color;
-
-	int32 hovered = 0;
-};
-ChoiceBox choice_box;
-void cbx_init(ChoiceBox* cbx);
-void cbx_add(ChoiceBox* cbx, ChoiceInfo choice);
-void cbx_clear(ChoiceBox* cbx);
-
-struct ChoiceRenderContext {
-	FontInfo* font = nullptr;
-	Vector2 point;
-};
-void choice_ctx_init(ChoiceRenderContext* ctx, FontInfo* font);
-void choice_ctx_advance(ChoiceRenderContext* ctx, GlyphInfo* glyph);
-void choice_ctx_nextline(ChoiceRenderContext* ctx);
-
-
 // Request for drawing text to the main text box.
 //
 // Line breaks are to be interpreted as such: Every substring in the text of the form
@@ -52,6 +23,18 @@ struct TextRenderInfo {
 
 	bool              visible                     = false;
 };
+
+
+struct ChoiceBox {
+	Mesh* mesh;
+	Vector2 pos;
+	Vector2 dim;
+	Vector2 pad;
+	Vector4 dbg_color;
+
+	int32 hovered = 0;
+};
+ChoiceBox choice_box;
 
 struct MainTextBox {
 	Mesh* mesh;
@@ -74,18 +57,20 @@ struct MainTextBox {
 MainTextBox main_box;
 void mtb_update_scroll(MainTextBox* mtb, float dt);
 void mtb_update_scroll_smooth(MainTextBox* mtb, float dt);
+void init_text_boxes();
 
 // Algorithm: Iterate through requests in LIFO order, so that the newest requests are rendered
 // first. Then, iterate over their line breaks, starting from the last line. Iterate the line,
 // and move to the line above. Move to the next request.
-struct MtbRenderContext {
-	
-};
-
 struct TextRenderContext {
 	TextRenderInfo* info  = nullptr;
 	FontInfo* font = nullptr;
+	Array<TextRenderInfo>* infos; // arr view
 
+	Vector2 position;
+	Vector2 dimension;
+	Vector2 padding;
+	
 	Vector2 point;
 	int32 max_lines = 0;
 	int32 next_chunk_index = 0;
@@ -105,9 +90,8 @@ void text_ctx_nextline(TextRenderContext* ctx);
 void text_ctx_render(TextRenderContext* ctx, char c);
 void text_ctx_advance(TextRenderContext* ctx, char c);
 float32 text_ctx_scroll(TextRenderContext* ctx);
-
-void init_text_boxes();
-
+void text_ctx_start_at_bottom(TextRenderContext* ctx);
+void text_ctx_start_at_top(TextRenderContext* ctx);
 
 struct LineBreakContext {
 	// Input
@@ -127,3 +111,6 @@ void lbctx_init(LineBreakContext* context);
 void lbctx_advance_no_break(LineBreakContext* context, const char* text, int32 len);
 void lbctx_advance(LineBreakContext* context, ArrayView<char> text);
 void lbctx_finish(LineBreakContext* context);
+
+void move_point_down(Vector2* point, float distance);
+void move_point_up(Vector2* point, float distance);

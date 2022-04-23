@@ -100,44 +100,40 @@ void RenderEngine::render(float dt) {
 }
 
 void render_cbx() {
-	ChoiceBox* cbx = &choice_box;
-	ChoiceRenderContext context;
-	choice_ctx_init(&context, font_infos[0]);
+	if (!choice_buffer.size) return;
 	
-	arr_for(choice_buffer, choice) {
-		int32 index = arr_indexof(&choice_buffer, choice);
-			
-		auto text = arr_view(choice->text);
-		arr_for(text, c) {
-			if (*c == 0) break;
-			GlyphInfo* glyph = context.font->glyphs[*c];
+	TextRenderContext context;
+	context.position = choice_box.pos;
+	context.dimension = choice_box.dim;
+	context.padding = choice_box.pad;
+	context.infos = &choice_buffer;
+	
+	text_ctx_init(&context, font_infos[0]);
+	text_ctx_start_at_top(&context);
+	
+	while (!text_ctx_done(&context)) {
+		auto info = text_ctx_chunk(&context);
+		int32 index = arr_indexof(&choice_buffer, info);
 
-			// If this character is part of the hovered choice, fill in the color buffer's entries for its
-			// vertices with the hovered color
-			if (index == cbx->hovered) {
-				int32 cr_offset = vx_buffer.size;
-				Array<Vector4> cr = arr_slice(&cr_buffer, cr_offset, 6);
-				arr_fill(&cr, colors::red);
+		while (!text_ctx_chunkdone(&context)) {
+			auto line = text_ctx_readline(&context);
+			arr_for(line, c) {
+				if (*c == 0) break;
+
+				// Hovered choice gets all red. You should do this at once, for all the text, instead
+				// of character-by-character like this
+				if (index == choice_box.hovered) {
+					int32 cr_offset = vx_buffer.size;
+					Array<Vector4> cr = arr_slice(&cr_buffer, cr_offset, 6);
+					arr_fill(&cr, colors::red);
+				}
+				
+				text_ctx_render(&context,  *c);
+				text_ctx_advance(&context, *c);
 			}
 
-			// Push vertices and texture coordinates to text buffers
-			Vector2* vx = arr_push(&vx_buffer, &glyph->mesh->verts[0], glyph->mesh->count);
-			Vector2* tc = arr_push(&tc_buffer, &glyph->mesh->tex_coords[0], glyph->mesh->count);
-
-			Vector2 gl_origin = { -1, 1 };
-			Vector2 offset = {
-				context.point.x - gl_origin.x,
-				context.point.y - gl_origin.y,
-			};
-			for (int32 i = 0; i < glyph->mesh->count; i++) {
-				vx[i].x += offset.x;
-				vx[i].y += offset.y;
-			}
-
-			choice_ctx_advance(&context, glyph);
+			text_ctx_nextline(&context);
 		}
-
-		choice_ctx_nextline(&context);
 	}
 }
 
@@ -145,10 +141,34 @@ void render_mtb(float32 dt) {
 	if (!text_buffer.size) return;
 	
 	TextRenderContext context;
+	context.position = main_box.pos;
+	context.dimension = main_box.dim;
+	context.padding = main_box.pad;
+	context.infos = &text_buffer;
+	
 	text_ctx_init(&context, font_infos[0]);
+	context.chunks_to_render = 0; // MTB calculates this itself
 
+	// Which texts are visible?
+	int32 acc = 0;
+	int32 skipped = 0;
+	arr_for(text_buffer, info) { info->visible = false; }
+	arr_rfor(text_buffer, info) {
+		if (acc >= context.max_lines) break;
+		if (skipped++ < main_box.line_scroll) continue;
+		info->visible = true;
+		acc += info->count_lb - 1;
+		context.next_chunk_index = arr_indexof(&text_buffer, info);
+		context.chunks_to_render++;
+	}
+
+	text_ctx_start_at_bottom(&context);
+	move_point_up(&context.point, context.font->max_advance.y * (acc - 1)); // Account for the lines of each chunk
+	move_point_up(&context.point, context.font->max_advance.y * (context.chunks_to_render - 1)); // Account for line breaks between chunks
+	
 	while (!text_ctx_done(&context)) {
 		auto info = text_ctx_chunk(&context);
+		
 		EffectRenderData render_data;
 
 		// Render the speaker
@@ -184,7 +204,6 @@ void render_mtb(float32 dt) {
 
 			text_ctx_nextline(&context);
 		}
-
 			
 		// Get the pointers to the memory blocks we just wrote for this text's GPU data, and pass
 		// those to the text's effects to modify

@@ -168,7 +168,7 @@ Array<T> arr_slice(T* data, int32 size) {
 	arr.capacity = size;
 	arr.data = data;
 	
-	return arr;
+	return arr; 
 }
 
 template<typename T>
@@ -177,6 +177,11 @@ int32 arr_indexof(Array<T>* array, T* element) {
 	fm_assert(index >= 0);
 	fm_assert(index < array->size);
 	return index;
+}
+
+template<typename T>
+T* arr_at(Array<T>* array, int32 index) {
+	return (*array)[index];
 }
 
 template<typename T>

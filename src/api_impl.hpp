@@ -76,7 +76,7 @@ void API::screen(const char* dimension) {
 
 void API::submit_choice(sol::table request) {
 	ChoiceBox* cbx = &choice_box;
-	ChoiceInfo* choice = arr_push(&choice_buffer);
+	TextRenderInfo* choice = arr_push(&choice_buffer);
 	
 	std::string text_copy = request["text"];
 	fm_assert(text_copy.size() < MAX_CHOICE_LEN);
@@ -85,7 +85,7 @@ void API::submit_choice(sol::table request) {
 	// Figure out line breaks
 	auto text = arr_view(choice->text);
 	Array<int32> line_breaks;
-	arr_stack(&line_breaks, choice->line_breaks);
+	arr_stack(&line_breaks, choice->lbreaks);
 	
 	LineBreakContext context;
 	context.position  = choice_box.pos;
@@ -97,7 +97,7 @@ void API::submit_choice(sol::table request) {
 	lbctx_advance(&context, text);
 	lbctx_finish(&context);
 	
-	choice->count_line_breaks = line_breaks.size;
+	choice->count_lb = line_breaks.size;
 }
 
 void API::set_hovered_choice(int32 index) {
@@ -106,7 +106,7 @@ void API::set_hovered_choice(int32 index) {
 }
 
 void API::clear_choices() {
-	cbx_clear(&choice_box);
+	arr_clear(&choice_buffer);
 }
 
 void API::submit_text(sol::table request) {
@@ -148,7 +148,7 @@ void API::submit_text(sol::table request) {
 
 	lbctx_init(&context);
 	lbctx_advance(&context, speaker);
-	lbctx_advance_no_break(&context, ": ", 2);
+	context.point += options::mtb_speaker_pad;
 	lbctx_advance(&context, text);
 	lbctx_finish(&context);
 	
