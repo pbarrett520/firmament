@@ -6,13 +6,8 @@ return {
 	set_me = false,
 	sup = true
   },
-  imgui_test = {
-	bool = true,
-	str = 'string',
-	float = 2.0,
-	[2] = {
-	  'stuff',
-	  'stuff2'
-	}
+  intro = {
+	has_seen_body = false,
+	tried_to_get_up = false,
   }
 }

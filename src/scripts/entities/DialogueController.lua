@@ -164,7 +164,6 @@ function DialogueController:enter()
 	  character = tdengine.characters[self.current.who],
 	  effects = self.current.effects or nil
 	}
-	print(inspect(request))
 	tdengine.submit_text(request)
 	return
   end

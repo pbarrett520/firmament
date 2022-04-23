@@ -74,7 +74,6 @@ function MainMenu:update(dt)
 	if imgui.IsFileSelected() then
 	  local dialogue_editor = tdengine.find_entity('DialogueEditor')
 	  dialogue_editor:load(imgui.GetSelectedFile())
-	  tdengine.layout('ded')
 	  self.state = state.idle
 	end
   end
@@ -146,8 +145,6 @@ function MainMenu:show_modals(dt)
 	imgui.InputText2(self.ids.new_dialogue)
 
 	if imgui.Button('Save') then
-	  tdengine.layout('ded')
-	  
 	  local dialogue_editor = tdengine.find_entity('DialogueEditor')
 	  local name = imgui.InputTextGet(self.ids.new_dialogue)
 	  dialogue_editor:new(name)

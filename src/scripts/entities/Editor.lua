@@ -65,7 +65,7 @@ function Editor:init(params)
 end
 
 function Editor:update(dt)
-  submit_dbg_tbox()
+  --submit_dbg_tbox()
   
   --tdengine.do_once(function() submit_dbg_text() end)
   

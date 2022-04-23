@@ -42,44 +42,33 @@ RULE #8: embrace the rectangle
   - [X] print effect type or a name if one is given instead of table index
   - [X] bind effect types between c and lua
   - [X] master list of effect types also
-** small
-- [ ] machine-specific layout files, ignored by git, checked before
-  the layouts that are checked in
-- [ ] display made choices
-- [ ] better text wrapping
-- [ ] multiselect nodes in dialogue editor
-- [ ] fix editor layout flashings
-** big
-- [ ] non-developer friendly GUI
-  - load / save / run dialogues
-  - add fields to state
-  - make lack of entry point very clear
+- [X] (4/22) non-developer friendly GUI
+  - [X] load / save / run dialogues
+- [X] (4/21) fix editor layout flashings
 - [X] proper text editor with word wrapping for nodes
   - [X] bind between editor contents and nodes that matter (both ways)
-  - [X] arrow key movement
-  - paste
-  - highlight, delete highlighted
-  - ctrl + backspace
+  - [X] arrow key movement** small
+** big
 - [ ] update text effect range as string is edited
-  
 - [ ] icon heads to see who is talking
-
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
-
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
 ** dogfood
-- [ ] animate patrick's first dialogue
-  - electric caul
-  - warmth and wet, delay between this, melt the characters
-  - flickering light
-  - snaking
-  - fade in blackness
+- [ ] text wrap choices
+- [ ] 'if' node -- like a branch node, but doesn't have two branches,
+  just gates a node (maybe just a choice) behind a condition
+- [ ] add fields to state
+- [ ] make lack of entry point very clear
 - [ ] need to specify effect ranges from editor, not typing in indices
 - [ ] delete effects
 - [ ] delete fields from effects
+- [ ] multiselect nodes in dialogue editor
+- [ ] word-based text wrapping
+- [ ] display made choices
+- [ ] copy/paste on text editor
 ** pie
 a really juiced up effects editor. like, one that will live show you what the
 effect is as you're doing it. would probably need to render the text to a
