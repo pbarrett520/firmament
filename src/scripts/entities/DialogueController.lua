@@ -12,13 +12,16 @@ local glfw = require('glfw')
 -- DialogueController:
 -- [ ] Make sure the node has an entry in advance(), enter(), and process() if needed
 -- [ ] Add node to legal_choice_parents if needed
--- [ ] Handle node kind in evaluate_branch if needed
--- [ ] Handle node kind in is_conditional if needed
+-- [ ] Handle conditional nodes
+--   [ ] Handle node kind in collect_choices
+--   [ ] Handle node kind in evaluate_branch
+--   [ ] Handle node kind in is_conditional
 tdengine.node_kinds = {
   'Text',
   'Choice',
   'Set',
   'Branch',
+  'If',
   'Switch',
   'ChoiceRepeat',
   'Return',
@@ -135,7 +138,7 @@ function DialogueController:advance()
 	self.current = evaluate_branch(self.current, self.data)
 	return
   end
-
+	
   if self.current.kind == 'Return' then
 	local rid = self.current.return_to
 	for id, node in pairs(self.data) do
@@ -149,6 +152,13 @@ function DialogueController:advance()
 	end
 	tdengine.log('no valid node found for return node, node = %s', inspect(self.current))
   end
+
+  if self.current.kind == 'If' then
+	tdengine.log('invalid node: if nodes can only be used to add choices conditionally, node = %s', self.current.branch_on)
+	self.state = state.err
+	return
+  end
+
 end
 
 
@@ -158,7 +168,6 @@ end
 function DialogueController:enter()
   if self.current.kind == 'Text' then
 	self.state = state.processing
-	
 	local request = {
 	  text = self.current.text,
 	  character = tdengine.characters[self.current.who],
@@ -251,7 +260,7 @@ function DialogueController:find_entry_node()
 end
 
 function is_conditional(node)
-  return node and node.kind == 'Branch'
+  return node and (node.kind == 'Branch' or node.kind == 'If')
 end
 
 function evaluate_branch(node, all_nodes)
@@ -259,7 +268,7 @@ function evaluate_branch(node, all_nodes)
   if not is_conditional(node) then return node end
 
   -- Traverse the conditional, depending on what kind it is
-  if node.kind == 'Branch' then
+  if node.kind == 'Branch' or node.kind == 'If' then
 	local value = index_string(tdengine.state, node.branch_on)
 
 	-- Alert by logging + being clever with the nodes that your variable is wrong
@@ -320,7 +329,7 @@ function collect_choices(node, all_nodes)
 	if child.kind == 'Choice' then
 	  -- Easy case: It's just a choice node. We don't have to check anything
 	  table.insert(choices, child)
-	elseif child.kind == 'Branch' then
+	elseif is_conditional(child) then
 	  -- More difficult: There is a conditional that may or may not hide a choice node. Evaluate
 	  -- the conditional, and if it returns non-nil we need to keep traversing this path.
 	  local evaluated = evaluate_branch(child, all_nodes)

@@ -65,6 +65,7 @@ void text_ctx_start_at_bottom(TextRenderContext* ctx) {
 
 void text_ctx_start_at_top(TextRenderContext* ctx) {
 	move_point_down(&ctx->point, ctx->padding.y);
+	move_point_down(&ctx->point, ctx->padding.y); // @bug
 }
 
 bool text_ctx_done(TextRenderContext* ctx) {

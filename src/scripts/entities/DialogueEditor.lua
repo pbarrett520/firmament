@@ -200,11 +200,7 @@ function DialogueEditor:update(dt)
 
 	-- Add any custom GUI items for each node kind
 	imgui.BeginGroup()
-	if node.kind == 'Text' then
-	  imgui.Text(node.who)
-	else
-	  imgui.Text(node.kind)
-	end
+	imgui.Text(node.kind)
 	imgui.Text(self:short_text(node))
 	imgui.EndGroup()
 
@@ -512,7 +508,9 @@ function DialogueEditor:make_dialogue_node(kind)
   elseif kind == 'Empty' then
 	node.internal_name = 'Empty'
   elseif kind == 'Branch' then
-	node.branch_on = 'buns'
+	node.branch_on = 'put a variable to check'
+  elseif kind == 'If' then
+	node.branch_on = 'put a variable to check'
   elseif kind == 'Switch' then
 	node.next_dialogue = 'empty_switch'
   elseif kind == 'ChoiceRepeat' then
@@ -526,7 +524,7 @@ function DialogueEditor:make_dialogue_node(kind)
 end
 
 function DialogueEditor:run() 
-  tdengine.layout('default')
+  tdengine.layout('ded-half')
   local controller = tdengine.find_entity('DialogueController')
   if controller then
 	tdengine.destroy_entity(controller.id)
@@ -628,11 +626,13 @@ function DialogueEditor:short_text(node)
 	  return string.sub(node.text, 0, max_size - 3) .. '...'
 	end
   elseif node.kind == 'Set' then
-	 return node.variable .. ' = ' .. tostring(node.value)
+	 return node.variable
   elseif node.kind == 'Empty' then
 	 return node.internal_name
   elseif node.kind == 'Branch' then
 	 return node.branch_on
+  elseif node.kind == 'If' then
+	return node.branch_on
   elseif node.kind == 'Switch' then
 	 return node.next_dialogue
   elseif node.kind == 'ChoiceRepeat' then
@@ -685,6 +685,10 @@ function DialogueEditor:select(id, node)
   end
   
   if node.kind == 'Branch' then
+	imgui.InputTextSetContents(self.branch_on_id, node.branch_on)
+  end
+
+  if node.kind == 'If' then
 	imgui.InputTextSetContents(self.branch_on_id, node.branch_on)
   end
 

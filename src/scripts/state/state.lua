@@ -9,5 +9,7 @@ return {
   intro = {
 	has_seen_body = false,
 	tried_to_get_up = false,
+	heard_language = false,
+	fog_is_real = true,
   }
 }
