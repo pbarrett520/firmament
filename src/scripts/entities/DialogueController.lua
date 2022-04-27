@@ -226,6 +226,10 @@ function DialogueController:process()
 
 	if self.input:was_pressed(glfw.keys.SPACE) then
 	  self.state = state.advancing
+	  tdengine.submit_text({
+		  text = self.current.choices[self.hovered].text,
+		  character = tdengine.characters.choice_select
+	  })
 	end
 
 	return

@@ -13,6 +13,10 @@ function TextEditor:init(params)
 
   self.repeat_delay = .3
   self.repeat_time = {}
+
+  self.highlighting = false
+  self.highlight_begin = 0
+  self.highlight_end = 0
 	
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.ImGui)
@@ -21,7 +25,7 @@ end
 function TextEditor:update(dt)
   self.advance = tdengine.vec2(imgui.CalcTextSize('#'), imgui.GetTextLineHeightWithSpacing())
   self.frame = self.frame + 1
-  
+
   imgui.Begin('Text Editor', true)
   if not self.text then imgui.End(); return end
   
@@ -42,6 +46,7 @@ function TextEditor:update(dt)
 	  self.point = self:mouse_to_point()
 	end
   end
+
 
   -- Calculate line breaks
   self.line_breaks = { 1 }
@@ -88,7 +93,7 @@ function TextEditor:update_blink()
   end
 
   if self.blink then
-	local tl = self:point_to_screen()
+	local tl = self:point_to_screen(self.point)
 	local dim = tdengine.vec2(self.advance.x, self.advance.y)
 	local color = imgui.ColorConvertFloat4ToU32(0, 1, 0, 1)
 	imgui.AddRectFilled(tl.x, tl.y, tl.x + dim.x, tl.y + dim.y, color)
@@ -170,10 +175,10 @@ function TextEditor:prev_character()
   self.point = math.max(self.point - 1, 1)
 end
 
-function TextEditor:point_to_screen()
+function TextEditor:point_to_screen(point)
   local screen = tdengine.vec2(imgui.GetCursorScreenPos())
   
-  if self.point == #self.text + 1 then
+  if point == #self.text + 1 then
 	local count_lines = #self.line_breaks - 2
 	screen.y = screen.y + (self.advance.y * count_lines)
 	local last_line_text_size = self:line_text_size(#self.line_breaks - 1)
@@ -181,7 +186,7 @@ function TextEditor:point_to_screen()
 	return screen
   end
   
-  local total = self.point
+  local total = point
   for i = 1, #self.line_breaks - 1 do
 	local line_size = self.line_breaks[i + 1] - self.line_breaks[i]
 	if total > line_size then -- 
@@ -257,4 +262,13 @@ end
 
 function TextEditor:line_size(i)
   return self.line_breaks[i + 1] - self.line_breaks[i]
+end
+
+function TextEditor:containing_line(i)
+  for j = 1, #self.line_breaks do
+	local line_begin = self.line_breaks[j]
+	local line_end = self.line_breaks[j + 1] - 1
+	--print(i, line_begin, line_end)
+	if i >= line_begin and i <= line_end then return j end
+  end
 end

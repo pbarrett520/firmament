@@ -53,7 +53,7 @@ imgui.extensions.TableEditor = function(editing, params)
 	selected_type = 'string',
 	editing = editing,
 	children = {},
-	imgui_ignore = {},
+	imgui_ignore = params.imgui_ignore or {},
 	array_replace_name = params.array_replace_name or nil,
 	draw_field_add = params.draw_field_add or false,
 	child_field_add = params.child_field_add or false,
@@ -161,7 +161,6 @@ imgui.internal.draw_table_editor = function(editor)
 	if type(key) == 'number' and editor.array_replace_name then
 	  display_key = editor.array_replace_name(key, value)
 	end
-
 	-- This is a two-way binding. If ImGui says that the input box was edited, we take the value from C and put it into Lua.
 	-- Otherwise, we take the value from Lua and put it into C, in case any value changes in the interpreter. This is slow -- it
 	-- means we copy every string in all tables we're editing into C every frame. I can't think of a better way to do it, because

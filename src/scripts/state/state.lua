@@ -11,5 +11,7 @@ return {
 	tried_to_get_up = false,
 	heard_language = false,
 	fog_is_real = true,
+	woke_prism = false,
+	heard_manual = false,
   }
 }
