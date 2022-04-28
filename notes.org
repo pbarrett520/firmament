@@ -51,6 +51,9 @@ RULE #8: embrace the rectangle
 - [X] text wrap choices
 - [X] 'if' node -- like a branch node, but doesn't have two branches,
   just gates a node (maybe just a choice) behind a condition
+- [X] 4/28 allow non-programmers to add fields to state
+- [X] file -> export state, file -> load state
+
 ** big
 - [ ] update text effect range as string is edited
 - [ ] icon heads to see who is talking
@@ -60,9 +63,7 @@ RULE #8: embrace the rectangle
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
 ** dogfood
-- [ ] allow non-programmers to add fields to state
 - [ ] show in the GUI if a state is not found
-- [ ] file -> export state, file -> load state
 - [ ] make lack of entry point very clear
 - [ ] need to specify effect ranges from editor, not typing in indices
 - [ ] delete effects

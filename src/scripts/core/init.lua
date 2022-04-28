@@ -15,15 +15,19 @@ function tdengine.load_editor()
   tdengine.create_entity('Editor')
 end
 
-function tdengine.load_default_state()
-  -- @firmament: define these paths in lua, load them into C++
-  -- you'd have a hardcoded path for "state directory", a function to
-  -- append a filename to a path, and then you just load the path
-  -- like in confer paths -- hardcode/detect base path and build from there
-  local state = tdengine.fetch_module_data('state/state')
-  if not state then tdengine.log('@load_default_state_failure'); return end
+function tdengine.save_state(name)
+  local path = tdengine.paths.state(name)
+  print(path)
+  tdengine.write_file_to_return_table(path, tdengine.state)
+end
 
-  tdengine.state = state
+function tdengine.load_state_by_file(file)
+  local data = loadfile(file)
+  tdengine.state = data()
+end
+
+function tdengine.load_default_state()
+  tdengine.state = tdengine.load_state_by_file(tdengine.paths.state('default'))
 end
 
 function tdengine.load_dialogue(name_or_path)

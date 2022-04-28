@@ -1,6 +1,6 @@
 local OptionUpdater = tdengine.entity('OptionUpdater')
 function OptionUpdater:init(params)
-  self.default_options = {
+  self.options = {
 	scroll_speed    = 0.05,
   	scroll_lerp     = 0.50,
 	smooth_scroll   = false,
@@ -8,10 +8,11 @@ function OptionUpdater:init(params)
 	game_fontsize   = 32,
 	editor_fontsize = 16,
 	show_imgui_demo = false,
+	show_text_box   = true
   }
 
-  self.last_frame = table.shallow_copy(self.default_options)
-  self.this_frame = table.shallow_copy(self.default_options)
+  self.last_frame = table.shallow_copy(self.options)
+  self.this_frame = table.shallow_copy(self.options)
 
   self.editor = imgui.extensions.TableEditor(self.this_frame)
 end

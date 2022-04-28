@@ -65,7 +65,8 @@ function Editor:init(params)
 end
 
 function Editor:update(dt)
-  submit_dbg_tbox()
+  local option_updater = tdengine.find_entity('OptionUpdater')
+  if option_updater.this_frame.show_text_box then submit_dbg_tbox() end
   
   --tdengine.do_once(function() submit_dbg_text() end)
   
@@ -192,7 +193,6 @@ function Editor:state_viewer()
   -- If the underlying table changes, we're holding a stale reference
   if self.state_editor.editing ~= tdengine.state then
 	self.state_editor = imgui.extensions.TableEditor(tdengine.state)
-	print('reload state editor')
   end
   self.state_editor:draw()
   imgui.End('state')

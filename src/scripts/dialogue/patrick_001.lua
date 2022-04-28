@@ -110,7 +110,7 @@ return {
       "497781df-e718-4f90-b7a4-15f0d6e5fe12"
     },
     effects = {},
-    is_entry_point = false,
+    is_entry_point = true,
     kind = "Text",
     text = "You awaken in the warm embrace of an electric caul. There is not light, only warmth and wet. You feel the snarls of not-flesh which snake around your body. They lift you up and up through a never-ending blackness. ",
     uuid = "11aa766b-7d9f-4fc5-8072-252ea87ce57b",
@@ -468,7 +468,7 @@ return {
         type = 1
       }
     },
-    is_entry_point = true,
+    is_entry_point = false,
     kind = "Text",
     text = "...he...llo...? ....me kn....when yo....an hear me...",
     uuid = "cd49fa8e-a491-4eba-aef9-a6b88a33cb33",
