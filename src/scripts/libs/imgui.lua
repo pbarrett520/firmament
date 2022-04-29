@@ -57,6 +57,7 @@ imgui.extensions.TableEditor = function(editing, params)
 	array_replace_name = params.array_replace_name or nil,
 	draw_field_add = params.draw_field_add or false,
 	child_field_add = params.child_field_add or false,
+	context_menu_item = nil,
 	draw = function(self) imgui.internal.draw_table_editor(self) end,
 	clear = function(self) imgui.internal.clear_table_editor(self) end
   }
@@ -132,6 +133,8 @@ imgui.internal.draw_table_field_add = function(editor)
 	imgui.SetKeyboardFocusHere(-1)
   end
   imgui.PopItemWidth()
+
+  return enter_on_key or enter_on_value
 end
 
 imgui.internal.draw_table_editor = function(editor)
@@ -152,7 +155,9 @@ imgui.internal.draw_table_editor = function(editor)
   local cursor = imgui.GetCursorPosX()
   local min_padding = 80
   local padding = math.max(cursor + padding_target * 10, min_padding)
-  
+
+  local open_item_context_menu = false
+
   for key, value in pairs(editor.editing) do
 	local display = not editor.imgui_ignore[key]
 	local label = string.format('##%s', hash_table_entry(editor.editing, tostring(key)))
@@ -161,6 +166,7 @@ imgui.internal.draw_table_editor = function(editor)
 	if type(key) == 'number' and editor.array_replace_name then
 	  display_key = editor.array_replace_name(key, value)
 	end
+	
 	-- This is a two-way binding. If ImGui says that the input box was edited, we take the value from C and put it into Lua.
 	-- Otherwise, we take the value from Lua and put it into C, in case any value changes in the interpreter. This is slow -- it
 	-- means we copy every string in all tables we're editing into C every frame. I can't think of a better way to do it, because
@@ -169,6 +175,7 @@ imgui.internal.draw_table_editor = function(editor)
 	if display then 
 	  if type(value) == 'string' then
 		imgui.extensions.VariableName(display_key)
+		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -181,6 +188,7 @@ imgui.internal.draw_table_editor = function(editor)
 		imgui.PopItemWidth()
 	  elseif type(value) == 'number' then
 		imgui.extensions.VariableName(display_key)
+		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -192,6 +200,7 @@ imgui.internal.draw_table_editor = function(editor)
 		imgui.PopItemWidth()
 	  elseif type(value) == 'boolean' then
 		imgui.extensions.VariableName(display_key)
+		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
 		imgui.SetCursorPosX(padding)
 		imgui.PushItemWidth(-1)
@@ -208,14 +217,60 @@ imgui.internal.draw_table_editor = function(editor)
 		end
 		local child = editor.children[key]
 
+		-- Modals! If the table's tree node is clicked, we want to draw it. If it's right clicked,
+		-- we want to open a popup where you can add new fields.
+		local open_context_menu = false
 		local unique_treenode_id = display_key .. label
 		if imgui.TreeNode(unique_treenode_id) then
+		  if imgui.IsItemClicked(1) then open_context_menu = true end
 		  child:draw()
 		  imgui.TreePop()
+		end
+		if imgui.IsItemClicked(1) then open_context_menu = true end
+
+		-- Show the context menu
+		local open_field_editor = false
+		local context_menu_id = label .. ':context_menu'
+		if open_context_menu then
+		  imgui.OpenPopup(context_menu_id)
+		end
+		if imgui.BeginPopup(context_menu_id) then
+		  if imgui.MenuItem('Add field') then
+			open_field_editor = true
+		  end
+		  imgui.EndPopup()
+		end
+
+		-- Show the aforementioned field editor modal
+		local field_editor_id = label .. ':field_editor'
+		if open_field_editor then
+		  imgui.OpenPopup(field_editor_id)
+		end
+		if imgui.BeginPopup(field_editor_id) then
+		  if imgui.internal.draw_table_field_add(child) then
+			imgui.CloseCurrentPopup()
+		  end
+		  imgui.EndPopup()
 		end
 	  end
 	end
   end
+
+  -- If any variable was right clicked, we show a little context menu where you can delete it
+  local item_context_menu_id = '##' .. hash_table_entry(editor.editing, editor.context_menu_item)
+  if open_item_context_menu then
+	imgui.OpenPopup(item_context_menu_id)
+  end
+  if imgui.BeginPopup(item_context_menu_id) then
+	print(editor.editing, item_context_menu_id)
+	if imgui.Button('Delete') then
+	  editor.editing[editor.context_menu_item] = nil
+	  editor.context_menu_item = nil
+	  imgui.CloseCurrentPopup()
+	end
+	imgui.EndPopup()
+  end
+
 end
 
 imgui.internal.propagate_table_editor_params = function(editor)
@@ -256,6 +311,14 @@ imgui.extensions.VariableName = function(name)
    imgui.PushStyleColor(imgui.constant.Col.Text, color)
    imgui.Text(tostring(name))
    imgui.PopStyleColor()
+   if imgui.IsItemHovered() then
+	 sx, sy = imgui.GetItemRectSize();
+	 x, y = imgui.GetItemRectMin();
+	 px, py = 5, 3
+	 local color = imgui.ColorConvertFloat4ToU32(0, 1, 0, .3)
+	 imgui.AddRectFilled(x - px, y - py, x + sx + px, y + sy + py, color)
+   end
+
 end
 
 imgui.extensions.RightAlignedString = function(str)

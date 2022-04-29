@@ -15,7 +15,7 @@ return {
     effects = {},
     is_entry_point = true,
     kind = "Text",
-    text = "Nested branches.",
+    text = "Nested branches, but also Patrick rulez.",
     uuid = "3fd4b04b-2fc5-433e-bf0d-469c07d4d371",
     who = "Nested Branch in Choice"
   },
