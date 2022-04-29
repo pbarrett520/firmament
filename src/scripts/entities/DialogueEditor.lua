@@ -1,6 +1,22 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
 
+local default_effects = {
+  [tdengine.effects.oscillate] = {
+	type = tdengine.effects.oscillate,
+	amplitude = .1,
+	frequency = 20,
+	first = 0,
+	last = 0
+  },
+  [tdengine.effects.rainbow] = {
+	type = tdengine.effects.rainbow,
+	frequency = 20,
+	first = 0,
+	last = 0
+  }
+}
+
 local DialogueEditor = tdengine.entity('DialogueEditor')
 function DialogueEditor:init(params)  
   self.nodes = {}
@@ -28,6 +44,9 @@ function DialogueEditor:init(params)
   self.selected_effect = 1
 
   self.choosing_file = false
+  self.choosing_effect_begin = false
+  self.choosing_effect_end = false
+  self.last_editor_point = 0
   
   self.input = tdengine.create_class('Input')
   self.input:set_channel(tdengine.InputChannel.Editor)
@@ -70,13 +89,52 @@ function DialogueEditor:update(dt)
 
 	  imgui.SameLine()
 	  if imgui.Button('Add Effect') then
-		table.insert(selected.effects, { type = self.selected_effect })
+		table.insert(selected.effects, default_effects[self.selected_effect])
 	  end
 
-	  if imgui.TreeNode('effects') then
-		self.effect_editor:draw()
-		imgui.TreePop()
+	  for i, effect in pairs(selected.effects) do
+		local effect_name = tdengine.effect_names[effect.type]
+		local display_name = string.format('%s [%d, %d]', effect_name, effect.first, effect.last)
+		if imgui.MenuItem(display_name) then
+		  local params = {
+			imgui_ignore = { first = true, last = true }
+		  }
+		  self.effect_editor = imgui.extensions.TableEditor(effect, params)
+		end
 	  end
+
+	  local text_editor = tdengine.find_entity('TextEditor')
+	  
+	  imgui.Separator()
+
+	  -- Something to edit the selected effect, including buttons that let
+	  -- you click on the text editor to set the effect range
+	  imgui.Text('Edit Effect')
+	  if imgui.Button('Set begin') then
+		self.choosing_effect_begin = true
+		self.last_editor_point = text_editor.point
+	  end
+	  if self.choosing_effect_begin then
+		if self.last_editor_point ~= text_editor.point then
+		  self.effect_editor.editing.first = text_editor.point - 1
+		  self.choosing_effect_begin = false
+		end
+	  end
+
+	  imgui.SameLine()
+
+	  if imgui.Button('Set end') then
+		self.choosing_effect_end = true
+		self.last_editor_point = text_editor.point
+	  end
+	  if self.choosing_effect_end then
+		if self.last_editor_point ~= text_editor.point then
+		  self.effect_editor.editing.last = text_editor.point - 1
+		  self.choosing_effect_end = false
+		end
+	  end
+	  
+	  self.effect_editor:draw()
 	end
   end
 
@@ -200,7 +258,8 @@ function DialogueEditor:update(dt)
 
 	-- Add any custom GUI items for each node kind
 	imgui.BeginGroup()
-	imgui.Text(node.kind)
+	local display_name = ternary(node.who, node.who, node.kind)
+	imgui.Text(display_name)
 	imgui.Text(self:short_text(node))
 	imgui.EndGroup()
 
@@ -524,7 +583,7 @@ function DialogueEditor:make_dialogue_node(kind)
 end
 
 function DialogueEditor:run() 
-  tdengine.layout('ded-half')
+  tdengine.layout('ded-half-1080j')
   local controller = tdengine.find_entity('DialogueController')
   if controller then
 	tdengine.destroy_entity(controller.id)
@@ -543,7 +602,6 @@ end
 function DialogueEditor:load(name_or_path)
   local name = tdengine.extract_filename(name_or_path)
   name = tdengine.strip_extension(name)
-  local path = tdengine.paths.dialogue(name)
 
   if #name == 0 then return end
   self.loaded = name
@@ -679,7 +737,7 @@ function DialogueEditor:select(id, node)
 	  array_replace_name = function(key, value)
 		local effect_type = value.type
 		return tdengine.effect_names[effect_type]
-	  end
+	  end,
 	}
 	self.effect_editor = imgui.extensions.TableEditor(node.effects, params)
   end

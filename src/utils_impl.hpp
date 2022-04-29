@@ -5,6 +5,7 @@ void init_imgui() {
 	
 	auto& imgui = ImGui::GetIO();
 	imgui.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	imgui.ConfigWindowsMoveFromTitleBarOnly = true;
 	ImGui::StyleColorsDark();
 
 	auto imgui_font = imgui.Fonts->AddFontFromFileTTF(fm_ed_font_path, (float)options::editor_fontsize);
