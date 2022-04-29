@@ -402,10 +402,10 @@ function DialogueEditor:update(dt)
 	for id, node in pairs(self.nodes) do
 	  delete(node.children, self.deleting)
 	end
-	
-	self:select(ternary(self.selected == self.deleting, nil, self.selected))
-	self.connecting = ternary(self.connecting == self.deleting, nil, self.selected)
-	self.disconnecting = ternary(self.disconnecting == self.deleting, nil, self.selected)
+
+	if self.selected == self.deleting then self:select(nil) end
+	if self.connecting == self.deleting then self.connecting = nil end
+	if self.disconnecting == self.deleting then self.disconnecting = nil end
 
 	self.nodes[self.deleting] = nil
 	self.deleting = nil
@@ -543,7 +543,7 @@ end
 function DialogueEditor:load(name_or_path)
   local name = tdengine.extract_filename(name_or_path)
   name = tdengine.strip_extension(name)
-  print(name)
+  local path = tdengine.paths.dialogue(name)
 
   if #name == 0 then return end
   self.loaded = name

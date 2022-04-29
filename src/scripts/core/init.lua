@@ -17,7 +17,6 @@ end
 
 function tdengine.save_state(name)
   local path = tdengine.paths.state(name)
-  print(path)
   tdengine.write_file_to_return_table(path, tdengine.state)
 end
 
@@ -27,7 +26,7 @@ function tdengine.load_state_by_file(file)
 end
 
 function tdengine.load_default_state()
-  tdengine.state = tdengine.load_state_by_file(tdengine.paths.state('default'))
+  tdengine.load_state_by_file(tdengine.paths.state('default'))
 end
 
 function tdengine.load_dialogue(name_or_path)

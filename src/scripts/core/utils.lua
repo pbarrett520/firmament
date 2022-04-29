@@ -68,6 +68,27 @@ function tdengine.scandir(dir)
   return t
 end
 
+function tdengine.fmodtime(path)
+  local platform = tdengine.platform()
+  if platform == 'Windows' then
+	local filename = tdengine.extract_filename(path)
+	path = path:sub(1, #path - #filename - 1)
+	local platform_path = path:gsub('/', '\\')
+	--local command = string.format('dir /T:W "%s" | FINDSTR /c:"/"', platform_path)
+	local command = string.format('forfiles /P "%s" /M "%s" /C "cmd /c echo @fdate @ftime"', platform_path, filename)
+	local pipe = io.popen(command)
+	local output = pipe:read'*a'
+	pipe:close()
+
+	output = output:gsub('\n', '')
+	output = split(output, ' ')
+	print(inspect(output))
+
+  elseif platform == 'Unix' then
+	
+  end
+end
+
 function tdengine.write_file_to_return_table(filepath, t)
   local file = assert(io.open(filepath, 'w'))
   if file then

@@ -62,13 +62,19 @@ RULE #8: embrace the rectangle
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
+- [ ] switch to stb_textedit
+- [ ] design the menus of the game
+  - log of things of intrigue
+  - a log where you can type stuff, write down your own log of intrigue
+- [ ] implement a basic sound api
 ** dogfood
 - [ ] show in the GUI if a state is not found
+- [ ] multiselect nodes in dialogue editor
+- [ ] node copy and paste in the editor
 - [ ] make lack of entry point very clear
 - [ ] need to specify effect ranges from editor, not typing in indices
 - [ ] delete effects
 - [ ] delete fields from effects
-- [ ] multiselect nodes in dialogue editor
 - [ ] word-based text wrapping
 - [ ] display made choices
 - [ ] copy/paste on text editor
@@ -102,6 +108,62 @@ cultivated flesh with static genetics to be recombined into themselves
 
 this idea of what the universe is: static or dynamic. some groups, some engineer
 types, view 
+* scenes
+intro scene:
+you awaken, covered in a strange electricity. you struggle to escape the depths
+of your mind and return to consciousness. once you awaken, you find someone in
+the room with you. they are tall, lanky, they have two eyes made of glass,
+wearing spacer coveralls. they seem very preoccupied -- they're going around the room,
+scraping things into small containers bandoliered to their body. you try to
+move, or speak, but cannot.
+
+eventually, you get out a weak hello. the person perks up and looks in your
+direction. you have a very brief back and forth -- more back than forth,
+considering your inability to speak. they fumble with their copy of the manual,
+finding the right section, before giving a simple, pre-written speech to
+welcome bewildered cryopatients from their sleep:
+- you have awoken from a long cryogenic sleep
+- you may lack fine motor control, ability to speak, etc. but this will wear off
+- $PERSON will assist with this, there is much to do to integrate you into
+  society
+
+the person seems very absentminded and flighty. you suspect that he's not _with_
+you 100% of the time. they think of a small piece of information they need to
+compile, and then appear to check out completely -- slumped body, unfocused eye.
+
+you can take this chance to get up. you can put on your coveralls, you can steal
+a jar of what he's been collecting, you can put it in the coveralls, if you put
+the coveralls on, he discovers you.
+
+you can discuss what he's collecting, although this will flag a small
+suspicion.
+
+at this point, you're able to speak. now, you may ask him questions.
+- where are you?
+- who are you?
+- where did i come from?
+- where will i live?
+
+he says that you're going to temporarily stay with a prestigious engineering
+clan before you can be sorted into your final home. he mentions that they can
+kind of eat you alive -- very powerful pod, almost a monarchy of the engineers,
+he prefers to stay jacked in, but for your sake here's a contact in our group if
+you need to get out. 
+
+you ask him if you can seek him out and talk to him later -- he's preoccupied,
+back in his world, he pops back in having clearly not heard you. he asks if
+you're as ready to go, and you nod
+
+purpose of this scene:
+besides there needing to be a first scene, it needs to do a few things
+- player agency. do not monologue at them.
+- show the player the wealth of options they have. hint to them how we will
+  remember their choices.
+- have them understand where they are, who they are, why they are here -- the
+  official story
+- set up some tension for the next scene (meeting the engineers). set up some
+  short-term conflict that will be resolved immediately.
+
 * log
 ** patrick 3
 use some of these short stories as easter eggs.
