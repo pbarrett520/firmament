@@ -17,7 +17,6 @@ end
 
 function tdengine.save_state(name)
   local path = tdengine.paths.state(name)
-  print(path)
   tdengine.write_file_to_return_table(path, tdengine.state)
 end
 

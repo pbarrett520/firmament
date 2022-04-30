@@ -187,6 +187,7 @@ function MainMenu:show_modals(dt)
 	imgui.EndPopup()
   end
 
+  
   if self.open_save_state_modal then
 	imgui.OpenPopup('Save state')
   end
