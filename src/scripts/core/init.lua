@@ -27,7 +27,7 @@ function tdengine.load_state_by_file(file)
 end
 
 function tdengine.load_default_state()
-  tdengine.state = tdengine.load_state_by_file(tdengine.paths.state('default'))
+  tdengine.load_state_by_file(tdengine.paths.state('default'))
 end
 
 function tdengine.load_dialogue(name_or_path)

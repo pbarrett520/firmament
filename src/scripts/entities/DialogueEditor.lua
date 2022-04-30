@@ -68,7 +68,8 @@ function DialogueEditor:update(dt)
   if selected then
 	self.selected_editor:draw()
 
-	if selected.kind == 'Text' or selected.kind == 'Choice' then
+	-- Effect editor
+	if selected.kind == 'Text' then
 	  imgui.Dummy(0, 10)
 	  imgui.Separator()
 	  imgui.Dummy(0, 10)
@@ -102,7 +103,6 @@ function DialogueEditor:update(dt)
 		  self.effect_editor = imgui.extensions.TableEditor(effect, params)
 		end
 	  end
-
 	  local text_editor = tdengine.find_entity('TextEditor')
 	  
 	  imgui.Separator()

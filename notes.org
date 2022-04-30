@@ -91,6 +91,13 @@ headshot maker
 https://picrew.me/image_maker/94097
 
 majikoi and grisaia
+* devlog
+- hacking input* into lua
+- text effect implementation
+- how i set up paths for the game
+- my array implementation
+- class / entity system in lua
+- dialogue graphs
 * ideas
 one of the endings: you don't solve anything and everyone dies
 
