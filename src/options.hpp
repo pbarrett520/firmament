@@ -1,4 +1,4 @@
-#define _fm_gm_font "apple_kid"
+#define _fm_gm_font "inconsolata"
 const char* fm_gm_font = _fm_gm_font;
 
 #define _fm_ed_font "inconsolata"
@@ -17,7 +17,7 @@ namespace options {
 	float32 scroll_lerp       = 0.500f;
 	bool    smooth_scroll     = false;
 	float32 mtb_speaker_pad   = 0.010f;
-	int32   game_fontsize     = 32;
+	int32   game_fontsize     = 48;
 	int32   editor_fontsize   = 16;
 	bool    show_imgui_demo   = false;
 };

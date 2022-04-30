@@ -55,29 +55,37 @@ RULE #8: embrace the rectangle
 - [X] file -> export state, file -> load state
 
 ** big
-- [ ] update text effect range as string is edited
 - [ ] icon heads to see who is talking
 - [ ] write the fade in effect
 - [ ] fast forward the fade in effect
 - [ ] modify node _properties_ based on state
   - for example, prism's name. you don't want to duplicate every node as "one
     where you know prism's name" and "one where you don't"
-- [ ] switch to stb_textedit
 - [ ] design the menus of the game
   - log of things of intrigue
   - a log where you can type stuff, write down your own log of intrigue
 - [ ] implement a basic sound api
 ** dogfood
-- [ ] show in the GUI if a state is not found
+- [ ] better state editor: have an alphabetized dropdown of all
+  state. show user a combo box.
+- [ ] negate if nodes
+- [ ] enhance branch nodes
+  - branch on multiple values
+  - branch on greater than, equal to, less than.
+  - [combo box for state] [combo box for operation] [input for value]
 - [ ] multiselect nodes in dialogue editor
-- [ ] node copy and paste in the editor
 - [ ] make lack of entry point very clear
-- [ ] need to specify effect ranges from editor, not typing in indices
-- [ ] delete effects
-- [ ] delete fields from effects
+- [ ] switch to stb_textedit
+- [ ] make nodes where you right click the context menu, not where
+  your mouse is when you select the node type from the dropdown
+- [ ] enhance effects editor
+  - [ ] need to specify effect ranges from editor, not typing in indices
+  - [ ] delete effects
+  - [ ] better UI -- begin/end is a little clunky, show what effect is
+    selected
+  - [ ] update range as string is edited
 - [ ] word-based text wrapping
-- [ ] display made choices
-- [ ] copy/paste on text editor
+
 ** pie
 a really juiced up effects editor. like, one that will live show you what the
 effect is as you're doing it. would probably need to render the text to a

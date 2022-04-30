@@ -1,7 +1,14 @@
 return {
+  ["0eb630b2-dd4b-4ad1-8116-8a20e01a8140"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "dome_exist",
+    uuid = "0eb630b2-dd4b-4ad1-8116-8a20e01a8140"
+  },
   ["0ef1934a-81bd-4323-8f8a-1b97dd968639"] = {
     children = {
-      "68f3f8b6-9069-4f2f-b268-2d9d771cc867"
+      "0eb630b2-dd4b-4ad1-8116-8a20e01a8140"
     },
     effects = {},
     is_entry_point = false,
@@ -19,6 +26,17 @@ return {
     kind = "Text",
     text = "To your great surprise, your corpus resembles that of the speaking creature. You see a large torso, with two legs sprouting from the bottom and two arms from the sides. Your skin is a neutral almond color. ",
     uuid = "1b5c3354-2067-4b4a-8474-2a7496f14641",
+    who = "narrator"
+  },
+  ["1e2c3426-0e0e-4c90-8505-baa3e863d2da"] = {
+    children = {
+      "eb2ea724-0009-46c9-a9b4-e394904bfd9f"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "For a moment, he becomes visibly less uncomfortable. His fidgeting stops, and he moves his hand in a smooth motion to the homemade looking monocle over his left eye. He unjacks a cord from it and peels it off, leaving what appears to be a normal eye.",
+    uuid = "1e2c3426-0e0e-4c90-8505-baa3e863d2da",
     who = "narrator"
   },
   ["2a8b3a7e-afb0-4fcc-aada-3d9b2926f57f"] = {
@@ -43,6 +61,17 @@ return {
     uuid = "2cc2940a-a0ba-4c01-a1ba-05de43f53e67",
     who = "prism"
   },
+  ["2eed2818-f845-42d5-9624-81af92c571a1"] = {
+    children = {
+      "65869954-d115-401e-9190-c46c7aee57d3",
+      "25e2bdfd-47a4-41a6-a1a7-715cc5db6016",
+      "4557f045-5189-4138-86d2-a6badbb42220"
+    },
+    internal_id = "clans",
+    is_entry_point = false,
+    kind = "ChoiceRepeat",
+    uuid = "2eed2818-f845-42d5-9624-81af92c571a1"
+  },
   ["3a6331e9-f36f-4856-997f-99f7e3b75402"] = {
     children = {
       "6d8d027b-c6b5-4ca2-a706-25a7402ca422"
@@ -64,6 +93,17 @@ return {
     text = "Sector 576 of what?",
     uuid = "3b5c2b9a-5a25-4a1f-afe2-77533c09fc1f",
     who = "pc"
+  },
+  ["4a4a6ca0-7eb4-474b-af01-fb69baef9ccb"] = {
+    children = {
+      "c757c350-7c14-4437-8716-d65c00d1dc8a"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism smiles glibly, as if he does not understand jokes but feels he has just made one.",
+    uuid = "4a4a6ca0-7eb4-474b-af01-fb69baef9ccb",
+    who = "narrator"
   },
   ["4cf0f09c-a008-4a51-94c7-d895ceb48c54"] = {
     children = {
@@ -115,7 +155,7 @@ return {
     kind = "Text",
     text = "Hrm, it looks like these questions are, um, pretty standard, actually. Sorry if I insinuated...",
     uuid = "6d8d027b-c6b5-4ca2-a706-25a7402ca422",
-    who = "unknown"
+    who = "prism"
   },
   ["6dcafaf4-8c27-40aa-8987-60cb28905382"] = {
     children = {
@@ -125,6 +165,17 @@ return {
     kind = "Choice",
     text = "Are you sure there is nothing outside the Dome?",
     uuid = "6dcafaf4-8c27-40aa-8987-60cb28905382"
+  },
+  ["7bf6ee23-38bf-41f5-953a-bb7a87aaaf93"] = {
+    children = {
+      "868e7eaf-84c5-4e36-9296-56974c9ea5ff"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Hm, that's a strange question. Everyone does, every day. I suppose, erm, what you mean to ask is what kinds of humans live in the Dome.",
+    uuid = "7bf6ee23-38bf-41f5-953a-bb7a87aaaf93",
+    who = "prism"
   },
   ["7c3c6d29-37c5-4780-8819-cbc1aaed5bc8"] = {
     children = {},
@@ -156,7 +207,9 @@ return {
     who = "narrator"
   },
   ["8a27b3ee-d260-4737-8c67-32a1e19fd1ad"] = {
-    children = {},
+    children = {
+      "941e6897-d22b-4fdb-adfb-1cc2fe8189f8"
+    },
     is_entry_point = false,
     kind = "Choice",
     text = "Where did I come from?",
@@ -183,6 +236,13 @@ return {
     kind = "ChoiceRepeat",
     uuid = "9c6cb972-34bf-49bb-912f-b2ea307cb922"
   },
+  ["9ca30b2d-0396-491e-aa84-28d4ad32deee"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "clans",
+    uuid = "9ca30b2d-0396-491e-aa84-28d4ad32deee"
+  },
   ["9f24fc24-e91a-4a6a-a63f-d60e9dfc3fa1"] = {
     children = {
       "087be027-685e-4bef-9d8f-1c406095a85d"
@@ -199,7 +259,7 @@ return {
       "497781df-e718-4f90-b7a4-15f0d6e5fe12"
     },
     effects = {},
-    is_entry_point = true,
+    is_entry_point = false,
     kind = "Text",
     text = "You awaken in the warm embrace of an electric caul. There is not light, only warmth and wet. You feel the snarls of not-flesh which snake around your body. They lift you up and up through a never-ending blackness. ",
     uuid = "11aa766b-7d9f-4fc5-8072-252ea87ce57b",
@@ -227,6 +287,15 @@ return {
     uuid = "21c7cb08-9d61-4541-9ca1-52e43ff0b5b9",
     who = "prism"
   },
+  ["25e2bdfd-47a4-41a6-a1a7-715cc5db6016"] = {
+    children = {
+      "e0552be5-72f0-46ba-a253-6033405620e8"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "What does it mean to communicate with the Dome?",
+    uuid = "25e2bdfd-47a4-41a6-a1a7-715cc5db6016"
+  },
   ["27c176ea-aac2-426a-8b49-29f1df0c78da"] = {
     children = {
       "bfe4805a-dea6-4e7b-a727-dc920272dd24"
@@ -238,16 +307,46 @@ return {
     uuid = "27c176ea-aac2-426a-8b49-29f1df0c78da",
     who = "narrator"
   },
+  ["28a8a436-01d9-4923-be3c-a0517d1085ad"] = {
+    children = {
+      "923a24e0-75c1-4fe1-8e90-583b8782bb15"
+    },
+    effects = {
+      {
+        amplitude = 0.004999999888241291,
+        first = 0,
+        frequency = 20,
+        last = 0,
+        type = 1
+      }
+    },
+    is_entry_point = false,
+    kind = "Text",
+    text = "Sure, we've got plenty of time.",
+    uuid = "28a8a436-01d9-4923-be3c-a0517d1085ad",
+    who = "prism"
+  },
   ["33e80fd8-9c79-4389-bfb3-4162a623518a"] = {
     children = {
       "fa76d5e5-5f4a-4e84-ac4d-df52bfaad15d"
     },
     effects = {},
-    is_entry_point = false,
+    is_entry_point = true,
     kind = "Text",
     text = "Of-of course. I never thought I would explain something as, as simple as the Dome. It's strange that you, erm, can speak and yet, don't understand the existence of a, mmh, physical realm.",
     uuid = "33e80fd8-9c79-4389-bfb3-4162a623518a",
     who = "prism"
+  },
+  ["38d9bce5-17c3-4b23-980e-68a9bf97973f"] = {
+    children = {
+      "63af3b3f-9488-4dc1-bb74-be69fc6de3fa"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "He gestures towards your naked body, dripping with fetal goo, wrinkled nearly beyond recognition as a human.",
+    uuid = "38d9bce5-17c3-4b23-980e-68a9bf97973f",
+    who = "narrator"
   },
   ["042d3077-14b3-4fcc-b4c6-b329b4123402"] = {
     children = {
@@ -259,6 +358,16 @@ return {
     text = "The creature towers over you. It is clearly a creature borne of natural processes. Biradial symmetry, but with enough variation to know that it is not manufactured. The noise it makes sounds as if it is coming from far away. It is tinny and robotic. ",
     uuid = "042d3077-14b3-4fcc-b4c6-b329b4123402",
     who = "narrator"
+  },
+  ["51f4cff7-50ac-4a50-aced-e5d381e03497"] = {
+    children = {
+      "858e9969-7a32-4a0c-8914-a43a5f80bb41"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "51f4cff7-50ac-4a50-aced-e5d381e03497",
+    value = true,
+    variable = "intro.held_monocle"
   },
   ["53b57d45-2b90-47be-a409-38f1d15a15a9"] = {
     children = {
@@ -289,28 +398,36 @@ return {
     text = "The fog is clouding your mind. There is a malevolence to it. It is taking you from the world of the real to the world of the unreal. You must escape this place.",
     uuid = "59db251a-2621-49e7-9895-e407d8f5156e"
   },
-  ["68f3f8b6-9069-4f2f-b268-2d9d771cc867"] = {
-    children = {},
+  ["62c4e2bd-9919-4336-8601-30824ccba31f"] = {
+    children = {
+      "f2e7e652-51c5-4b54-ad48-33c665ee2e8b"
+    },
     is_entry_point = false,
-    kind = "Return",
-    return_to = "dome_exist",
-    uuid = "68f3f8b6-9069-4f2f-b268-2d9d771cc867"
+    kind = "Choice",
+    text = "This is a lot to take in...",
+    uuid = "62c4e2bd-9919-4336-8601-30824ccba31f"
+  },
+  ["63af3b3f-9488-4dc1-bb74-be69fc6de3fa"] = {
+    children = {
+      "539ed5c8-8e2e-4487-945e-3f8935bf11f8"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Uhm, such as yourself. There are three main groups among us. There are Engineers, who commune with the Dome by, uhm, means of Maintenance. There is the Aequeum, of which I am one, who commune with the Dome through incantations which, hmm, what is the best way to say this...",
+    uuid = "63af3b3f-9488-4dc1-bb74-be69fc6de3fa",
+    who = "prism"
   },
   ["071fab6a-d32f-47b7-a7c4-3ab5f648cc08"] = {
     children = {
-      "239907b1-b3c3-44b2-930d-6687f47a86e2"
+      "239907b1-b3c3-44b2-930d-6687f47a86e2",
+      "ccd386b0-b32e-44a6-9c54-a27019189896",
+      "62c4e2bd-9919-4336-8601-30824ccba31f"
     },
     internal_id = "dome",
     is_entry_point = false,
     kind = "ChoiceRepeat",
     uuid = "071fab6a-d32f-47b7-a7c4-3ab5f648cc08"
-  },
-  ["75d828f5-5973-4007-a08f-dadc91651d72"] = {
-    children = {},
-    is_entry_point = false,
-    kind = "Return",
-    return_to = "dome_exist",
-    uuid = "75d828f5-5973-4007-a08f-dadc91651d72"
   },
   ["087be027-685e-4bef-9d8f-1c406095a85d"] = {
     children = {
@@ -361,6 +478,28 @@ return {
     return_to = "dome",
     uuid = "451b8af2-5834-4b8a-958b-89f2e5aedc16"
   },
+  ["492e9e89-21a1-4514-b448-98b415d8628d"] = {
+    children = {
+      "2eed2818-f845-42d5-9624-81af92c571a1"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "That is the nature of the Dome. It simply...does. Of course, humans must commune with the Dome for many reasons lest the Dome stop, stop, uhm, sustaining us. ",
+    uuid = "492e9e89-21a1-4514-b448-98b415d8628d",
+    who = "prism"
+  },
+  ["539ed5c8-8e2e-4487-945e-3f8935bf11f8"] = {
+    children = {
+      "b4b44c94-2cda-46e9-8dfa-4cc54aec54b6"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Incantations that transmute matter between forms. And then there is the Ascetics. They are strange. More, uhm, ritualistic. Not very attuned to the Manual. ",
+    uuid = "539ed5c8-8e2e-4487-945e-3f8935bf11f8",
+    who = "prism"
+  },
   ["616fe3b4-bdf1-4081-8f48-a56ea3f18ddc"] = {
     children = {},
     is_entry_point = false,
@@ -379,6 +518,53 @@ return {
     uuid = "0841e09d-d101-42b8-bec0-e79060c3b23d",
     who = "narrator"
   },
+  ["858e9969-7a32-4a0c-8914-a43a5f80bb41"] = {
+    children = {
+      "ac272edd-d932-4f2d-9eb6-5780a6b0b086"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "And sometimes we make things that aren't so necessary.",
+    uuid = "858e9969-7a32-4a0c-8914-a43a5f80bb41",
+    who = "prism"
+  },
+  ["868e7eaf-84c5-4e36-9296-56974c9ea5ff"] = {
+    children = {
+      "38d9bce5-17c3-4b23-980e-68a9bf97973f"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Well, lots. If I had to break them down to someone such as...",
+    uuid = "868e7eaf-84c5-4e36-9296-56974c9ea5ff",
+    who = "prism"
+  },
+  ["923a24e0-75c1-4fe1-8e90-583b8782bb15"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "dome",
+    uuid = "923a24e0-75c1-4fe1-8e90-583b8782bb15"
+  },
+  ["941e6897-d22b-4fdb-adfb-1cc2fe8189f8"] = {
+    children = {
+      "4a4a6ca0-7eb4-474b-af01-fb69baef9ccb"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Hm, in a way, the same place as everyone else. You came from the Dome, heh.",
+    uuid = "941e6897-d22b-4fdb-adfb-1cc2fe8189f8",
+    who = "prism"
+  },
+  ["957ea797-48f8-42ca-9338-1b965cbd3a27"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "prism",
+    uuid = "957ea797-48f8-42ca-9338-1b965cbd3a27"
+  },
   ["964d129b-d11a-41b3-9622-1e4c74278ddc"] = {
     children = {
       "7d443a7c-e20a-44fd-9abf-b316dac820fc"
@@ -389,6 +575,22 @@ return {
     text = "You try, by instinct, to move some part of your body, but it's useless. You feel slippery, and nothing on your body has any traction.",
     uuid = "964d129b-d11a-41b3-9622-1e4c74278ddc",
     who = "narrator"
+  },
+  ["4557f045-5189-4138-86d2-a6badbb42220"] = {
+    children = {
+      "28a8a436-01d9-4923-be3c-a0517d1085ad"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "I have more questions about the Dome.",
+    uuid = "4557f045-5189-4138-86d2-a6badbb42220"
+  },
+  ["5552e630-413f-4362-abe6-c2bd6386791e"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "clans",
+    uuid = "5552e630-413f-4362-abe6-c2bd6386791e"
   },
   ["8324ad4d-e061-4ae7-9f17-716b972b7f56"] = {
     children = {
@@ -459,7 +661,7 @@ return {
     },
     is_entry_point = false,
     kind = "Choice",
-    text = "You mean this is the entire known universe?",
+    text = "You mean that this Dome is the entire known universe?",
     uuid = "239907b1-b3c3-44b2-930d-6687f47a86e2"
   },
   ["414085ec-2eca-4695-8e7f-13e9cc5c18f7"] = {
@@ -469,7 +671,7 @@ return {
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "The Dome. The, um, well, I'm not sure of another way to put it. The Dome is where humans live. There is no other place be-besides the Dome. The Dome provides us with everything that humans need to live.",
+    text = "The Dome. The, um, well, I'm not sure of another way to put it. The Dome is where humans live. There is no other place b-besides the Dome. The Dome provides us with everything that humans need to live.",
     uuid = "414085ec-2eca-4695-8e7f-13e9cc5c18f7",
     who = "prism"
   },
@@ -514,9 +716,18 @@ return {
     uuid = "4897187e-8a72-4403-a4ab-c2aa72d35197",
     who = "narrator"
   },
+  ["65869954-d115-401e-9190-c46c7aee57d3"] = {
+    children = {
+      "7bf6ee23-38bf-41f5-953a-bb7a87aaaf93"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Who communicates with the Dome?",
+    uuid = "65869954-d115-401e-9190-c46c7aee57d3"
+  },
   ["a9f69b1a-2275-4064-ac04-8da66945a902"] = {
     children = {
-      "75d828f5-5973-4007-a08f-dadc91651d72"
+      "e7d0e3f2-fcc6-49a9-8d12-20c99be9973e"
     },
     effects = {},
     is_entry_point = false,
@@ -545,6 +756,17 @@ return {
     uuid = "a98aceb6-3ca9-464d-8fc7-e016a64be3ad",
     who = "narrator"
   },
+  ["ac272edd-d932-4f2d-9eb6-5780a6b0b086"] = {
+    children = {
+      "5552e630-413f-4362-abe6-c2bd6386791e"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "There are other ways, though. Some groups perform Maintenance. Pretty, uhm, boring, if you ask me. ",
+    uuid = "ac272edd-d932-4f2d-9eb6-5780a6b0b086",
+    who = "prism"
+  },
   ["afc3941c-7f88-45d2-92a8-8d89c4650842"] = {
     children = {
       "964d129b-d11a-41b3-9622-1e4c74278ddc"
@@ -553,6 +775,26 @@ return {
     kind = "Choice",
     text = "Try to move around.",
     uuid = "afc3941c-7f88-45d2-92a8-8d89c4650842"
+  },
+  ["b3d2e2a5-b049-41b5-9e09-a1ba5daa0ca7"] = {
+    children = {
+      "9ca30b2d-0396-491e-aa84-28d4ad32deee"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "b3d2e2a5-b049-41b5-9e09-a1ba5daa0ca7",
+    value = true,
+    variable = "intro.heard_manual"
+  },
+  ["b4b44c94-2cda-46e9-8dfa-4cc54aec54b6"] = {
+    children = {
+      "b3d2e2a5-b049-41b5-9e09-a1ba5daa0ca7"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "b4b44c94-2cda-46e9-8dfa-4cc54aec54b6",
+    value = true,
+    variable = "intro.heard_clans"
   },
   ["b7eff8e0-cc26-475a-96da-4d349309d25b"] = {
     branch_on = "intro.has_seen_body",
@@ -622,6 +864,24 @@ return {
     uuid = "c00343dc-d19c-479e-98a7-f8344cb165c3",
     who = "unknown"
   },
+  ["c757c350-7c14-4437-8716-d65c00d1dc8a"] = {
+    children = {},
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Of course, it's not the same. Most people here come from uterine replicators. The Manual does tell us a fair bit about your kind, though. Beyond what was in the speech. You come out at a regular time interval, and there are regulations for how to integrate you and where you live and things like that. Very orderly.",
+    uuid = "c757c350-7c14-4437-8716-d65c00d1dc8a",
+    who = "prism"
+  },
+  ["ccd386b0-b32e-44a6-9c54-a27019189896"] = {
+    children = {
+      "492e9e89-21a1-4514-b448-98b415d8628d"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "How does it produce what we need to live?",
+    uuid = "ccd386b0-b32e-44a6-9c54-a27019189896"
+  },
   ["cfcad5d8-ebe3-477c-8627-6ec17abe315a"] = {
     children = {
       "a9f69b1a-2275-4064-ac04-8da66945a902"
@@ -662,6 +922,13 @@ return {
     uuid = "d739fef2-002d-4786-81e2-57cd0d232283",
     who = "narrator"
   },
+  ["e7d0e3f2-fcc6-49a9-8d12-20c99be9973e"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "dome_exist",
+    uuid = "e7d0e3f2-fcc6-49a9-8d12-20c99be9973e"
+  },
   ["e99f2742-9ebe-43d0-9a9c-a7d2c03beebc"] = {
     children = {
       "bd7c3092-3faf-4b73-8ca1-6fb942e460e2"
@@ -684,6 +951,17 @@ return {
     uuid = "e171d140-f6a4-48e3-bca8-890a0be1522c",
     who = "narrator"
   },
+  ["e0552be5-72f0-46ba-a253-6033405620e8"] = {
+    children = {
+      "1e2c3426-0e0e-4c90-8505-baa3e863d2da"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Different things. To different groups. Some, like myself, prefer to communicate through incantations. Codified speech. We, uhm, we can instruct the Dome to do things, things that are, hmm, necessary to survival.",
+    uuid = "e0552be5-72f0-46ba-a253-6033405620e8",
+    who = "prism"
+  },
   ["e0090427-8f4f-45ff-92a7-06fb6d115b9b"] = {
     children = {
       "3b5c2b9a-5a25-4a1f-afe2-77533c09fc1f"
@@ -694,6 +972,17 @@ return {
     text = "Sector 576, subsector 8. You know, it's really quite rare to be scheduled on a birthing sector on the day of. Some consider it lucky.",
     uuid = "e0090427-8f4f-45ff-92a7-06fb6d115b9b",
     who = "prism"
+  },
+  ["eb2ea724-0009-46c9-a9b4-e394904bfd9f"] = {
+    children = {
+      "51f4cff7-50ac-4a50-aced-e5d381e03497"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "He hands it to you. It is glass, with a soft piece where it touches the face. It is strangely heavy -- it feels too heavy to be just glass. You cannot tell just by holding it what it does. Prism shoots you a yeah-I-know-it's-cool grin before taking it back and fastening it back on.",
+    uuid = "eb2ea724-0009-46c9-a9b4-e394904bfd9f",
+    who = "narrator"
   },
   ["f0dfa9a9-ab6a-4f5e-889e-76a2aa92e4d3"] = {
     children = {
@@ -713,6 +1002,17 @@ return {
     kind = "Choice",
     text = "Wait for the man to say something.",
     uuid = "f1e8f781-8321-447b-9ac9-0e1eb64dbaa9"
+  },
+  ["f2e7e652-51c5-4b54-ad48-33c665ee2e8b"] = {
+    children = {
+      "957ea797-48f8-42ca-9338-1b965cbd3a27"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Mmm, yes, I'm sure that the, uhm, the nature of reality is difficult to take in all at once. You will come to understand the Dome very well in your life here. Maybe we should talk about something else...?",
+    uuid = "f2e7e652-51c5-4b54-ad48-33c665ee2e8b",
+    who = "prism"
   },
   ["f5e0a8f4-d291-4bdd-857d-0171260a2897"] = {
     children = {

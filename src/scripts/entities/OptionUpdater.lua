@@ -5,7 +5,7 @@ function OptionUpdater:init(params)
   	scroll_lerp     = 0.50,
 	smooth_scroll   = false,
 	mtb_speaker_pad = 0.01,
-	game_fontsize   = 32,
+	game_fontsize   = 48,
 	editor_fontsize = 16,
 	show_imgui_demo = false,
 	show_text_box   = true
