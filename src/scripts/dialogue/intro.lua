@@ -1,4 +1,15 @@
 return {
+  ["0c5d2f65-983e-4d72-9570-0427a5b9bb17"] = {
+    children = {
+      "fcb62ce1-1034-4777-b91e-32bb0fe9b396"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "It's not as simple as following a section of the Manual, though. Our society's self-segmentation isn't formal, or prescribed by the Manual. The way the Manual prescribes assignment of cryos is, uhm, ambiguous. Or at least discordant with our society.",
+    uuid = "0c5d2f65-983e-4d72-9570-0427a5b9bb17",
+    who = "prism"
+  },
   ["0eb630b2-dd4b-4ad1-8116-8a20e01a8140"] = {
     children = {},
     is_entry_point = false,
@@ -105,6 +116,17 @@ return {
     uuid = "4a4a6ca0-7eb4-474b-af01-fb69baef9ccb",
     who = "narrator"
   },
+  ["4bda91ae-f590-4d04-a90a-7776040c1da1"] = {
+    children = {
+      "4d72ef71-d5c7-477b-ae98-7437c49e6755",
+      "435d446f-4d10-464d-b857-98cf804dfb5d",
+      "e0e4179f-ac0d-49f9-a1d6-0f41bf7f22ce"
+    },
+    internal_id = "cryowake",
+    is_entry_point = false,
+    kind = "ChoiceRepeat",
+    uuid = "4bda91ae-f590-4d04-a90a-7776040c1da1"
+  },
   ["4cf0f09c-a008-4a51-94c7-d895ceb48c54"] = {
     children = {
       "38730ce5-bbac-4ea2-a664-9069dfc0ab4e"
@@ -115,6 +137,13 @@ return {
     text = "You can feel the bindings between your mind and that of the fog beginning to release. They dissolve like old glue under heat, melting, and you feel your mind's energy separate and return to you as if through a sieve. One thing begins to form in your newborn mind, an idea. It must escape...",
     uuid = "4cf0f09c-a008-4a51-94c7-d895ceb48c54",
     who = "narrator"
+  },
+  ["4d72ef71-d5c7-477b-ae98-7437c49e6755"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Choice",
+    text = "How often do people like me come out?",
+    uuid = "4d72ef71-d5c7-477b-ae98-7437c49e6755"
   },
   ["5b3bfd57-63c5-4286-bd57-a3d33be540e4"] = {
     branch_on = "intro.has_seen_body",
@@ -137,6 +166,13 @@ return {
     uuid = "5bbda89f-cec5-4b03-9308-f02cb4500918",
     who = "unknown"
   },
+  ["5c503aff-e259-489e-b616-92ae908b8c66"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "cryowake",
+    uuid = "5c503aff-e259-489e-b616-92ae908b8c66"
+  },
   ["6c14546a-789a-46c1-a401-a55ff12581f0"] = {
     children = {
       "97eda20b-d005-435c-8378-3d18f1371787"
@@ -156,6 +192,13 @@ return {
     text = "Hrm, it looks like these questions are, um, pretty standard, actually. Sorry if I insinuated...",
     uuid = "6d8d027b-c6b5-4ca2-a706-25a7402ca422",
     who = "prism"
+  },
+  ["6d52d14f-f96d-45eb-9324-b649d4932c5a"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "intro.living",
+    uuid = "6d52d14f-f96d-45eb-9324-b649d4932c5a"
   },
   ["6dcafaf4-8c27-40aa-8987-60cb28905382"] = {
     children = {
@@ -183,6 +226,17 @@ return {
     kind = "Return",
     return_to = "dome_exist",
     uuid = "7c3c6d29-37c5-4780-8819-cbc1aaed5bc8"
+  },
+  ["7cd2b620-40b0-41db-84ae-d2e177d88db6"] = {
+    children = {
+      "b77b37c1-a291-4490-bc23-6d05407cc0f1"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "The pod is one thing. But this is also an, mhh, unusual time for your arrival.",
+    uuid = "7cd2b620-40b0-41db-84ae-d2e177d88db6",
+    who = "prism"
   },
   ["7d443a7c-e20a-44fd-9abf-b316dac820fc"] = {
     children = {
@@ -225,6 +279,28 @@ return {
     text = "Sitting up, you have a little more mobility. You twist to see your backside. All of your skin is covered in a vague, nonthreatening rash. In the polished steel of your coffin, you see your face.",
     uuid = "8c1232b6-8b6e-49fa-b6ce-8cadd83f1d7b",
     who = "narrator"
+  },
+  ["8d2af6c9-0929-4734-8466-9f63e5ed1cf0"] = {
+    children = {
+      "7435b1bf-e09d-4b62-bd2b-96bd16064165"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "There is a powerful pod who has used their leverage to take you in. They are part of a group called the Engineers, who are, uhm, highly...respectful of the Manual.",
+    uuid = "8d2af6c9-0929-4734-8466-9f63e5ed1cf0",
+    who = "prism"
+  },
+  ["8fb6f021-38bb-4979-9d71-0405477f9cb2"] = {
+    children = {
+      "6d52d14f-f96d-45eb-9324-b649d4932c5a"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Oh. Most important for you. Pods aren't equal. There are, erm, power structures. If you're staying with Ma Bell, you'll learn all about that. Plus, well, some pods are just nicer than others. More room. More privacy. You know.",
+    uuid = "8fb6f021-38bb-4979-9d71-0405477f9cb2",
+    who = "prism"
   },
   ["9c6cb972-34bf-49bb-912f-b2ea307cb922"] = {
     children = {
@@ -275,6 +351,15 @@ return {
     text = "The man snaps awake, as if he's recorporating.",
     uuid = "12e026ef-3f69-4685-8c2b-aad5e7b8954b",
     who = "narrator"
+  },
+  ["19a5c3b6-c779-4d3e-ab1b-62c25361600d"] = {
+    children = {
+      "c8bf2a40-7d28-4438-92ba-31cc71711b10"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Is this pod a good one?",
+    uuid = "19a5c3b6-c779-4d3e-ab1b-62c25361600d"
   },
   ["21c7cb08-9d61-4541-9ca1-52e43ff0b5b9"] = {
     children = {
@@ -449,6 +534,15 @@ return {
     text = "I guess there's nothing I can do but take your word for it.",
     uuid = "90de207f-6271-4151-b87b-ebbe67df758d"
   },
+  ["97a9de6a-12e5-4fb4-8c5a-45bd612941c5"] = {
+    children = {
+      "5266f12b-b99a-4ebc-9820-168862f7a9b1"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "What is a pod?",
+    uuid = "97a9de6a-12e5-4fb4-8c5a-45bd612941c5"
+  },
   ["97eda20b-d005-435c-8378-3d18f1371787"] = {
     children = {
       "3a6331e9-f36f-4856-997f-99f7e3b75402"
@@ -471,12 +565,32 @@ return {
     uuid = "336e1a12-4fb0-4e1c-85c8-55d2f39703b2",
     who = "prism"
   },
+  ["435d446f-4d10-464d-b857-98cf804dfb5d"] = {
+    children = {
+      "be48da75-6e14-491f-a267-27fbd2c6b0f0"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Where am I going to live?",
+    uuid = "435d446f-4d10-464d-b857-98cf804dfb5d"
+  },
   ["451b8af2-5834-4b8a-958b-89f2e5aedc16"] = {
     children = {},
     is_entry_point = false,
     kind = "Return",
     return_to = "dome",
     uuid = "451b8af2-5834-4b8a-958b-89f2e5aedc16"
+  },
+  ["456e99a7-bf5b-4824-ae63-b93e67cb49b7"] = {
+    children = {
+      "0c5d2f65-983e-4d72-9570-0427a5b9bb17"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Do you remember that group that I mentioned? The Engineers. You're going to stay with a, hrm, how do I put this...a powerful pod in their group. The most powerful pod. ",
+    uuid = "456e99a7-bf5b-4824-ae63-b93e67cb49b7",
+    who = "prism"
   },
   ["492e9e89-21a1-4514-b448-98b415d8628d"] = {
     children = {
@@ -576,6 +690,17 @@ return {
     uuid = "964d129b-d11a-41b3-9622-1e4c74278ddc",
     who = "narrator"
   },
+  ["2740ac8c-0cab-41dd-aedf-d37e4e006c77"] = {
+    children = {
+      "bcb5435b-6097-4ee8-bc95-1b45db791acf"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism's nervous energy amplifies. You can tell that his obscured eyes won't make contact with your own. He fidgets for a moment, making noises, before answering.",
+    uuid = "2740ac8c-0cab-41dd-aedf-d37e4e006c77",
+    who = "narrator"
+  },
   ["4557f045-5189-4138-86d2-a6badbb42220"] = {
     children = {
       "28a8a436-01d9-4923-be3c-a0517d1085ad"
@@ -585,12 +710,25 @@ return {
     text = "I have more questions about the Dome.",
     uuid = "4557f045-5189-4138-86d2-a6badbb42220"
   },
-  ["5552e630-413f-4362-abe6-c2bd6386791e"] = {
-    children = {},
+  ["5266f12b-b99a-4ebc-9820-168862f7a9b1"] = {
+    children = {
+      "26448ebd-ad16-40c0-94e1-2ba655461b89"
+    },
     is_entry_point = false,
-    kind = "Return",
-    return_to = "clans",
-    uuid = "5552e630-413f-4362-abe6-c2bd6386791e"
+    kind = "Set",
+    uuid = "5266f12b-b99a-4ebc-9820-168862f7a9b1",
+    value = true,
+    variable = "intro.heard_pods"
+  },
+  ["7435b1bf-e09d-4b62-bd2b-96bd16064165"] = {
+    children = {
+      "0c5d2f65-983e-4d72-9570-0427a5b9bb17"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "7435b1bf-e09d-4b62-bd2b-96bd16064165",
+    value = true,
+    variable = "intro.heard_engineers"
   },
   ["8324ad4d-e061-4ae7-9f17-716b972b7f56"] = {
     children = {
@@ -603,6 +741,17 @@ return {
     text = "The light burns your eyes, so you squint them shut. Through your haze of vision, you make out something. A creature? Perhaps. It looks like no living creature you have seen before. It is more fog than man, and you begin to wonder unto what hell you have been born.",
     uuid = "8324ad4d-e061-4ae7-9f17-716b972b7f56",
     who = "mind"
+  },
+  ["26448ebd-ad16-40c0-94e1-2ba655461b89"] = {
+    children = {
+      "f97e69e0-6460-4294-aea8-d44ce68612f7"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Oh, right, yes. It's easy to forget how little you know. A pod is the fundamental organizational unit of humans. The Dome is built as such -- humans live in pods in offshoots of the main tunnel system. ",
+    uuid = "26448ebd-ad16-40c0-94e1-2ba655461b89",
+    who = "prism"
   },
   ["34757f69-2f99-46a0-b408-28ef0b2a7edf"] = {
     children = {
@@ -758,7 +907,7 @@ return {
   },
   ["ac272edd-d932-4f2d-9eb6-5780a6b0b086"] = {
     children = {
-      "5552e630-413f-4362-abe6-c2bd6386791e"
+      "9ca30b2d-0396-491e-aa84-28d4ad32deee"
     },
     effects = {},
     is_entry_point = false,
@@ -813,6 +962,15 @@ return {
     return_to = "rpt_001",
     uuid = "b20ae3be-0bd6-43b6-b24c-549d6255136c"
   },
+  ["b77b37c1-a291-4490-bc23-6d05407cc0f1"] = {
+    children = {},
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism looks away with a grimace. ",
+    uuid = "b77b37c1-a291-4490-bc23-6d05407cc0f1",
+    who = "narrator"
+  },
   ["b092020c-2e5a-440d-a51b-f9fba307b47a"] = {
     children = {
       "e171d140-f6a4-48e3-bca8-890a0be1522c"
@@ -824,6 +982,27 @@ return {
     uuid = "b092020c-2e5a-440d-a51b-f9fba307b47a",
     who = "narrator"
   },
+  ["baa362bc-2d06-499e-aaad-69f72796dbef"] = {
+    branch_on = "intro.heard_engineers",
+    children = {
+      "456e99a7-bf5b-4824-ae63-b93e67cb49b7",
+      "8d2af6c9-0929-4734-8466-9f63e5ed1cf0"
+    },
+    is_entry_point = false,
+    kind = "Branch",
+    uuid = "baa362bc-2d06-499e-aaad-69f72796dbef"
+  },
+  ["bcb5435b-6097-4ee8-bc95-1b45db791acf"] = {
+    children = {
+      "7cd2b620-40b0-41db-84ae-d2e177d88db6"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Uhm, well, probably. A bit. ",
+    uuid = "bcb5435b-6097-4ee8-bc95-1b45db791acf",
+    who = "prism"
+  },
   ["bd7c3092-3faf-4b73-8ca1-6fb942e460e2"] = {
     children = {
       "c00343dc-d19c-479e-98a7-f8344cb165c3"
@@ -834,6 +1013,16 @@ return {
     text = "Nothing. It doesn't seem like he heard you, despite being close enough to touch. You begin to wonder if the limp form next to you is dead, somehow...",
     uuid = "bd7c3092-3faf-4b73-8ca1-6fb942e460e2",
     who = "narrator"
+  },
+  ["be48da75-6e14-491f-a267-27fbd2c6b0f0"] = {
+    branch_on = "intro.heard_clans",
+    children = {
+      "456e99a7-bf5b-4824-ae63-b93e67cb49b7",
+      "baa362bc-2d06-499e-aaad-69f72796dbef"
+    },
+    is_entry_point = false,
+    kind = "Branch",
+    uuid = "be48da75-6e14-491f-a267-27fbd2c6b0f0"
   },
   ["bfe4805a-dea6-4e7b-a727-dc920272dd24"] = {
     children = {},
@@ -853,6 +1042,17 @@ return {
     uuid = "c6d8ff18-0a2c-41dc-b8aa-b81ca8f4a37e",
     who = "pc"
   },
+  ["c8bf2a40-7d28-4438-92ba-31cc71711b10"] = {
+    children = {
+      "5c503aff-e259-489e-b616-92ae908b8c66"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "It depends on what you mean by good. For someone who's still shaking off an unknown amount of neurochemical stasis, it may be, uhm...intense.",
+    uuid = "c8bf2a40-7d28-4438-92ba-31cc71711b10",
+    who = "prism"
+  },
   ["c00343dc-d19c-479e-98a7-f8344cb165c3"] = {
     children = {
       "12e026ef-3f69-4685-8c2b-aad5e7b8954b"
@@ -865,7 +1065,9 @@ return {
     who = "unknown"
   },
   ["c757c350-7c14-4437-8716-d65c00d1dc8a"] = {
-    children = {},
+    children = {
+      "4bda91ae-f590-4d04-a90a-7776040c1da1"
+    },
     effects = {},
     is_entry_point = false,
     kind = "Text",
@@ -922,6 +1124,13 @@ return {
     uuid = "d739fef2-002d-4786-81e2-57cd0d232283",
     who = "narrator"
   },
+  ["e0e4179f-ac0d-49f9-a1d6-0f41bf7f22ce"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Are there any others like me?",
+    uuid = "e0e4179f-ac0d-49f9-a1d6-0f41bf7f22ce"
+  },
   ["e7d0e3f2-fcc6-49a9-8d12-20c99be9973e"] = {
     children = {},
     is_entry_point = false,
@@ -973,6 +1182,15 @@ return {
     uuid = "e0090427-8f4f-45ff-92a7-06fb6d115b9b",
     who = "prism"
   },
+  ["ea9cd685-3356-4e04-98d6-5b29dbfeab82"] = {
+    children = {
+      "2740ac8c-0cab-41dd-aedf-d37e4e006c77"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Should I be worried?",
+    uuid = "ea9cd685-3356-4e04-98d6-5b29dbfeab82"
+  },
   ["eb2ea724-0009-46c9-a9b4-e394904bfd9f"] = {
     children = {
       "51f4cff7-50ac-4a50-aced-e5d381e03497"
@@ -1014,6 +1232,15 @@ return {
     uuid = "f2e7e652-51c5-4b54-ad48-33c665ee2e8b",
     who = "prism"
   },
+  ["f4e5dea4-2274-4dab-b82f-f45a23d81c3f"] = {
+    branch_on = "intro.heard_pods",
+    children = {
+      "19a5c3b6-c779-4d3e-ab1b-62c25361600d"
+    },
+    is_entry_point = false,
+    kind = "If",
+    uuid = "f4e5dea4-2274-4dab-b82f-f45a23d81c3f"
+  },
   ["f5e0a8f4-d291-4bdd-857d-0171260a2897"] = {
     children = {
       "b092020c-2e5a-440d-a51b-f9fba307b47a"
@@ -1023,6 +1250,17 @@ return {
     uuid = "f5e0a8f4-d291-4bdd-857d-0171260a2897",
     value = true,
     variable = "intro.fought_fog"
+  },
+  ["f97e69e0-6460-4294-aea8-d44ce68612f7"] = {
+    children = {
+      "8fb6f021-38bb-4979-9d71-0405477f9cb2"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Pods have most things the humans who inhabit them need for survival. Plus, uhm, common living areas, personal quarters, things like that. Humans tend to stay with members of their own pod. B-but, it's not uncommon for interpod relationships. ",
+    uuid = "f97e69e0-6460-4294-aea8-d44ce68612f7",
+    who = "prism"
   },
   ["f872d76a-e416-4617-8789-7441b580cbc1"] = {
     children = {
@@ -1066,6 +1304,17 @@ return {
     text = "Nearly all of the fog has left your brain. You can feel a familiar feeling that has been absent for a long time. You feel as if there is something separate from your raw sensory input. ",
     uuid = "fb697274-1b9e-47fd-9de7-7ff9e0e281c4",
     who = "narrator"
+  },
+  ["fcb62ce1-1034-4777-b91e-32bb0fe9b396"] = {
+    children = {
+      "ea9cd685-3356-4e04-98d6-5b29dbfeab82",
+      "97a9de6a-12e5-4fb4-8c5a-45bd612941c5",
+      "f4e5dea4-2274-4dab-b82f-f45a23d81c3f"
+    },
+    internal_id = "living",
+    is_entry_point = false,
+    kind = "ChoiceRepeat",
+    uuid = "fcb62ce1-1034-4777-b91e-32bb0fe9b396"
   },
   ["fd589e00-3739-4e26-bfaf-ebf32adddb22"] = {
     children = {

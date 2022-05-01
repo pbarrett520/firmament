@@ -85,12 +85,24 @@ RULE #8: embrace the rectangle
     selected
   - [ ] update range as string is edited
 - [ ] word-based text wrapping
-
 ** pie
 a really juiced up effects editor. like, one that will live show you what the
 effect is as you're doing it. would probably need to render the text to a
 texture, unless i could mess with imgui text, would be really lucky if it was
 stored as SOA instead of AOS.
+** release
+if i want to start releasing iterations of this to my friends:
+- automatically detect root directory
+- title screen
+- fade in effect
+  - automatically applied to all nodes
+- save game
+- basic menu, even just implemented with imgui
+- proper input handling for the game
+- game mode -- a flag you can flip that will change what entities are loaded on
+  startup, kick off the title screen, etc.
+- sound
+- speech effects
 * inspiration / reference
 fate/stay night ui
 https://youtu.be/gAkUUB4B6po?t=551
