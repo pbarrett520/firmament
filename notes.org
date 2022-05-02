@@ -53,7 +53,8 @@ RULE #8: embrace the rectangle
   just gates a node (maybe just a choice) behind a condition
 - [X] 4/28 allow non-programmers to add fields to state
 - [X] file -> export state, file -> load state
-
+- [X] better state editor: have an alphabetized dropdown of all
+  state. show user a combo box.
 ** big
 - [ ] icon heads to see who is talking
 - [ ] write the fade in effect
@@ -66,8 +67,6 @@ RULE #8: embrace the rectangle
   - a log where you can type stuff, write down your own log of intrigue
 - [ ] implement a basic sound api
 ** dogfood
-- [ ] better state editor: have an alphabetized dropdown of all
-  state. show user a combo box.
 - [ ] negate if nodes
 - [ ] enhance branch nodes
   - branch on multiple values
@@ -117,6 +116,11 @@ headshot maker
 https://picrew.me/image_maker/94097
 
 majikoi and grisaia
+
+C++ parsing for imgui bindings
+https://www.gccxml.org/HTML/Index.html
+https://pygccxml.readthedocs.io/en/develop/query_interface.html
+https://github.com/CastXML/pygccxml
 * devlog
 - hacking input* into lua
 - text effect implementation

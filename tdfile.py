@@ -5,9 +5,8 @@ build_options = {
     'source_dir': 'src',
     'include_dirs': [
         'include',
-        os.path.join('include', 'lua'), # symlinked to /usr/include on linux
-        os.path.join('include', 'freetype'), # symlinked to /usr/include on linux
-        os.path.join('include', 'sol')
+        os.path.join('include', 'lua'), 
+        os.path.join('include', 'freetype')
     ],
     'lib_dir': 'lib',
     'build_dir': 'build',

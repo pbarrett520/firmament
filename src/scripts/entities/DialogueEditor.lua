@@ -36,12 +36,13 @@ function DialogueEditor:init(params)
   self.internal_id_id = '##ded:detail:set_internal_id'
   self.return_to_id = '##ded:detail:set_return_to'
   self.branch_on_id = '##ded:detail:set_branch_var'
-  self.next_dialogue_id = '##ded:detail:next_dialogue'
   self.branch_val_id = '##ded:detail:set_branch_val'
   self.empty_name_id = '##ded:detail:set_empty_name'
+  
   self.selected_editor = nil
   self.effect_editor = nil
   self.selected_effect = 1
+  self.selected_state = ''
 
   self.choosing_file = false
   self.choosing_effect_begin = false
@@ -55,18 +56,43 @@ function DialogueEditor:init(params)
   tdengine.create_entity('TextEditor')
 end
 
-function DialogueEditor:update(dt)  
+function DialogueEditor:update(dt)
   imgui.Begin('dialogue', true)
 
   -- Draw the sidebar
   imgui.BeginChild('sidebar', 400, 0)
   
   imgui.Text(self:full_path())
-  
+
   -- Selected node detail view
   local selected = self.selected and self.nodes[self.selected]
   if selected then
 	self.selected_editor:draw()
+
+	if node_contains_variable(selected) then
+	  local selected_variable = get_node_variable(selected)
+	  local state = table.flatten(tdengine.state)
+	  table.sort(state)
+
+	  imgui.extensions.VariableName('state')
+	  imgui.SameLine()
+	  local padding = imgui.internal.table_editor_padding(self.selected_editor)
+	  imgui.SetCursorPosX(padding)
+	  imgui.PushItemWidth(-1)
+	  if imgui.BeginCombo('##state', selected_variable) then
+		for i, variable in ipairs(state) do
+		  local item_selected = variable == selected_variable
+		  if imgui.Selectable(variable, item_selected) then
+			set_node_variable(selected, variable)
+		  end
+
+		  if selected then imgui.SetItemDefaultFocus() end
+		end
+		imgui.EndCombo()
+	  end
+	  imgui.PopItemWidth(-1)
+	end
+
 
 	-- Effect editor
 	if selected.kind == 'Text' then
@@ -137,7 +163,6 @@ function DialogueEditor:update(dt)
 	  self.effect_editor:draw()
 	end
   end
-
   
   -- bind selected node's text to what's in the editor
   if selected then
@@ -632,7 +657,6 @@ end
 function DialogueEditor:save(name_or_path)
   local name = tdengine.extract_filename(name_or_path)
   name = tdengine.strip_extension(name)
-  print(name)
   
   if #name == 0 then return end
   local serpent = require('serpent')
@@ -712,6 +736,12 @@ end
 
 function DialogueEditor:select(id, node)
   self.selected = id
+
+  -- Always do this, regardless of whether the new node exists
+  self.selected_effect = 1
+  self.selected_state = ''
+  
+  -- Then, bail early if it does not exist
   if not self.selected then
 	self.selected_editor = nil
 	return
@@ -744,21 +774,26 @@ function DialogueEditor:select(id, node)
   
   if node.kind == 'Branch' then
 	imgui.InputTextSetContents(self.branch_on_id, node.branch_on)
+	self.selected_editor.imgui_ignore = {
+	  branch_on = true
+	}
   end
 
   if node.kind == 'If' then
 	imgui.InputTextSetContents(self.branch_on_id, node.branch_on)
+	self.selected_editor.imgui_ignore = {
+	  variable = true
+	}
   end
 
-  if node.kind == 'Switch' then
-	imgui.InputTextSetContents(self.next_dialogue_id, node.next_dialogue)
-  end
-  
   if node.kind == 'Set' then
 	imgui.InputTextSetContents(self.set_var_id, node.variable)
 	imgui.InputTextSetContents(self.set_val_id, tostring(node.value))
+	self.selected_editor.imgui_ignore = {
+	  variable = true
+	}
   end
-  
+	  
   if node.kind == 'ChoiceRepeat' then
 	imgui.InputTextSetContents(self.internal_id_id, node.internal_id)
   end
@@ -767,6 +802,11 @@ function DialogueEditor:select(id, node)
 	imgui.InputTextSetContents(self.return_to_id, node.return_to)
   end
 
+  if node_contains_variable(node) then
+	self.selected_state = get_node_variable(node) or ''
+  end
+
+  -- Set up the text editor
   local text = ternary(node.text, node.text, node.variable)
   if node.kind == 'Text' or node.kind == 'Choice' then
 	imgui.InputTextSetContents(self.input_id, text)
@@ -817,3 +857,21 @@ function DialogueEditor:canvas_screen_to_window_screen(canvas_screen)
   return window_screen
 end
 
+
+function node_contains_variable(node)
+  local contains = false
+  contains = contains or node.kind == 'If'
+  contains = contains or node.kind == 'Set'
+  contains = contains or node.kind == 'Branch'
+  return contains
+end
+
+function get_node_variable(node)
+  if node.kind == 'If' or node.kind == 'Branch' then return node.branch_on end
+  if node.kind == 'Set' then return node.variable end
+end
+
+function set_node_variable(node, var)
+  if node.kind == 'If' or node.kind == 'Branch' then node.branch_on = var end
+  if node.kind == 'Set' then node.variable = var end
+end

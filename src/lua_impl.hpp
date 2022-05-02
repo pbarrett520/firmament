@@ -77,6 +77,7 @@ void init_lua() {
         sol::lib::bit32,
 		sol::lib::debug,
 		sol::lib::io,
+		sol::lib::ffi,
 		sol::lib::jit,
 		sol::lib::math,
 		sol::lib::os,

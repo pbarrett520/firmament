@@ -137,9 +137,8 @@ imgui.internal.draw_table_field_add = function(editor)
   return enter_on_key or enter_on_value
 end
 
-imgui.internal.draw_table_editor = function(editor)
-  if editor.draw_field_add then imgui.internal.draw_table_field_add(editor) end
-  -- Very hacky way to line up the inputs: Figure out the largest key, then when drawing a key,
+imgui.internal.table_editor_padding = function(editor)
+-- Very hacky way to line up the inputs: Figure out the largest key, then when drawing a key,
   -- use the difference in length between current key and largest key as a padding. Does not work
   -- that well, but kind of works
   local padding_threshold = 12
@@ -152,10 +151,16 @@ imgui.internal.draw_table_editor = function(editor)
 	padding_target = math.max(padding_target, key_len)
   end
 
-  local cursor = imgui.GetCursorPosX()
   local min_padding = 80
-  local padding = math.max(cursor + padding_target * 10, min_padding)
+  local padding = math.max(padding_target * 10, min_padding)
+  return padding
+end
 
+imgui.internal.draw_table_editor = function(editor)
+  if editor.draw_field_add then imgui.internal.draw_table_field_add(editor) end
+
+  local cursor = imgui.GetCursorPosX()
+  local padding = imgui.internal.table_editor_padding(editor)
   local open_item_context_menu = false
 
   for key, value in pairs(editor.editing) do
@@ -177,7 +182,7 @@ imgui.internal.draw_table_editor = function(editor)
 		imgui.extensions.VariableName(display_key)
 		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
-		imgui.SetCursorPosX(padding)
+		imgui.SetCursorPosX(cursor + padding)
 		imgui.PushItemWidth(-1)
 		
 		if imgui.InputText2(label) then
@@ -190,7 +195,7 @@ imgui.internal.draw_table_editor = function(editor)
 		imgui.extensions.VariableName(display_key)
 		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
-		imgui.SetCursorPosX(padding)
+		imgui.SetCursorPosX(cursor + padding)
 		imgui.PushItemWidth(-1)
 		if imgui.InputFloat(label) then
 		  editor.editing[key] = imgui.InputFloatGet(label)
@@ -202,7 +207,7 @@ imgui.internal.draw_table_editor = function(editor)
 		imgui.extensions.VariableName(display_key)
 		if imgui.IsItemClicked(1) then open_item_context_menu = true; editor.context_menu_item = key end
 		imgui.SameLine()
-		imgui.SetCursorPosX(padding)
+		imgui.SetCursorPosX(cursor + padding)
 		imgui.PushItemWidth(-1)
 		
 		if imgui.Checkbox(label) then

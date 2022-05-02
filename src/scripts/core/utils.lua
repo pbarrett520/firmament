@@ -14,6 +14,84 @@ function table.shallow_copy(t)
   return t2
 end
 
+function table.flatten(t, parent)
+  function child_key(parent, child)
+	if #parent > 0 then
+	  return string.format('%s.%s', parent, child)
+	else
+	  return child
+	end
+  end
+  
+  parent = parent or ''
+  local flat = {}
+  for name, value in pairs(t) do
+	if type(value) == 'table' then
+	  local children = table.flatten(value, child_key(parent, name))
+	  for i, child in pairs(children) do
+		table.insert(flat, child)
+	  end
+	else
+	  table.insert(flat, child_key(parent, name))
+	end
+  end
+
+  return flat
+end
+
+-- Copy all keys in source and all subtables into dest. Do not copy values
+-- that already exist in dest. Also, remove all keys in dest that are not in
+-- source. In other words, source is the canonical form, make dest comply.
+function make_keys_match(source, dest)
+  return add_source_keys(source, dest) or remove_dest_keys(source, dest)
+end
+
+function add_source_keys(source, dest)
+  -- Copy source keys into dest
+  local changed = false
+  
+  for key, value in pairs(source) do
+	local continue = false
+	
+	-- Dest table doesn't have this key at all. Whether it's a table,
+	-- or a single state field, we want to copy it from source
+	if dest[key] == nil then
+	  dest[key] = dest[key] or source[key]
+	  changed = true
+	  continue = true
+	end
+
+	-- Both tables could have a child table that have different keys,
+	-- so we must recurse
+	if type(value) == 'table' and not continue then
+	  changed = changed or add_source_keys(source[key], dest[key])
+	end
+  end
+
+  return changed
+end
+
+function remove_dest_keys(source, dest)
+  -- Remove dest keys that are not in source
+  local changed = false
+  
+  for key, value in pairs(dest) do
+	local continue = false
+	
+	if source[key] == nil then
+	  dest[key] = nil
+	  changed = true
+	  continue = true
+	end
+	
+	if type(value) == 'table' and not continue then
+	  changed = changed or remove_dest_keys(source[key], dest[key])
+	end
+  end
+  
+  return changed
+end
+  
 function tdengine.platform()
   local separator = package.config:sub(1,1)
   if separator == '\\' then

@@ -1,5 +1,7 @@
 local glfw = require('glfw')
 local inspect = require('inspect')
+local profiler = require('jit.p')
+local profi = require('profi')
 
 local Editor = tdengine.entity('Editor')
 function Editor:init(params)
@@ -118,7 +120,17 @@ function Editor:engine_viewer()
   local cursor = tdengine.vec2(tdengine.cursor()):truncate(3)
   imgui.extensions.Vec2('cursor', cursor)
 
-  imgui.extensions.Table(tdengine.engine_stats.scroll);
+
+  if imgui.Button('Start profiling') then
+	profiler.start('-jp=s')
+	--profi:reset()
+	--profi:start()
+  end
+  if imgui.Button('Stop profiling') then
+	profiler.stop()
+	--profi:stop()
+	--profi:writeReport()
+  end
   
   imgui.End()
 end
@@ -194,6 +206,14 @@ function Editor:state_viewer()
   if self.state_editor.editing ~= tdengine.state then
 	self.state_editor = imgui.extensions.TableEditor(tdengine.state)
   end
+
+  -- Reconcile any added / removed state fields to the default state
+  local current_state = tdengine.state
+  local default_state = tdengine.load_state_by_file(tdengine.paths.state('default'))
+  if make_keys_match(tdengine.state, default_state) then
+	tdengine.save_state('default', default_state)
+  end
+  
   self.state_editor:draw()
   imgui.End('state')
 end

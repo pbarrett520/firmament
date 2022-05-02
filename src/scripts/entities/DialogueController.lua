@@ -1,3 +1,4 @@
+
 local glfw = require('glfw')
 
 -- Adding a new node checklist:
@@ -93,7 +94,7 @@ function DialogueController:advance()
 
   -- Pretty much anything that isn't a choice or conditional
   function simple_advance(self)
-	if are_choices_next(self.current) then
+	if self:are_choices_next(self.current) then
 	  -- The next nodes are a set of choices. Wrap them in one node to make it easy to handle
 	  local internal = {
 		kind = 'InternalChoice',
@@ -291,7 +292,7 @@ function evaluate_branch(node, all_nodes)
   return nil
 end
 
-function are_choices_next(node)
+function DialogueController:are_choices_next(node)
   -- This is not validation; that happens when the tree is saved. Instead, this is
   -- how we determine whether the next node we're visiting is a set of choices.
   -- This is slightly complicated, since there are other node types that can
@@ -309,9 +310,13 @@ function are_choices_next(node)
   end
   if not legal then return false end
 
-  -- Second step: You must have multiple children to have choices. This chould change in the future
-  local has_multiple_children = #node.children > 1
-  return has_multiple_children
+  -- Second step: You must have at least one choice node as a child. This is lazy. You could, for example, have a branch node that has both paths evaluate to a choice.
+  for index, child_id in pairs(node.children) do
+	local child = self.data[child_id]
+	if child.kind == 'Choice' then return true end
+  end
+
+  return false
 end
 
 function collect_choices(node, all_nodes)

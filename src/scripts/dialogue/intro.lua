@@ -72,6 +72,17 @@ return {
     uuid = "2cc2940a-a0ba-4c01-a1ba-05de43f53e67",
     who = "prism"
   },
+  ["2ce8e2d4-905c-4131-9820-90a9a64e20d7"] = {
+    children = {
+      "d1ef0d95-9e4d-44ce-9fe7-0fad245d3cda"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism quickly presses it into your hand and resumes his ritual of nervous fidgeting. It's probably best to talk about something else. ",
+    uuid = "2ce8e2d4-905c-4131-9820-90a9a64e20d7",
+    who = "narrator"
+  },
   ["2eed2818-f845-42d5-9624-81af92c571a1"] = {
     children = {
       "65869954-d115-401e-9190-c46c7aee57d3",
@@ -139,7 +150,9 @@ return {
     who = "narrator"
   },
   ["4d72ef71-d5c7-477b-ae98-7437c49e6755"] = {
-    children = {},
+    children = {
+      "d40ec3c3-c28e-4685-b941-d42a57459c7e"
+    },
     is_entry_point = false,
     kind = "Choice",
     text = "How often do people like me come out?",
@@ -209,6 +222,17 @@ return {
     text = "Are you sure there is nothing outside the Dome?",
     uuid = "6dcafaf4-8c27-40aa-8987-60cb28905382"
   },
+  ["7a6bae8f-346b-4a6f-ba1b-43b05ddc46da"] = {
+    children = {
+      "d1076580-8ea3-47cc-8e58-b95b4e38e23a"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism looks away with a grimace. It's the eyes, you realize, that make Prism seem so unreal. The lack thereof. The opaque lenses conceal most of what he is feeling, any pain. Or life. ",
+    uuid = "7a6bae8f-346b-4a6f-ba1b-43b05ddc46da",
+    who = "unknown"
+  },
   ["7bf6ee23-38bf-41f5-953a-bb7a87aaaf93"] = {
     children = {
       "868e7eaf-84c5-4e36-9296-56974c9ea5ff"
@@ -229,12 +253,12 @@ return {
   },
   ["7cd2b620-40b0-41db-84ae-d2e177d88db6"] = {
     children = {
-      "b77b37c1-a291-4490-bc23-6d05407cc0f1"
+      "7a6bae8f-346b-4a6f-ba1b-43b05ddc46da"
     },
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "The pod is one thing. But this is also an, mhh, unusual time for your arrival.",
+    text = "Uhm, well, probably. A bit. The pod is one thing. But this is also an, mhh, unusual time for your arrival.",
     uuid = "7cd2b620-40b0-41db-84ae-d2e177d88db6",
     who = "prism"
   },
@@ -248,6 +272,16 @@ return {
     text = "After a few attempts, you begin wheezing, and whatever muscles were actuating are out of energy.",
     uuid = "7d443a7c-e20a-44fd-9abf-b316dac820fc",
     who = "narrator"
+  },
+  ["07ef399f-e963-4992-bc0f-9cc02e489429"] = {
+    branch_on = "intro.got_paper",
+    children = {
+      "99dba8d2-a656-44ce-ae35-e6397e173895",
+      "2740ac8c-0cab-41dd-aedf-d37e4e006c77"
+    },
+    is_entry_point = false,
+    kind = "Branch",
+    uuid = "07ef399f-e963-4992-bc0f-9cc02e489429"
   },
   ["7f00b043-8ab9-486b-aaff-04f85a51e756"] = {
     children = {
@@ -302,6 +336,13 @@ return {
     uuid = "8fb6f021-38bb-4979-9d71-0405477f9cb2",
     who = "prism"
   },
+  ["9b665970-8182-4e84-9aa2-3c61c67c1bc6"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "living",
+    uuid = "9b665970-8182-4e84-9aa2-3c61c67c1bc6"
+  },
   ["9c6cb972-34bf-49bb-912f-b2ea307cb922"] = {
     children = {
       "b7eff8e0-cc26-475a-96da-4d349309d25b",
@@ -319,6 +360,17 @@ return {
     return_to = "clans",
     uuid = "9ca30b2d-0396-491e-aa84-28d4ad32deee"
   },
+  ["9ed82ddb-c988-4c2a-bd12-89daf3f3c6d0"] = {
+    children = {
+      "b33bc572-5619-4bf5-b5ae-d2b8c0810077"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "You're not sure if learning about Prism's life makes him any more human. The lack of eyes and dark orange circles in their place. What are you? ",
+    uuid = "9ed82ddb-c988-4c2a-bd12-89daf3f3c6d0",
+    who = "narrator"
+  },
   ["9f24fc24-e91a-4a6a-a63f-d60e9dfc3fa1"] = {
     children = {
       "087be027-685e-4bef-9d8f-1c406095a85d"
@@ -329,6 +381,17 @@ return {
     text = "Oh! You're awake. The Manual said it'd be a couple more hours, but you can't trust that piece of shit for anything these days. Sorry, ah, blasphemy, there's actually a section I need to, erm, one second...",
     uuid = "9f24fc24-e91a-4a6a-a63f-d60e9dfc3fa1",
     who = "unknown_waker"
+  },
+  ["9f73988f-579a-46c6-a2d0-862da2095564"] = {
+    children = {
+      "cd617305-7e6f-4291-ae7d-660d1955561a"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "That itself it cause for concern. I can't, erm, I can't say more. It's too complicated to explain. It's, mmh, too simple to explain too. But...",
+    uuid = "9f73988f-579a-46c6-a2d0-862da2095564",
+    who = "prism"
   },
   ["11aa766b-7d9f-4fc5-8072-252ea87ce57b"] = {
     children = {
@@ -368,7 +431,7 @@ return {
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "\"But fear not. Although this is your purpose in creation, you will be a fully autonomous member of society. Our world is not one borne of slavery. It is a self-providing utopia. You will come to learn of the Dome, and the Manual that governs it, until you are fully integrated as a Domer. You may lack in fine motor controls or other basic neural functions. This is normal.\"",
+    text = "\"But fear not. Although this is your purpose in creation, you will be a fully autonomous member of society. Our world is not one borne of slavery. It is a self-providing utopia. You will come to learn of the Dome, and the Manual that governs it, until you are fully integrated as a Domer.\"",
     uuid = "21c7cb08-9d61-4541-9ca1-52e43ff0b5b9",
     who = "prism"
   },
@@ -416,7 +479,7 @@ return {
       "fa76d5e5-5f4a-4e84-ac4d-df52bfaad15d"
     },
     effects = {},
-    is_entry_point = true,
+    is_entry_point = false,
     kind = "Text",
     text = "Of-of course. I never thought I would explain something as, as simple as the Dome. It's strange that you, erm, can speak and yet, don't understand the existence of a, mmh, physical realm.",
     uuid = "33e80fd8-9c79-4389-bfb3-4162a623518a",
@@ -554,6 +617,17 @@ return {
     uuid = "97eda20b-d005-435c-8378-3d18f1371787",
     who = "prism"
   },
+  ["99dba8d2-a656-44ce-ae35-e6397e173895"] = {
+    children = {
+      "9b665970-8182-4e84-9aa2-3c61c67c1bc6"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Prism avoids eye contact with you. He seems pretty torn up about giving you the paper. It's probably best to let this one lie.",
+    uuid = "99dba8d2-a656-44ce-ae35-e6397e173895",
+    who = "narrator"
+  },
   ["336e1a12-4fb0-4e1c-85c8-55d2f39703b2"] = {
     children = {
       "55fe089f-856a-4b46-831d-44fc379bec27"
@@ -564,6 +638,13 @@ return {
     text = "Well, there it is. I guess, erm, well, we have a few hours before anyone is expecting us. You can, hm, ask me some questions. Your privacy may be, well, limited, when you're taken to your temporary domicile.",
     uuid = "336e1a12-4fb0-4e1c-85c8-55d2f39703b2",
     who = "prism"
+  },
+  ["345fdb80-3bda-4fc4-9d00-f97e9acec636"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "cryowake",
+    uuid = "345fdb80-3bda-4fc4-9d00-f97e9acec636"
   },
   ["435d446f-4d10-464d-b857-98cf804dfb5d"] = {
     children = {
@@ -605,12 +686,12 @@ return {
   },
   ["539ed5c8-8e2e-4487-945e-3f8935bf11f8"] = {
     children = {
-      "b4b44c94-2cda-46e9-8dfa-4cc54aec54b6"
+      "917e2882-e06b-47a7-95ec-c426b0384381"
     },
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "Incantations that transmute matter between forms. And then there is the Ascetics. They are strange. More, uhm, ritualistic. Not very attuned to the Manual. ",
+    text = "Incantations that transmute matter between forms.",
     uuid = "539ed5c8-8e2e-4487-945e-3f8935bf11f8",
     who = "prism"
   },
@@ -654,6 +735,17 @@ return {
     uuid = "868e7eaf-84c5-4e36-9296-56974c9ea5ff",
     who = "prism"
   },
+  ["917e2882-e06b-47a7-95ec-c426b0384381"] = {
+    children = {
+      "b4b44c94-2cda-46e9-8dfa-4cc54aec54b6"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "And then there are the Ascetics. They are strange. More, uhm, ritualistic. Not very attuned to the Manual.",
+    uuid = "917e2882-e06b-47a7-95ec-c426b0384381",
+    who = "unknown"
+  },
   ["923a24e0-75c1-4fe1-8e90-583b8782bb15"] = {
     children = {},
     is_entry_point = false,
@@ -690,9 +782,16 @@ return {
     uuid = "964d129b-d11a-41b3-9622-1e4c74278ddc",
     who = "narrator"
   },
+  ["1288facc-e1ac-4c93-ab77-b8e10a036f5f"] = {
+    children = {},
+    is_entry_point = false,
+    kind = "Return",
+    return_to = "living",
+    uuid = "1288facc-e1ac-4c93-ab77-b8e10a036f5f"
+  },
   ["2740ac8c-0cab-41dd-aedf-d37e4e006c77"] = {
     children = {
-      "bcb5435b-6097-4ee8-bc95-1b45db791acf"
+      "7cd2b620-40b0-41db-84ae-d2e177d88db6"
     },
     effects = {},
     is_entry_point = false,
@@ -700,6 +799,17 @@ return {
     text = "Prism's nervous energy amplifies. You can tell that his obscured eyes won't make contact with your own. He fidgets for a moment, making noises, before answering.",
     uuid = "2740ac8c-0cab-41dd-aedf-d37e4e006c77",
     who = "narrator"
+  },
+  ["04248dfb-91a3-439b-b5c9-d3035634114b"] = {
+    children = {
+      "9f73988f-579a-46c6-a2d0-862da2095564"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "I, uhm, am...yes, I am okay. I am not used to this kind of dilemma. There are many things I avoid. Among them, conflict. I'm afraid that you have come in the midst of conflict.  ",
+    uuid = "04248dfb-91a3-439b-b5c9-d3035634114b",
+    who = "prism"
   },
   ["4557f045-5189-4138-86d2-a6badbb42220"] = {
     children = {
@@ -741,6 +851,26 @@ return {
     text = "The light burns your eyes, so you squint them shut. Through your haze of vision, you make out something. A creature? Perhaps. It looks like no living creature you have seen before. It is more fog than man, and you begin to wonder unto what hell you have been born.",
     uuid = "8324ad4d-e061-4ae7-9f17-716b972b7f56",
     who = "mind"
+  },
+  ["8840ae35-c0d7-4f35-b78c-e1e5b520845b"] = {
+    children = {
+      "2ce8e2d4-905c-4131-9820-90a9a64e20d7"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Your coveralls. Put this in your coveralls. Somewhere, uhm, hidden. They'll check. You can use it to contact me. You'll know how.",
+    uuid = "8840ae35-c0d7-4f35-b78c-e1e5b520845b",
+    who = "prism"
+  },
+  ["14234db6-657f-42d3-8d69-32461c2ad7c1"] = {
+    children = {
+      "04248dfb-91a3-439b-b5c9-d3035634114b"
+    },
+    is_entry_point = false,
+    kind = "Choice",
+    text = "Are you okay?",
+    uuid = "14234db6-657f-42d3-8d69-32461c2ad7c1"
   },
   ["26448ebd-ad16-40c0-94e1-2ba655461b89"] = {
     children = {
@@ -945,6 +1075,17 @@ return {
     value = true,
     variable = "intro.heard_clans"
   },
+  ["b4d694c9-c4e7-430f-9e2a-542604af44f3"] = {
+    children = {
+      "d0649aae-fa23-4fd5-a361-d9f79fdeb160"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "What is the inner world of Prism...?",
+    uuid = "b4d694c9-c4e7-430f-9e2a-542604af44f3",
+    who = "narrator"
+  },
   ["b7eff8e0-cc26-475a-96da-4d349309d25b"] = {
     branch_on = "intro.has_seen_body",
     children = {
@@ -962,13 +1103,15 @@ return {
     return_to = "rpt_001",
     uuid = "b20ae3be-0bd6-43b6-b24c-549d6255136c"
   },
-  ["b77b37c1-a291-4490-bc23-6d05407cc0f1"] = {
-    children = {},
+  ["b33bc572-5619-4bf5-b5ae-d2b8c0810077"] = {
+    children = {
+      "d0649aae-fa23-4fd5-a361-d9f79fdeb160"
+    },
     effects = {},
     is_entry_point = false,
     kind = "Text",
-    text = "Prism looks away with a grimace. ",
-    uuid = "b77b37c1-a291-4490-bc23-6d05407cc0f1",
+    text = "These questions feel hollow. You will never fit in here. You have risen from a fetid swamp and to the bog you shall return.",
+    uuid = "b33bc572-5619-4bf5-b5ae-d2b8c0810077",
     who = "narrator"
   },
   ["b092020c-2e5a-440d-a51b-f9fba307b47a"] = {
@@ -991,17 +1134,6 @@ return {
     is_entry_point = false,
     kind = "Branch",
     uuid = "baa362bc-2d06-499e-aaad-69f72796dbef"
-  },
-  ["bcb5435b-6097-4ee8-bc95-1b45db791acf"] = {
-    children = {
-      "7cd2b620-40b0-41db-84ae-d2e177d88db6"
-    },
-    effects = {},
-    is_entry_point = false,
-    kind = "Text",
-    text = "Uhm, well, probably. A bit. ",
-    uuid = "bcb5435b-6097-4ee8-bc95-1b45db791acf",
-    who = "prism"
   },
   ["bd7c3092-3faf-4b73-8ca1-6fb942e460e2"] = {
     children = {
@@ -1058,11 +1190,11 @@ return {
       "12e026ef-3f69-4685-8c2b-aad5e7b8954b"
     },
     effects = {},
-    is_entry_point = false,
+    is_entry_point = true,
     kind = "Text",
     text = "...WHAP!",
     uuid = "c00343dc-d19c-479e-98a7-f8344cb165c3",
-    who = "unknown"
+    who = "narrator"
   },
   ["c757c350-7c14-4437-8716-d65c00d1dc8a"] = {
     children = {
@@ -1084,6 +1216,17 @@ return {
     text = "How does it produce what we need to live?",
     uuid = "ccd386b0-b32e-44a6-9c54-a27019189896"
   },
+  ["cd617305-7e6f-4291-ae7d-660d1955561a"] = {
+    children = {
+      "8840ae35-c0d7-4f35-b78c-e1e5b520845b"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "From a hidden pocket of his coveralls, Prism pulls out a slip of something. It is very, very thin. It feels good in your hands. It is smooth. It feels ancient. You can sense that it is rare in this world. ",
+    uuid = "cd617305-7e6f-4291-ae7d-660d1955561a",
+    who = "narrator"
+  },
   ["cfcad5d8-ebe3-477c-8627-6ec17abe315a"] = {
     children = {
       "a9f69b1a-2275-4064-ac04-8da66945a902"
@@ -1102,6 +1245,27 @@ return {
     text = " The fog is trying to commune with you. This must be God presenting himself to you. You can feel the fog seep into your brain, filling you with light and knowledge, becoming one with you. You must commune with this spirit inside you.",
     uuid = "d0e830b5-155c-4fd8-a7ce-c5793d514f65"
   },
+  ["d1ef0d95-9e4d-44ce-9fe7-0fad245d3cda"] = {
+    children = {
+      "1288facc-e1ac-4c93-ab77-b8e10a036f5f"
+    },
+    is_entry_point = false,
+    kind = "Set",
+    uuid = "d1ef0d95-9e4d-44ce-9fe7-0fad245d3cda",
+    value = true,
+    variable = "intro.got_paper"
+  },
+  ["d40ec3c3-c28e-4685-b941-d42a57459c7e"] = {
+    children = {
+      "345fdb80-3bda-4fc4-9d00-f97e9acec636"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Mmh. Rarely. Every twenty-five years. ",
+    uuid = "d40ec3c3-c28e-4685-b941-d42a57459c7e",
+    who = "prism"
+  },
   ["d305f4a4-9db5-45a2-8ed1-76178bbbe479"] = {
     children = {
       "2cc2940a-a0ba-4c01-a1ba-05de43f53e67"
@@ -1113,6 +1277,17 @@ return {
     uuid = "d305f4a4-9db5-45a2-8ed1-76178bbbe479",
     who = "prism"
   },
+  ["d0649aae-fa23-4fd5-a361-d9f79fdeb160"] = {
+    children = {
+      "14234db6-657f-42d3-8d69-32461c2ad7c1"
+    },
+    effects = {},
+    is_entry_point = false,
+    kind = "Text",
+    text = "Enough! You must live in this world of tables, and chairs, and things if you are to survive. You can see that Prism is uncomfortable. There is something he does not want to tell you. Or cannot tell you.",
+    uuid = "d0649aae-fa23-4fd5-a361-d9f79fdeb160",
+    who = "narrator"
+  },
   ["d739fef2-002d-4786-81e2-57cd0d232283"] = {
     children = {
       "414085ec-2eca-4695-8e7f-13e9cc5c18f7"
@@ -1123,6 +1298,16 @@ return {
     text = "He looks a bit puzzled, as if the question doesn't make any sense. He pauses for a bit, searching for the right words. His fidgeting intensifies.",
     uuid = "d739fef2-002d-4786-81e2-57cd0d232283",
     who = "narrator"
+  },
+  ["d1076580-8ea3-47cc-8e58-b95b4e38e23a"] = {
+    branch_on = "intro.learned_about_prism",
+    children = {
+      "9ed82ddb-c988-4c2a-bd12-89daf3f3c6d0",
+      "b4d694c9-c4e7-430f-9e2a-542604af44f3"
+    },
+    is_entry_point = false,
+    kind = "Branch",
+    uuid = "d1076580-8ea3-47cc-8e58-b95b4e38e23a"
   },
   ["e0e4179f-ac0d-49f9-a1d6-0f41bf7f22ce"] = {
     children = {},
@@ -1184,7 +1369,7 @@ return {
   },
   ["ea9cd685-3356-4e04-98d6-5b29dbfeab82"] = {
     children = {
-      "2740ac8c-0cab-41dd-aedf-d37e4e006c77"
+      "07ef399f-e963-4992-bc0f-9cc02e489429"
     },
     is_entry_point = false,
     kind = "Choice",
